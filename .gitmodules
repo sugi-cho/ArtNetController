@@ -1,0 +1,6 @@
+[submodule "sugi.udp"]
+	path = sugi.udp
+	url = https://github.com/sugi-cho/sugi.udp.git
+[submodule "sugi.cc"]
+	path = sugi.cc
+	url = https://github.com/sugi-cho/sugi.cc.git
