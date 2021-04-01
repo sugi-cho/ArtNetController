@@ -3,8 +3,9 @@ using UnityEngine;
 
 using sugi.cc.udp.artnet;
 
-public class DmxOutputFloat : IDmxOutputModule
+public class DmxOutputFloat : IDmxOutputModule, IDmxOutputUseFine
 {
+    public string Label { get; set; }
     public bool UseFine { get; set; }
     int m_startChannel;
     int IDmxOutputModule.StartChannel => m_startChannel;
@@ -27,6 +28,7 @@ public class DmxOutputFloat : IDmxOutputModule
 
 public class DmxOutputInt : IDmxOutputModule
 {
+    public string Label { get; set; }
     int IDmxOutputModule.StartChannel => m_startChannel;
     int IDmxOutputModule.NumChannels => 1;
     int m_startChannel;
@@ -39,6 +41,7 @@ public class DmxOutputInt : IDmxOutputModule
 
 public class DmxOutputBool : IDmxOutputModule
 {
+    public string Label { get; set; }
     int IDmxOutputModule.StartChannel => m_startChannel;
     int IDmxOutputModule.NumChannels => 1;
     int m_startChannel;
@@ -49,8 +52,9 @@ public class DmxOutputBool : IDmxOutputModule
     void IDmxOutputModule.SetDmx(ref byte[] dmx) => dmx[m_startChannel] = (byte)(m_value ? 255 : 0);
 }
 
-public class DmxOutputXY : IDmxOutputModule
+public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
 {
+    public string Label { get; set; }
     public DmxOutputXY()
     {
         dmxOutputX = new DmxOutputFloat();
@@ -61,7 +65,7 @@ public class DmxOutputXY : IDmxOutputModule
     DmxOutputFloat dmxOutputY;
     IDmxOutputModule[] dmxOutputs;
 
-    public bool UseFine
+    bool IDmxOutputUseFine.UseFine
     {
         get => dmxOutputX.UseFine;
         set
@@ -101,8 +105,9 @@ public class DmxOutputXY : IDmxOutputModule
     }
 }
 
-public class DmxOutputColor : IDmxOutputModule
+public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
 {
+    public string Label { get; set; }
     public DmxOutputColor()
     {
         dmxOutputR = new DmxOutputFloat();
@@ -115,7 +120,7 @@ public class DmxOutputColor : IDmxOutputModule
     DmxOutputFloat dmxOutputB;
     IDmxOutputModule[] dmxOutputs;
 
-    public bool UseFine
+    bool IDmxOutputUseFine.UseFine
     {
         get => dmxOutputR.UseFine;
         set
@@ -143,10 +148,10 @@ public class DmxOutputColor : IDmxOutputModule
 
     void IDmxOutputModule.SetChannel(int channel)
     {
-        for (var i = 0; i < dmxOutputs.Length; i++)
+        foreach(var output in dmxOutputs)
         {
-            dmxOutputs[i].SetChannel(channel);
-            channel += dmxOutputs[i].NumChannels;
+            output.SetChannel(channel);
+            channel += output.NumChannels;
         }
     }
     void IDmxOutputModule.SetDmx(ref byte[] dmx)
@@ -154,4 +159,17 @@ public class DmxOutputColor : IDmxOutputModule
         foreach (var output in dmxOutputs)
             output.SetDmx(ref dmx);
     }
+}
+
+public class DmxOutputEmpty : IDmxOutputModule
+{
+    public string Label { get => $"Empty_{m_size}"; set { } }
+    public int Size { set => m_size = value; }
+    int m_startChannel;
+    int m_size;
+    int IDmxOutputModule.StartChannel => m_startChannel;
+    int IDmxOutputModule.NumChannels => m_size;
+    void IDmxOutputModule.SetChannel(int channel) => m_startChannel = channel;
+    void IDmxOutputModule.SetDmx(ref byte[] dmx) =>
+        System.Buffer.BlockCopy(new byte[m_size], 0, dmx, m_startChannel, m_size);
 }

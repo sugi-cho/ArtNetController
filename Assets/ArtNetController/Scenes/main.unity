@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -312,4 +312,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64a864b4723af2f44a674ffa368309eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dmx: 
+  fixture:
+    label: TestFixture
+    dmxOutputDefinitions:
+    - type: 1
+      label: Test
+      useFine: 0
+    - type: 5
+      label: AAA
+      useFine: 1
+  newFixture:
+    label: TestFixture
+    dmxOutputDefinitions:
+    - type: 1
+      label: Test
+      useFine: 0
+    - type: 5
+      label: AAA
+      useFine: 1

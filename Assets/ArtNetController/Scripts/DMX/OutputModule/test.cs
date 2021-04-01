@@ -4,25 +4,21 @@ using sugi.cc.udp.artnet;
 
 public class test : MonoBehaviour
 {
-    [SerializeField] float single;
-    [SerializeField] Color color;
-    [SerializeField] bool useFine;
-    [SerializeField] int channel;
-    [SerializeField] byte[] dmx = new byte[512];
+    public DmxOutputFixture fixture;
+    public DmxOutputFixture newFixture;
 
-    private void OnValidate()
+    [ContextMenu("test")]
+    void Test()
     {
-        var dmxFloat = new DmxOutputFloat();
-        var dmxColor = new DmxOutputColor();
-        var output = dmxColor as IDmxOutputModule;
+        fixture.SetModuleList();
+        var dmxModule = (fixture as IDmxOutputModule);
+        dmxModule.SetChannel(0);
 
-        dmxFloat.UseFine = useFine;
-        dmxFloat.Value = single;
-        dmxColor.UseFine = useFine;
-        dmxColor.Value = color;
+        Debug.Log((fixture as IDmxOutputModule).NumChannels);
+        var json = JsonUtility.ToJson(dmxModule);
+        Debug.Log(json);
 
-        output.SetChannel(channel);
-        output.SetDmx(ref dmx);
-        (dmxFloat as IDmxOutputModule).SetDmx(ref dmx);
+        (newFixture = JsonUtility.FromJson<DmxOutputFixture>(json)).SetModuleList();
+        Debug.Log((newFixture as IDmxOutputModule).NumChannels);
     }
 }
