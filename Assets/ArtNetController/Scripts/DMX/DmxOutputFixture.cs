@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-
-using sugi.cc.udp.artnet;
+using UnityEngine;
 
 [System.Serializable]
-public class DmxOutputUniverse : IDmxOutputModule
+public class DmxOutputFixture : IDmxOutputModule
 {
-    public void SetModuleList()
+    public bool IsEmpty => dmxOutputList[0] == emptyOne;
+    public void Initialize()
     {
         if (dmxOutputDefinitions != null)
             dmxOutputList = dmxOutputDefinitions.Select(d =>
@@ -21,9 +21,9 @@ public class DmxOutputUniverse : IDmxOutputModule
         if (dmxOutputList == null)
             dmxOutputList = new List<IDmxOutputModule>();
         if (dmxOutputList.Count == 0)
-            dmxOutputList.Add(emptyZero);
+            dmxOutputList.Add(emptyOne);
     }
-    DmxOutputEmpty emptyZero = new DmxOutputEmpty { Size = 0 };
+    DmxOutputEmpty emptyOne = new DmxOutputEmpty { Size = 1 };
 
     public void AddModule(IDmxOutputModule module)
     {
@@ -34,13 +34,13 @@ public class DmxOutputUniverse : IDmxOutputModule
     {
         dmxOutputList.Remove(module);
         if (dmxOutputList.Count == 0)
-            dmxOutputList.Add(emptyZero);
+            dmxOutputList.Add(emptyOne);
         BuildDefinitions();
     }
     void BuildDefinitions()
     {
-        if (dmxOutputList.Contains(emptyZero) && 1 < dmxOutputList.Count)
-            dmxOutputList.Remove(emptyZero);
+        if (dmxOutputList.Contains(emptyOne) && 1 < dmxOutputList.Count)
+            dmxOutputList.Remove(emptyOne);
         dmxOutputDefinitions = dmxOutputList.Select(o =>
         {
             var type = o.GetType();
@@ -53,19 +53,23 @@ public class DmxOutputUniverse : IDmxOutputModule
         }).ToArray();
     }
 
-    public string Label { get; set; }
-    int IDmxOutputModule.StartChannel => dmxOutputList[0].StartChannel;
-    int IDmxOutputModule.NumChannels => dmxOutputList.Sum(output => output.NumChannels);
-    void IDmxOutputModule.SetChannel(int channel)
-    {
-        (emptyZero as IDmxOutputModule).SetChannel(channel);
-        foreach (var output in dmxOutputList)
+    public string Label { get => label; set => label = value; }
+    [SerializeField] string label;
+    public int StartChannel {
+        get => m_startChannel;
+        set
         {
-            output.SetChannel(channel);
-            channel += output.NumChannels;
+            m_startChannel = value;
+            foreach (var output in dmxOutputList)
+            {
+                output.StartChannel = value;
+                value += output.NumChannels;
+            }
         }
     }
-    void IDmxOutputModule.SetDmx(ref byte[] dmx)
+    int m_startChannel;
+    public int NumChannels => dmxOutputList.Sum(output => output.NumChannels);
+    public void SetDmx(ref byte[] dmx)
     {
         foreach (var output in dmxOutputList)
             output.SetDmx(ref dmx);
@@ -90,7 +94,6 @@ public class DmxOutputUniverse : IDmxOutputModule
         Float,
         XY,
         Color,
-        Fixture
     }
 
     readonly Dictionary<DmxOutputType, System.Type> TypeMap
@@ -102,6 +105,5 @@ public class DmxOutputUniverse : IDmxOutputModule
             {DmxOutputType.Float,typeof( DmxOutputFloat)},
             {DmxOutputType.XY,typeof( DmxOutputXY)},
             {DmxOutputType.Color,typeof( DmxOutputColor)},
-            {DmxOutputType.Fixture,typeof( DmxOutputFixture)},
         };
 }

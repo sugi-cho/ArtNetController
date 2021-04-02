@@ -1,55 +1,47 @@
 using System.Linq;
 using UnityEngine;
 
-using sugi.cc.udp.artnet;
-
 public class DmxOutputFloat : IDmxOutputModule, IDmxOutputUseFine
 {
     public string Label { get; set; }
     public bool UseFine { get; set; }
-    int m_startChannel;
-    int IDmxOutputModule.StartChannel => m_startChannel;
-    int IDmxOutputModule.NumChannels => UseFine ? 2 : 1;
+    public int StartChannel { get; set; }
+    public int NumChannels => UseFine ? 2 : 1;
 
     public float Value { get => m_value; set => m_value = Mathf.Clamp01(value); }
     float m_value;
-    void IDmxOutputModule.SetChannel(int channel) => m_startChannel = channel;
-    void IDmxOutputModule.SetDmx(ref byte[] dmx)
+    public void SetDmx(ref byte[] dmx)
     {
         if (UseFine)
         {
-            dmx[m_startChannel] = (byte)Mathf.Min(Value * 256, 255);
-            dmx[m_startChannel + 1] = (byte)((Value * 256 - dmx[m_startChannel]) * 255);
+            dmx[StartChannel] = (byte)Mathf.Min(Value * 256, 255);
+            dmx[StartChannel + 1] = (byte)((Value * 256 - dmx[StartChannel]) * 255);
         }
         else
-            dmx[m_startChannel] = (byte)(Value * 255);
+            dmx[StartChannel] = (byte)(Value * 255);
     }
 }
 
 public class DmxOutputInt : IDmxOutputModule
 {
     public string Label { get; set; }
-    int IDmxOutputModule.StartChannel => m_startChannel;
-    int IDmxOutputModule.NumChannels => 1;
-    int m_startChannel;
+    public int StartChannel { get; set; }
+    public int NumChannels => 1;
 
     public int Value { get => m_value; set => m_value = (byte)value; }
     int m_value;
-    void IDmxOutputModule.SetChannel(int channel) => m_startChannel = channel;
-    void IDmxOutputModule.SetDmx(ref byte[] dmx) => dmx[m_startChannel] = (byte)Value;
+    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
 }
 
 public class DmxOutputBool : IDmxOutputModule
 {
     public string Label { get; set; }
-    int IDmxOutputModule.StartChannel => m_startChannel;
-    int IDmxOutputModule.NumChannels => 1;
-    int m_startChannel;
+    public int StartChannel { get; set; }
+    public int NumChannels => 1;
 
     public bool Value { get => m_value; set => m_value = value; }
     bool m_value;
-    void IDmxOutputModule.SetChannel(int channel) => m_startChannel = channel;
-    void IDmxOutputModule.SetDmx(ref byte[] dmx) => dmx[m_startChannel] = (byte)(m_value ? 255 : 0);
+    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)(m_value ? 255 : 0);
 }
 
 public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
@@ -59,23 +51,34 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
     {
         dmxOutputX = new DmxOutputFloat();
         dmxOutputY = new DmxOutputFloat();
-        dmxOutputs = new[] { dmxOutputX, dmxOutputY as IDmxOutputModule, };
+        dmxOutputs = new[] { dmxOutputX, dmxOutputY };
     }
     DmxOutputFloat dmxOutputX;
     DmxOutputFloat dmxOutputY;
     IDmxOutputModule[] dmxOutputs;
 
-    bool IDmxOutputUseFine.UseFine
+    public bool UseFine
     {
         get => dmxOutputX.UseFine;
         set
         {
             dmxOutputX.UseFine = dmxOutputY.UseFine = value;
-            (this as IDmxOutputModule).SetChannel(dmxOutputs[0].StartChannel);
+            StartChannel = (dmxOutputs[0].StartChannel);
         }
     }
-    int IDmxOutputModule.StartChannel => dmxOutputs[0].StartChannel;
-    int IDmxOutputModule.NumChannels => dmxOutputs.Sum(output => output.NumChannels);
+    public int StartChannel
+    {
+        get => dmxOutputs[0].StartChannel;
+        set
+        {
+            foreach (var output in dmxOutputs)
+            {
+                output.StartChannel = value;
+                value += output.NumChannels;
+            }
+        }
+    }
+    public int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
 
     public (float x, float y) Value
     {
@@ -90,15 +93,7 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
     }
     (float x, float y) m_value;
 
-    void IDmxOutputModule.SetChannel(int channel)
-    {
-        for (var i = 0; i < dmxOutputs.Length; i++)
-        {
-            dmxOutputs[i].SetChannel(channel);
-            channel += dmxOutputs[i].NumChannels;
-        }
-    }
-    void IDmxOutputModule.SetDmx(ref byte[] dmx)
+    public void SetDmx(ref byte[] dmx)
     {
         foreach (var output in dmxOutputs)
             output.SetDmx(ref dmx);
@@ -113,7 +108,7 @@ public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
         dmxOutputR = new DmxOutputFloat();
         dmxOutputG = new DmxOutputFloat();
         dmxOutputB = new DmxOutputFloat();
-        dmxOutputs = new[] { dmxOutputR, dmxOutputG, dmxOutputB as IDmxOutputModule };
+        dmxOutputs = new[] { dmxOutputR, dmxOutputG, dmxOutputB };
     }
     DmxOutputFloat dmxOutputR;
     DmxOutputFloat dmxOutputG;
@@ -126,12 +121,23 @@ public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
         set
         {
             dmxOutputR.UseFine = dmxOutputG.UseFine = dmxOutputB.UseFine = value;
-            (this as IDmxOutputModule).SetChannel(dmxOutputs[0].StartChannel);
+            StartChannel = dmxOutputs[0].StartChannel;
         }
     }
 
-    int IDmxOutputModule.StartChannel => dmxOutputs[0].StartChannel;
-    int IDmxOutputModule.NumChannels => dmxOutputs.Sum(output => output.NumChannels);
+    public int StartChannel
+    {
+        get => dmxOutputs[0].StartChannel;
+        set
+        {
+            foreach (var output in dmxOutputs)
+            {
+                output.StartChannel = value;
+                value += output.NumChannels;
+            }
+        }
+    }
+    public int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
 
     public Color Value
     {
@@ -146,15 +152,7 @@ public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
     }
     Color m_value;
 
-    void IDmxOutputModule.SetChannel(int channel)
-    {
-        foreach(var output in dmxOutputs)
-        {
-            output.SetChannel(channel);
-            channel += output.NumChannels;
-        }
-    }
-    void IDmxOutputModule.SetDmx(ref byte[] dmx)
+    public void SetDmx(ref byte[] dmx)
     {
         foreach (var output in dmxOutputs)
             output.SetDmx(ref dmx);
@@ -165,11 +163,10 @@ public class DmxOutputEmpty : IDmxOutputModule
 {
     public string Label { get => $"Empty_{m_size}"; set { } }
     public int Size { set => m_size = value; }
-    int m_startChannel;
+
     int m_size;
-    int IDmxOutputModule.StartChannel => m_startChannel;
-    int IDmxOutputModule.NumChannels => m_size;
-    void IDmxOutputModule.SetChannel(int channel) => m_startChannel = channel;
-    void IDmxOutputModule.SetDmx(ref byte[] dmx) =>
-        System.Buffer.BlockCopy(new byte[m_size], 0, dmx, m_startChannel, m_size);
+    public int StartChannel { get; set; }
+    public int NumChannels => m_size;
+    public void SetDmx(ref byte[] dmx) =>
+        System.Buffer.BlockCopy(new byte[m_size], 0, dmx, StartChannel, m_size);
 }
