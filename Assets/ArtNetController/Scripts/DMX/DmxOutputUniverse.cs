@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-
 using UnityEngine;
 
 [System.Serializable]
 public class DmxOutputUniverse : IDmxOutputModule
 {
-    public void SetModuleList()
+    public void Initialize()
     {
         if (dmxOutputDefinitions != null)
             dmxOutputList = dmxOutputDefinitions.Select(d =>
             {
+                if (d.type == DmxOutputType.Fixture)
+                    return FixtureLibrary.LoadFixture(d.label);
+
                 var dmxOutput = System.Activator.CreateInstance(TypeMap[d.type]) as IDmxOutputModule;
                 dmxOutput.Label = d.label;
                 var usefine = dmxOutput as IDmxOutputUseFine;
@@ -34,12 +36,13 @@ public class DmxOutputUniverse : IDmxOutputModule
     }
     void BuildDefinitions()
     {
-        dmxOutputDefinitions = dmxOutputList.Select(o =>
+        dmxOutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
+        dmxOutputDefinitions = dmxOutputList.Select(output =>
         {
-            var type = o.GetType();
+            var type = output.GetType();
             var outputType = TypeMap.FirstOrDefault(pair => pair.Value == type).Key;
-            var definition = new DmxOutputDefinition { type = outputType, label = o.Label, channel = o.StartChannel };
-            var useFine = o as IDmxOutputUseFine;
+            var definition = new DmxOutputDefinition { type = outputType, label = output.Label, channel = output.StartChannel };
+            var useFine = output as IDmxOutputUseFine;
             if (useFine != null)
                 definition.useFine = useFine.UseFine;
             return definition;
@@ -79,21 +82,13 @@ public class DmxOutputUniverse : IDmxOutputModule
         public int channel;
     }
 
-    public enum DmxOutputType
-    {
-        Bool,
-        Int,
-        Float,
-        XY,
-        Color,
-        Fixture,
-    }
-
     readonly Dictionary<DmxOutputType, System.Type> TypeMap
         = new Dictionary<DmxOutputType, System.Type>
         {
+            {DmxOutputType.Empty,typeof( DmxOutputEmpty)},
             {DmxOutputType.Bool,typeof( DmxOutputBool)},
             {DmxOutputType.Int,typeof( DmxOutputInt)},
+            {DmxOutputType.Selector,typeof(DmxOutputSelector)},
             {DmxOutputType.Float,typeof( DmxOutputFloat)},
             {DmxOutputType.XY,typeof( DmxOutputXY)},
             {DmxOutputType.Color,typeof( DmxOutputColor)},

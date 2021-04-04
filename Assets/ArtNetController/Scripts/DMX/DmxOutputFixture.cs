@@ -25,6 +25,7 @@ public class DmxOutputFixture : IDmxOutputModule
     }
     DmxOutputEmpty emptyOne = new DmxOutputEmpty { Size = 1 };
 
+    public List<IDmxOutputModule> DmxOutputModules => dmxOutputList;
     public void AddModule(IDmxOutputModule module)
     {
         dmxOutputList.Add(module);
@@ -41,12 +42,12 @@ public class DmxOutputFixture : IDmxOutputModule
     {
         if (dmxOutputList.Contains(emptyOne) && 1 < dmxOutputList.Count)
             dmxOutputList.Remove(emptyOne);
-        dmxOutputDefinitions = dmxOutputList.Select(o =>
+        dmxOutputDefinitions = dmxOutputList.Select(output =>
         {
-            var type = o.GetType();
+            var type = output.GetType();
             var outputType = TypeMap.FirstOrDefault(pair => pair.Value == type).Key;
-            var definition = new DmxOutputDefinition { type = outputType, label = o.Label };
-            var useFine = o as IDmxOutputUseFine;
+            var definition = new DmxOutputDefinition { type = outputType, label = output.Label };
+            var useFine = output as IDmxOutputUseFine;
             if (useFine != null)
                 definition.useFine = useFine.UseFine;
             return definition;
@@ -86,24 +87,16 @@ public class DmxOutputFixture : IDmxOutputModule
         public bool useFine;
     }
 
-    public enum DmxOutputType
-    {
-        Empty = 0,
-        Bool,
-        Int,
-        Float,
-        XY,
-        Color,
-    }
-
     readonly Dictionary<DmxOutputType, System.Type> TypeMap
         = new Dictionary<DmxOutputType, System.Type>
         {
             {DmxOutputType.Empty,typeof( DmxOutputEmpty)},
             {DmxOutputType.Bool,typeof( DmxOutputBool)},
             {DmxOutputType.Int,typeof( DmxOutputInt)},
+            {DmxOutputType.Selector,typeof(DmxOutputSelector)},
             {DmxOutputType.Float,typeof( DmxOutputFloat)},
             {DmxOutputType.XY,typeof( DmxOutputXY)},
             {DmxOutputType.Color,typeof( DmxOutputColor)},
+            {DmxOutputType.Fixture,typeof(DmxOutputFixture)},
         };
 }

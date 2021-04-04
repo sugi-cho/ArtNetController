@@ -10,14 +10,9 @@ public class test : MonoBehaviour
     [ContextMenu("test")]
     void Test()
     {
-        fixture.Initialize();
-        var dmxModule = (fixture as IDmxOutputModule);
-
-        Debug.Log((fixture as IDmxOutputModule).NumChannels);
-        var json = JsonUtility.ToJson(dmxModule);
-        Debug.Log(json);
-
-        (newFixture = JsonUtility.FromJson<DmxOutputFixture>(json)).Initialize();
-        Debug.Log((newFixture as IDmxOutputModule).NumChannels);
+        fixture = FixtureLibrary.CreateFixture();
+        FixtureLibrary.SaveFixture(fixture);
+        newFixture = FixtureLibrary.CreateFixture();
+        FixtureLibrary.SaveFixture(newFixture);
     }
 }

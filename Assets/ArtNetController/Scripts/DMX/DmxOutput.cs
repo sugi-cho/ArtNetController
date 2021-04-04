@@ -28,9 +28,44 @@ public class DmxOutputInt : IDmxOutputModule
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
-    public int Value { get => m_value; set => m_value = (byte)value; }
+    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, 255); }
     int m_value;
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
+}
+
+public class DmxOutputSelector : IDmxOutputModule
+{
+    public string Label
+    {
+        get => m_label;
+        set
+        {
+            m_label = value;
+            var arg = value.Split('?').Last();
+            int numChoices;
+            if (int.TryParse(arg, out numChoices))
+                NumChoices = numChoices;
+            else
+                NumChoices = 10;
+        }
+    }
+    string m_label;
+    public int StartChannel { get; set; }
+    public int NumChannels => 1;
+
+    public int NumChoices {
+        get => m_numChoices;
+        set
+        {
+            m_numChoices = value;
+            m_label = $"{Label.Split('?').First()}?{m_numChoices}";
+        }
+    }
+    int m_numChoices;
+    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, NumChoices - 1); }
+    int m_value;
+    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / NumChoices * 255);
+
 }
 
 public class DmxOutputBool : IDmxOutputModule
@@ -169,4 +204,16 @@ public class DmxOutputEmpty : IDmxOutputModule
     public int NumChannels => m_size;
     public void SetDmx(ref byte[] dmx) =>
         System.Buffer.BlockCopy(new byte[m_size], 0, dmx, StartChannel, m_size);
+}
+
+public enum DmxOutputType
+{
+    Empty,
+    Bool,
+    Int,
+    Selector,
+    Float,
+    XY,
+    Color,
+    Fixture,
 }
