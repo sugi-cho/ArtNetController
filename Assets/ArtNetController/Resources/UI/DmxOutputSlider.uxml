@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="DmxOutputUI.uss" />
+    <ui:VisualElement name="DmxOutputSlider" style="align-items: center; width: 64px; overflow: hidden; padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; margin-left: 2px; margin-right: 2px;">
+        <ui:Label text="Label" display-tooltip-when-elided="true" style="flex-grow: 1; width: 100%;" />
+        <ui:Slider value="0.5" high-value="1" direction="Vertical" style="height: 300px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+        <ui:TextField value="filler text" text="0.15" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,18 @@
+#unity-drag-container {
+}
+
+#unity-tracker {
+    flex-grow: 1;
+    left: 4px;
+    right: 4px;
+    width: auto;
+    margin-right: 0;
+}
+
+#unity-dragger {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    width: auto;
+}
