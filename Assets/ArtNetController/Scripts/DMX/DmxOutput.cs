@@ -1,6 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
+[System.Serializable]
 public class DmxOutputFloat : IDmxOutputModule, IDmxOutputUseFine
 {
     public string Label { get; set; }

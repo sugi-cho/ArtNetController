@@ -1,3 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <EditableDropdownField choices="test,aaa" />
+    <Style src="StyleSheets/Dropdown.uss" />
+    <ui:VisualElement style="height: 50px;" />
+    <EditableDropdownField choices="test,aaa" style="width: 300px;" />
+    <ui:VisualElement style="height: 50px;" />
+    <ui:GroupBox />
 </ui:UXML>

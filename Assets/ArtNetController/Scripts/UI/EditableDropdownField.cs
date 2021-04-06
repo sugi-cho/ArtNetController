@@ -1,11 +1,10 @@
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EditableDropdownField : VisualElement
 {
+
     public new class UxmlFactory : UxmlFactory<EditableDropdownField, UxmlTraits> { }
     public new class UxmlTraits : VisualElement.UxmlTraits
     {

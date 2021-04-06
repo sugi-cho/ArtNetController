@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -268,6 +268,7 @@ GameObject:
   m_Component:
   - component: {fileID: 833176890}
   - component: {fileID: 833176889}
+  - component: {fileID: 833176891}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -289,7 +290,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 5ce67fabedc3c2543a7f2396dfe762f1, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 7feaadf68deefca4f89a9682eea17475, type: 3}
+  sourceAsset: {fileID: 0}
   m_SortingOrder: 0
 --- !u!4 &833176890
 Transform:
@@ -305,6 +306,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &833176891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833176888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64a864b4723af2f44a674ffa368309eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixture:
+    label: 
+    dmxOutputDefinitions: []
+  newFixture:
+    label: 
+    dmxOutputDefinitions: []
 --- !u!1 &982344159
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +334,6 @@ GameObject:
   m_Component:
   - component: {fileID: 982344161}
   - component: {fileID: 982344160}
-  - component: {fileID: 982344162}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -399,33 +417,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &982344162
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 982344159}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a864b4723af2f44a674ffa368309eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fixture:
-    label: TestFixture
-    dmxOutputDefinitions:
-    - type: 1
-      label: Test
-      useFine: 0
-    - type: 5
-      label: AAA
-      useFine: 1
-  newFixture:
-    label: TestFixture
-    dmxOutputDefinitions:
-    - type: 1
-      label: Test
-      useFine: 0
-    - type: 5
-      label: AAA
-      useFine: 1
