@@ -22,7 +22,6 @@ public class DmxOutputBoolUI : DmxOutputUIBase<DmxOutputBool>
 
         void SetValue(bool val)
         {
-            Debug.Log(val);
             if (val)
             {
                 area.RemoveFromClassList("switch-off");
