@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public class DmxOutputFloat : IDmxOutputModule, IDmxOutputUseFine
+public class DmxOutputFloat : IDmxOutputModule, IUseFine
 {
     public string Label { get; set; }
     public bool UseFine { get; set; }
@@ -23,6 +23,7 @@ public class DmxOutputFloat : IDmxOutputModule, IDmxOutputUseFine
     }
 }
 
+[System.Serializable]
 public class DmxOutputInt : IDmxOutputModule
 {
     public string Label { get; set; }
@@ -34,7 +35,8 @@ public class DmxOutputInt : IDmxOutputModule
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
 }
 
-public class DmxOutputSelector : IDmxOutputModule
+[System.Serializable]
+public class DmxOutputSelector : IDmxOutputModule, INumChoices
 {
     public string Label
     {
@@ -69,6 +71,7 @@ public class DmxOutputSelector : IDmxOutputModule
 
 }
 
+[System.Serializable]
 public class DmxOutputBool : IDmxOutputModule
 {
     public string Label { get; set; }
@@ -80,7 +83,8 @@ public class DmxOutputBool : IDmxOutputModule
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)(m_value ? 255 : 0);
 }
 
-public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
+[System.Serializable]
+public class DmxOutputXY : IDmxOutputModule, IUseFine
 {
     public string Label { get; set; }
     public DmxOutputXY()
@@ -116,7 +120,7 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
     }
     public int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
 
-    public (float x, float y) Value
+    public Vector2 Value
     {
         get => m_value;
         set
@@ -127,7 +131,7 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
             m_value.y = dmxOutputY.Value;
         }
     }
-    (float x, float y) m_value;
+    Vector2 m_value;
 
     public void SetDmx(ref byte[] dmx)
     {
@@ -137,7 +141,7 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
 }
 
 [System.Serializable]
-public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
+public class DmxOutputColor : IDmxOutputModule, IUseFine
 {
     public string Label { get; set; }
     public DmxOutputColor()
@@ -196,6 +200,7 @@ public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
     }
 }
 
+[System.Serializable]
 public class DmxOutputEmpty : IDmxOutputModule
 {
     public string Label { get => $"Empty_{m_size}"; set { } }
@@ -206,16 +211,4 @@ public class DmxOutputEmpty : IDmxOutputModule
     public int NumChannels => m_size;
     public void SetDmx(ref byte[] dmx) =>
         System.Buffer.BlockCopy(new byte[m_size], 0, dmx, StartChannel, m_size);
-}
-
-public enum DmxOutputType
-{
-    Empty,
-    Bool,
-    Int,
-    Selector,
-    Float,
-    XY,
-    Color,
-    Fixture,
 }

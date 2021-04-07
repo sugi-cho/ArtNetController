@@ -32,12 +32,12 @@ public class XYPad : VisualElement
             lineX.style.left = (localBound.width - 1) * value.x;
             lineY.style.bottom = (localBound.height - 1) * value.y;
             m_value = value;
-            onChange?.Invoke(m_value);
+            onValueChanged?.Invoke(m_value);
         }
     }
     public void SetValueWithoutNotify(Vector2 v2) => m_value = v2;
     Vector2 m_value;
-    public event System.Action<Vector2> onChange;
+    public event System.Action<Vector2> onValueChanged;
     public Color LineColor
     {
         set => lineX.style.backgroundColor = lineY.style.backgroundColor = value;
