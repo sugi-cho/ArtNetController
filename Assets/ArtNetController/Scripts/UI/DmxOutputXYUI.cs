@@ -5,10 +5,6 @@ public class DmxOutputXYUI : DmxOutputUIBase<DmxOutputXY>
 {
     public DmxOutputXYUI(DmxOutputXY dmxOutput) : base(dmxOutput) { }
 
-    protected override void BuildEditorUI()
-    {
-        base.BuildEditorUI();
-    }
     protected override void BuildControlUI()
     {
         base.BuildControlUI();

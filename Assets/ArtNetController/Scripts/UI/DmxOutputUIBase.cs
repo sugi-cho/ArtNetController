@@ -13,7 +13,7 @@ public abstract class DmxOutputUIBase<T> where T : IDmxOutputModule
     string EditorUIBaseResourcePath => $"UI/DmxOutput/DmxOutput_Editor";
     internal string EditorUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Editor";
     internal string ControlUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Control";
-    protected virtual void BuildEditorUI()
+    void BuildEditorUI()
     {
         var tree = Resources.Load<VisualTreeAsset>(EditorUIBaseResourcePath);
         editorUI = tree?.CloneTree("");

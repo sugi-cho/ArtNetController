@@ -8,7 +8,7 @@ public struct DmxOutputDefinition
     public string label;
     public int channel;
     public bool useFine;
-    public int numChoices;
+    public int size;
 }
 
 public enum DmxOutputType
@@ -48,9 +48,9 @@ public static class DmxOutputUtility
         var useFine = dmxOutput as IUseFine;
         if (useFine != null)
             useFine.UseFine = definition.useFine;
-        var numChoices = dmxOutput as INumChoices;
+        var numChoices = dmxOutput as ISizeProp;
         if (numChoices != null)
-            numChoices.NumChoices = definition.numChoices;
+            numChoices.SizeProp = definition.size;
         return dmxOutput;
     }
     public static DmxOutputDefinition DefinitionFromModule(IDmxOutputModule output)
@@ -61,9 +61,9 @@ public static class DmxOutputUtility
         var useFine = output as IUseFine;
         if (useFine != null)
             definition.useFine = useFine.UseFine;
-        var numChoices = output as INumChoices;
+        var numChoices = output as ISizeProp;
         if (numChoices != null)
-            definition.numChoices = numChoices.NumChoices;
+            definition.size = numChoices.SizeProp;
         return definition;
     }
 }

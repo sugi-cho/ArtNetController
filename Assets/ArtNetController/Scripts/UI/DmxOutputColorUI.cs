@@ -7,10 +7,6 @@ using UnityEngine.UIElements;
 public class DmxOutputColorUI : DmxOutputUIBase<DmxOutputColor>
 {
     public DmxOutputColorUI(DmxOutputColor dmxOutput) : base(dmxOutput) { }
-    protected override void BuildEditorUI()
-    {
-        base.BuildEditorUI();
-    }
     protected override void BuildControlUI()
     {
         base.BuildControlUI();

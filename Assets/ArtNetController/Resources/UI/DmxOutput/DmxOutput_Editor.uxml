@@ -1,2 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement style="margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
+        <ui:Label text="DmxOutputType" display-tooltip-when-elided="true" name="Type" style="-unity-text-align: middle-center; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
+        <ui:VisualElement style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+            <ui:TextField picking-mode="Ignore" label="Label" value="filler text" text="Name" name="Label" />
+            <ui:Toggle label="Use Fine" name="UseFine" />
+            <ui:TextField picking-mode="Ignore" label="Size" value="filler text" text="10&#10;" name="SizeProp" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

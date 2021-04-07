@@ -36,38 +36,16 @@ public class DmxOutputInt : IDmxOutputModule
 }
 
 [System.Serializable]
-public class DmxOutputSelector : IDmxOutputModule, INumChoices
+public class DmxOutputSelector : IDmxOutputModule, ISizeProp
 {
-    public string Label
-    {
-        get => m_label;
-        set
-        {
-            m_label = value;
-            var arg = value.Split('?').Last();
-            int numChoices;
-            if (int.TryParse(arg, out numChoices))
-                NumChoices = numChoices;
-            else
-                NumChoices = 10;
-        }
-    }
-    string m_label;
+    public string Label { get; set; }
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
-    public int NumChoices {
-        get => m_numChoices;
-        set
-        {
-            m_numChoices = value;
-            m_label = $"{Label.Split('?').First()}?{m_numChoices}";
-        }
-    }
-    int m_numChoices;
-    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, NumChoices - 1); }
+    public int SizeProp { get; set; }
+    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, SizeProp - 1); }
     int m_value;
-    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / NumChoices * 255);
+    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / SizeProp * 255);
 
 }
 
@@ -201,14 +179,12 @@ public class DmxOutputColor : IDmxOutputModule, IUseFine
 }
 
 [System.Serializable]
-public class DmxOutputEmpty : IDmxOutputModule
+public class DmxOutputEmpty : IDmxOutputModule, ISizeProp
 {
-    public string Label { get => $"Empty_{m_size}"; set { } }
-    public int Size { set => m_size = value; }
-
-    int m_size;
+    public string Label { get => $"Empty_{SizeProp}"; set { } }
+    public int SizeProp { get; set; }
     public int StartChannel { get; set; }
-    public int NumChannels => m_size;
+    public int NumChannels => SizeProp;
     public void SetDmx(ref byte[] dmx) =>
-        System.Buffer.BlockCopy(new byte[m_size], 0, dmx, StartChannel, m_size);
+        System.Buffer.BlockCopy(new byte[SizeProp], 0, dmx, StartChannel, SizeProp);
 }

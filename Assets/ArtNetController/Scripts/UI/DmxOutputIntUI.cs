@@ -1,15 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DmxOutputIntUI : DmxOutputUIBase<DmxOutputInt>
 {
     public DmxOutputIntUI(DmxOutputInt dmxOutput) : base(dmxOutput) { }
-
-    protected override void BuildEditorUI() {
-        base.BuildEditorUI();
-    }
     protected override void BuildControlUI()
     {
         base.BuildControlUI();

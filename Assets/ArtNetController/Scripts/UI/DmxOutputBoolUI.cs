@@ -4,11 +4,6 @@ using UnityEngine.UIElements;
 public class DmxOutputBoolUI : DmxOutputUIBase<DmxOutputBool>
 {
     public DmxOutputBoolUI(DmxOutputBool dmxOutput) : base(dmxOutput) { }
-    protected override void BuildEditorUI()
-    {
-        var tree = Resources.Load<VisualTreeAsset>(EditorUIResourcePath);
-        editorUI = tree?.CloneTree("");
-    }
 
     protected override void BuildControlUI()
     {

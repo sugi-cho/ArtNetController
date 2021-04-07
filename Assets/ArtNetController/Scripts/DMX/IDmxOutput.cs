@@ -9,7 +9,7 @@ public interface IUseFine
 {
     bool UseFine { get; set; }
 }
-public interface INumChoices
+public interface ISizeProp
 {
-    int NumChoices { get; set; }
+    int SizeProp { get; set; }
 }

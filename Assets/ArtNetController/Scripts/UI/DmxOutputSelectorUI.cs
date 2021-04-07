@@ -1,17 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DmxOutputSelectorUI : DmxOutputUIBase<DmxOutputSelector>
 {
     public DmxOutputSelectorUI(DmxOutputSelector dmxOutput) : base(dmxOutput) { }
-    protected override void BuildEditorUI()
-    {
-        var tree = Resources.Load<VisualTreeAsset>(EditorUIResourcePath);
-        editorUI = tree?.CloneTree("");
-    }
-
     protected override void BuildControlUI()
     {
         base.BuildControlUI();
@@ -22,11 +14,11 @@ public class DmxOutputSelectorUI : DmxOutputUIBase<DmxOutputSelector>
 
         label.text = targetDmxOutput.Label.Split('?')[0];
         selector.style.flexDirection = FlexDirection.ColumnReverse;
-        selector.NumChoices = targetDmxOutput.NumChoices;
+        selector.NumChoices = targetDmxOutput.SizeProp;
         selector.onValueChanged += (val) =>
         {
             targetDmxOutput.Value = val;
-            textField.value = $"{Mathf.FloorToInt((targetDmxOutput.Value + 0.5f) / targetDmxOutput.NumChoices * 255)}";
+            textField.value = $"{Mathf.FloorToInt((targetDmxOutput.Value + 0.5f) / targetDmxOutput.SizeProp * 255)}";
             onValueChaned?.Invoke(val);
         };
         textField.SetEnabled(false);
