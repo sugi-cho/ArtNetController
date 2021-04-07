@@ -136,6 +136,7 @@ public class DmxOutputXY : IDmxOutputModule, IDmxOutputUseFine
     }
 }
 
+[System.Serializable]
 public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
 {
     public string Label { get; set; }
@@ -151,7 +152,7 @@ public class DmxOutputColor : IDmxOutputModule, IDmxOutputUseFine
     DmxOutputFloat dmxOutputB;
     IDmxOutputModule[] dmxOutputs;
 
-    bool IDmxOutputUseFine.UseFine
+    public bool UseFine
     {
         get => dmxOutputR.UseFine;
         set

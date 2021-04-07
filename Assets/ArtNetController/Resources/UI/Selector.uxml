@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <IntSelector numChoices="5" style="flex-grow: 1;" />
+</ui:UXML>

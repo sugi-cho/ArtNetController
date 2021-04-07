@@ -16,3 +16,31 @@
     border-bottom-right-radius: 3px;
     width: auto;
 }
+
+.switch-off #toggle-switch {
+    background-color: rgb(51, 51, 51);
+}
+
+.switch-on #toggle-switch {
+    background-color: rgb(128, 128, 128);
+}
+
+.switch-off #switch {
+    bottom: 0;
+    top: auto;
+    background-color: rgba(102, 102, 102, 255);
+}
+
+.switch-on #switch {
+    top: 0;
+    bottom: auto;
+    background-color: rgba(178, 178, 178, 255);
+}
+
+.switch-off #trigger {
+    background-color: rgba(26, 26, 26, 255);
+}
+
+.switch-on #trigger {
+    background-color: rgb(229, 229, 229);
+}

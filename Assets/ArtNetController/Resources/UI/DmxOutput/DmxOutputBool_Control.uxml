@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/DmxOutputUI.uss" />
+    <ui:VisualElement name="DmxOutputSelector" style="align-items: center; width: 64px; overflow: hidden; padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; margin-left: 2px; margin-right: 2px; display: flex;">
+        <ui:Label text="Label" display-tooltip-when-elided="true" style="flex-grow: 1; width: 100%; background-color: rgb(77, 77, 77); border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden;" />
+        <ui:VisualElement name="input-area" style="flex-direction: column; height: 300px; width: 100%; background-color: rgb(77, 77, 77); padding-left: 8px; padding-right: 8px; justify-content: space-around; align-items: center;">
+            <ui:VisualElement name="toggle-switch" class="switch-off" style="height: 80px; border-top-left-radius: 20px; border-bottom-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; width: 40px; margin-top: 5px; border-top-width: 1px; border-top-color: rgb(51, 51, 51); border-bottom-width: 1px; border-bottom-color: rgb(153, 153, 153); align-items: center; border-left-width: 0; border-right-width: 0;">
+                <ui:VisualElement name="switch" style="width: 36px; height: 36px; border-top-left-radius: 18px; border-bottom-left-radius: 18px; border-top-right-radius: 18px; border-bottom-right-radius: 18px; position: absolute; margin-top: 1px; margin-bottom: 1px; border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-left-color: rgb(102, 102, 102); border-right-color: rgb(102, 102, 102); border-top-color: rgb(102, 102, 102); border-bottom-color: rgb(102, 102, 102);" />
+            </ui:VisualElement>
+            <ui:VisualElement name="trigger" style="width: 48px; height: 48px; align-items: center; justify-content: space-around; border-left-color: rgba(51, 51, 51, 255); border-right-color: rgba(51, 51, 51, 255); border-top-color: rgba(51, 51, 51, 255); border-bottom-color: rgba(51, 51, 51, 255); border-left-width: 1px; border-right-width: 1px; border-top-width: 1px; border-bottom-width: 1px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+                <ui:Label text="Trigger&#10;" display-tooltip-when-elided="true" style="color: rgba(128, 128, 128, 255);" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement style="width: 100%; background-color: rgb(76, 76, 76); padding-bottom: 2px;">
+            <ui:TextField value="filler text" text="0.15" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
