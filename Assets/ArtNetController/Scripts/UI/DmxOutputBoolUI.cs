@@ -22,6 +22,7 @@ public class DmxOutputBoolUI : DmxOutputUIBase<DmxOutputBool>
 
         void SetValue(bool val)
         {
+            Debug.Log(val);
             if (val)
             {
                 area.RemoveFromClassList("switch-off");
@@ -38,7 +39,7 @@ public class DmxOutputBoolUI : DmxOutputUIBase<DmxOutputBool>
         }
 
         label.text = targetDmxOutput.Label;
-        toggle.RegisterCallback<PointerDownEvent>(evt => SetValue(!targetDmxOutput.Value));
+        toggle.RegisterCallback<PointerUpEvent>(evt => SetValue(!targetDmxOutput.Value));
         trigger.RegisterCallback<PointerDownEvent>(evt =>
         {
             trigger.CapturePointer(evt.pointerId);
