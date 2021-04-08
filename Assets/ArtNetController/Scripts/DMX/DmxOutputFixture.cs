@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public class DmxOutputFixture : IDmxOutputModule
+public class DmxOutputFixture : IDmxOutput
 {
     public void Initialize()
     {
@@ -12,15 +12,15 @@ public class DmxOutputFixture : IDmxOutputModule
                 .Select(d => DmxOutputUtility.DefinitionToModule(d))
                 .ToList();
         if (dmxOutputList == null)
-            dmxOutputList = new List<IDmxOutputModule>();
+            dmxOutputList = new List<IDmxOutput>();
     }
 
-    public void AddModule(IDmxOutputModule module)
+    public void AddModule(IDmxOutput module)
     {
         dmxOutputList.Add(module);
         BuildDefinitions();
     }
-    public void RemoveModule(IDmxOutputModule module)
+    public void RemoveModule(IDmxOutput module)
     {
         dmxOutputList.Remove(module);
         BuildDefinitions();
@@ -56,6 +56,6 @@ public class DmxOutputFixture : IDmxOutputModule
             output.SetDmx(ref dmx);
     }
 
-    List<IDmxOutputModule> dmxOutputList;
+    List<IDmxOutput> dmxOutputList;
     public DmxOutputDefinition[] dmxOutputDefinitions;
 }

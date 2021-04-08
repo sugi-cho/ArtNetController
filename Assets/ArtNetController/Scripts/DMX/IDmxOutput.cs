@@ -1,4 +1,4 @@
-public interface IDmxOutputModule
+public interface IDmxOutput
 {
     public string Label { get; set; }
     int StartChannel { get; set; }

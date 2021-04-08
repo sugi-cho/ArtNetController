@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DmxOutputColorUI : DmxOutputUIBase<DmxOutputColor>
+public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
 {
     public DmxOutputColorUI(DmxOutputColor dmxOutput) : base(dmxOutput) { }
     protected override void BuildControlUI()

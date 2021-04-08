@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DmxOutputIntUI : DmxOutputUIBase<DmxOutputInt>
+public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
 {
     public DmxOutputIntUI(DmxOutputInt dmxOutput) : base(dmxOutput) { }
     protected override void BuildControlUI()

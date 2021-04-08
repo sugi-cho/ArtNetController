@@ -10,7 +10,7 @@ public class UniverseManager
     [SerializeField] List<string> fixtures;
     readonly string folderPath = Path.Combine(Application.streamingAssetsPath, "Universes");
 
-    public IDmxOutputModule[] activeModules;
+    public IDmxOutput[] activeModules;
 
     public UniverseManager()
     {

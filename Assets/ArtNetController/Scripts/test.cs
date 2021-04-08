@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,6 +14,9 @@ public class test : MonoBehaviour
     public DmxOutputXY outputXY;
     public DmxOutputColor outputColor;
 
+    [SerializeReference]
+    public List<IDmxOutput> dmxOutputList;
+
     [ContextMenu("test")]
     void Test()
     {
@@ -24,38 +28,25 @@ public class test : MonoBehaviour
 
     private void OnEnable()
     {
-        outputFloat = new DmxOutputFloat { Label = "Dimmer", UseFine = true, };
-        outputInt = new DmxOutputInt { Label = "IntTest" };
-        outputSelector = new DmxOutputSelector { Label = "Selector"};
-        outputBool = new DmxOutputBool { Label = "Switch" };
-        outputXY = new DmxOutputXY { Label = "XY Pad" };
-        outputColor = new DmxOutputColor { Label = "Color", UseFine = true };
+        dmxOutputList = new List<IDmxOutput>();
 
-        var dmxOutputFloatUI = new DmxOutputFloatUI(outputFloat);
-        var dmxOutputIntUI = new DmxOutputIntUI(outputInt);
-        var dmxOutputSelectorUI = new DmxOutputSelectorUI(outputSelector);
-        var dmxOutputBoolUI = new DmxOutputBoolUI(outputBool);
-        var dmxOutputXYUI = new DmxOutputXYUI(outputXY);
-        var dmxOutputColorUI = new DmxOutputColorUI(outputColor);
+        dmxOutputList.Add(new DmxOutputFloat { Label = "Dimmer", UseFine = true });
+        dmxOutputList.Add(new DmxOutputInt { Label = "IntTest" });
+        dmxOutputList.Add(new DmxOutputSelector { Label = "Selector", SizeProp = 5 });
+        dmxOutputList.Add(new DmxOutputBool { Label = "Switch" });
+        dmxOutputList.Add(new DmxOutputXY { Label = "XY Pad" });
+        dmxOutputList.Add(new DmxOutputColor { Label = "Color", UseFine = true });
 
         var doc = GetComponent<UIDocument>();
         var root = doc.rootVisualElement;
         var editorView = root.Q("EditorView");
         var controlView = root.Q("ControlView");
 
-        editorView.Add(dmxOutputFloatUI.EditorUI);
-        editorView.Add(dmxOutputIntUI.EditorUI);
-        editorView.Add(dmxOutputSelectorUI.EditorUI);
-        editorView.Add(dmxOutputBoolUI.EditorUI);
-        editorView.Add(dmxOutputXYUI.EditorUI);
-        editorView.Add(dmxOutputColorUI.EditorUI);
-
-        controlView.style.flexDirection = FlexDirection.Row;
-        controlView.Add(dmxOutputFloatUI.ControlUI);
-        controlView.Add(dmxOutputIntUI.ControlUI);
-        controlView.Add(dmxOutputSelectorUI.ControlUI);
-        controlView.Add(dmxOutputBoolUI.ControlUI);
-        controlView.Add(dmxOutputXYUI.ControlUI);
-        controlView.Add(dmxOutputColorUI.ControlUI);
+        foreach (var output in dmxOutputList)
+        {
+            var dmxOutputUI = DmxOutputUI.Create(output);
+            editorView.Add(dmxOutputUI.EditorUI);
+            controlView.Add(dmxOutputUI.ControlUI);
+        }
     }
 }

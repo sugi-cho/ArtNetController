@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DmxOutputFloatUI : DmxOutputUIBase<DmxOutputFloat>
+public class DmxOutputFloatUI : DmxOutputUI<DmxOutputFloat>
 {
     public DmxOutputFloatUI(DmxOutputFloat dmxOutput) : base(dmxOutput) { }
     protected override void BuildControlUI()

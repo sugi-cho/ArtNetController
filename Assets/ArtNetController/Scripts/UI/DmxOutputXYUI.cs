@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DmxOutputXYUI : DmxOutputUIBase<DmxOutputXY>
+public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
 {
     public DmxOutputXYUI(DmxOutputXY dmxOutput) : base(dmxOutput) { }
 

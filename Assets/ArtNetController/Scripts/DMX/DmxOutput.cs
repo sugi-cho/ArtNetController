@@ -2,7 +2,7 @@ using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public class DmxOutputFloat : IDmxOutputModule, IUseFine
+public class DmxOutputFloat : IDmxOutput, IUseFine
 {
     public string Label { get; set; }
     public bool UseFine { get; set; }
@@ -24,7 +24,7 @@ public class DmxOutputFloat : IDmxOutputModule, IUseFine
 }
 
 [System.Serializable]
-public class DmxOutputInt : IDmxOutputModule
+public class DmxOutputInt : IDmxOutput
 {
     public string Label { get; set; }
     public int StartChannel { get; set; }
@@ -36,7 +36,7 @@ public class DmxOutputInt : IDmxOutputModule
 }
 
 [System.Serializable]
-public class DmxOutputSelector : IDmxOutputModule, ISizeProp
+public class DmxOutputSelector : IDmxOutput, ISizeProp
 {
     public string Label { get; set; }
     public int StartChannel { get; set; }
@@ -50,7 +50,7 @@ public class DmxOutputSelector : IDmxOutputModule, ISizeProp
 }
 
 [System.Serializable]
-public class DmxOutputBool : IDmxOutputModule
+public class DmxOutputBool : IDmxOutput
 {
     public string Label { get; set; }
     public int StartChannel { get; set; }
@@ -62,7 +62,7 @@ public class DmxOutputBool : IDmxOutputModule
 }
 
 [System.Serializable]
-public class DmxOutputXY : IDmxOutputModule, IUseFine
+public class DmxOutputXY : IDmxOutput, IUseFine
 {
     public string Label { get; set; }
     public DmxOutputXY()
@@ -73,7 +73,7 @@ public class DmxOutputXY : IDmxOutputModule, IUseFine
     }
     DmxOutputFloat dmxOutputX;
     DmxOutputFloat dmxOutputY;
-    IDmxOutputModule[] dmxOutputs;
+    IDmxOutput[] dmxOutputs;
 
     public bool UseFine
     {
@@ -119,7 +119,7 @@ public class DmxOutputXY : IDmxOutputModule, IUseFine
 }
 
 [System.Serializable]
-public class DmxOutputColor : IDmxOutputModule, IUseFine
+public class DmxOutputColor : IDmxOutput, IUseFine
 {
     public string Label { get; set; }
     public DmxOutputColor()
@@ -132,7 +132,7 @@ public class DmxOutputColor : IDmxOutputModule, IUseFine
     DmxOutputFloat dmxOutputR;
     DmxOutputFloat dmxOutputG;
     DmxOutputFloat dmxOutputB;
-    IDmxOutputModule[] dmxOutputs;
+    IDmxOutput[] dmxOutputs;
 
     public bool UseFine
     {
@@ -179,7 +179,7 @@ public class DmxOutputColor : IDmxOutputModule, IUseFine
 }
 
 [System.Serializable]
-public class DmxOutputEmpty : IDmxOutputModule, ISizeProp
+public class DmxOutputEmpty : IDmxOutput, ISizeProp
 {
     public string Label { get => $"Empty_{SizeProp}"; set { } }
     public int SizeProp { get; set; }

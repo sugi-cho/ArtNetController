@@ -38,12 +38,12 @@ public static class DmxOutputUtility
             {DmxOutputType.Fixture,typeof(DmxOutputFixture)},
         };
 
-    public static IDmxOutputModule DefinitionToModule(DmxOutputDefinition definition)
+    public static IDmxOutput DefinitionToModule(DmxOutputDefinition definition)
     {
         if (definition.type == DmxOutputType.Fixture)
             return FixtureLibrary.LoadFixture(definition.label);
 
-        var dmxOutput = System.Activator.CreateInstance(TypeMap[definition.type]) as IDmxOutputModule;
+        var dmxOutput = System.Activator.CreateInstance(TypeMap[definition.type]) as IDmxOutput;
         dmxOutput.Label = definition.label;
         var useFine = dmxOutput as IUseFine;
         if (useFine != null)
@@ -53,7 +53,7 @@ public static class DmxOutputUtility
             numChoices.SizeProp = definition.size;
         return dmxOutput;
     }
-    public static DmxOutputDefinition DefinitionFromModule(IDmxOutputModule output)
+    public static DmxOutputDefinition DefinitionFromModule(IDmxOutput output)
     {
         var type = output.GetType();
         var outputType = TypeMap.FirstOrDefault(pair => pair.Value == type).Key;
