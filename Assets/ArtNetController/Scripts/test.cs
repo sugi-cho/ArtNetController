@@ -5,7 +5,6 @@ using UnityEngine.UIElements;
 public class test : MonoBehaviour
 {
     public DmxOutputFixture fixture;
-    public DmxOutputFixture newFixture;
 
     [SerializeReference]
     public List<IDmxOutput> dmxOutputList;
@@ -13,23 +12,13 @@ public class test : MonoBehaviour
     [ContextMenu("test")]
     void Test()
     {
-        fixture = FixtureLibrary.CreateFixture();
-        FixtureLibrary.SaveFixture(fixture);
-        newFixture = FixtureLibrary.CreateFixture();
-        FixtureLibrary.SaveFixture(newFixture);
+
     }
 
     private void OnEnable()
     {
         dmxOutputList = new List<IDmxOutput>();
-
-        dmxOutputList.Add(new DmxOutputEmpty { Label = "Empty", SizeProp = 3 });
-        dmxOutputList.Add(new DmxOutputFloat { Label = "Dimmer", UseFine = true });
-        dmxOutputList.Add(new DmxOutputInt { Label = "IntTest" });
-        dmxOutputList.Add(new DmxOutputSelector { Label = "Selector", SizeProp = 5 });
-        dmxOutputList.Add(new DmxOutputBool { Label = "Switch" });
-        dmxOutputList.Add(new DmxOutputXY { Label = "XY Pad" });
-        dmxOutputList.Add(new DmxOutputColor { Label = "Color", UseFine = true });
+        dmxOutputList.Add(fixture);
 
         var doc = GetComponent<UIDocument>();
         var root = doc.rootVisualElement;

@@ -4,6 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputFloat : IDmxOutput, IUseFine
 {
+    public DmxOutputType Type => DmxOutputType.Float;
     public string Label { get; set; }
     public bool UseFine { get; set; }
     public int StartChannel { get; set; }
@@ -26,6 +27,7 @@ public class DmxOutputFloat : IDmxOutput, IUseFine
 [System.Serializable]
 public class DmxOutputInt : IDmxOutput
 {
+    public DmxOutputType Type => DmxOutputType.Int;
     public string Label { get; set; }
     public int StartChannel { get; set; }
     public int NumChannels => 1;
@@ -38,6 +40,7 @@ public class DmxOutputInt : IDmxOutput
 [System.Serializable]
 public class DmxOutputSelector : IDmxOutput, ISizeProp
 {
+    public DmxOutputType Type => DmxOutputType.Selector;
     public string Label { get; set; }
     public int StartChannel { get; set; }
     public int NumChannels => 1;
@@ -52,6 +55,7 @@ public class DmxOutputSelector : IDmxOutput, ISizeProp
 [System.Serializable]
 public class DmxOutputBool : IDmxOutput
 {
+    public DmxOutputType Type => DmxOutputType.Bool;
     public string Label { get; set; }
     public int StartChannel { get; set; }
     public int NumChannels => 1;
@@ -64,6 +68,7 @@ public class DmxOutputBool : IDmxOutput
 [System.Serializable]
 public class DmxOutputXY : IDmxOutput, IUseFine
 {
+    public DmxOutputType Type => DmxOutputType.XY;
     public string Label { get; set; }
     public DmxOutputXY()
     {
@@ -121,6 +126,7 @@ public class DmxOutputXY : IDmxOutput, IUseFine
 [System.Serializable]
 public class DmxOutputColor : IDmxOutput, IUseFine
 {
+    public DmxOutputType Type => DmxOutputType.Color;
     public string Label { get; set; }
     public DmxOutputColor()
     {
@@ -181,6 +187,7 @@ public class DmxOutputColor : IDmxOutput, IUseFine
 [System.Serializable]
 public class DmxOutputEmpty : IDmxOutput, ISizeProp
 {
+    public DmxOutputType Type => DmxOutputType.Empty;
     public string Label { get => $"Empty_{SizeProp}"; set { } }
     public int SizeProp { get; set; }
     public int StartChannel { get; set; }

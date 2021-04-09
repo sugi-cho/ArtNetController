@@ -28,17 +28,17 @@
 .switch-off #switch {
     bottom: 0;
     top: auto;
-    background-color: rgba(102, 102, 102, 255);
+    background-color: rgb(102, 102, 102);
 }
 
 .switch-on #switch {
     top: 0;
     bottom: auto;
-    background-color: rgba(178, 178, 178, 255);
+    background-color: rgb(178, 178, 178);
 }
 
 .switch-off #trigger {
-    background-color: rgba(26, 26, 26, 255);
+    background-color: rgb(26, 26, 26);
 }
 
 .switch-on #trigger {

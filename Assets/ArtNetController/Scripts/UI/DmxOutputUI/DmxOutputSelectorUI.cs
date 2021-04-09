@@ -18,7 +18,10 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
         selector.onValueChanged += (val) =>
         {
             targetDmxOutput.Value = val;
-            textField.value = $"{Mathf.FloorToInt((targetDmxOutput.Value + 0.5f) / targetDmxOutput.SizeProp * 255)}";
+            if (0 < targetDmxOutput.SizeProp)
+                textField.value = $"{Mathf.FloorToInt((targetDmxOutput.Value + 0.5f) / targetDmxOutput.SizeProp * 255)}";
+            else
+                textField.value = "0";
             onValueChaned?.Invoke(val);
         };
         textField.SetEnabled(false);

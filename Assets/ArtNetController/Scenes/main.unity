@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -157,10 +157,12 @@ MonoBehaviour:
     dmxData: 
   universeManager:
     universes:
-    - universe: 0
-      label: New Universe
+    - label: New Universe
+      universe: 0
       dmxOutputDefinitions: []
-    fixtures: []
+    fixtures:
+    - 
+    - test
 --- !u!4 &788946608
 Transform:
   m_ObjectHideFlags: 0
@@ -210,8 +212,8 @@ Camera:
   m_GameObject: {fileID: 815527832}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -319,11 +321,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixture:
-    label: 
-    dmxOutputDefinitions: []
-  newFixture:
-    label: 
-    dmxOutputDefinitions: []
+    label: NewFixtur
+    dmxOutputDefinitions:
+    - type: 1
+      label: Switch
+      channel: 0
+      useFine: 0
+      size: 0
+    - type: 2
+      label: IntSlider
+      channel: 0
+      useFine: 0
+      size: 0
+    - type: 3
+      label: Selector
+      channel: 7
+      useFine: 0
+      size: 7
+    - type: 4
+      label: FineSlider
+      channel: 0
+      useFine: 1
+      size: 0
+    - type: 5
+      label: XYPad
+      channel: 0
+      useFine: 0
+      size: 0
+    - type: 6
+      label: Color
+      channel: 0
+      useFine: 1
+      size: 0
+    - type: 0
+      label: 
+      channel: 3
+      useFine: 0
+      size: 5
+  dmxOutputList: []
+  references:
+    version: 1
 --- !u!1 &982344159
 GameObject:
   m_ObjectHideFlags: 0

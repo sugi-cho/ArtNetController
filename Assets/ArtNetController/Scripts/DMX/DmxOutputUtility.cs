@@ -21,6 +21,7 @@ public enum DmxOutputType
     XY,
     Color,
     Fixture,
+    Universe,
 }
 
 public static class DmxOutputUtility
@@ -40,13 +41,22 @@ public static class DmxOutputUtility
 
     public static DmxOutputType GetDmxOutputType(IDmxOutput output) =>
         TypeMap.FirstOrDefault(pair => pair.Value == output.GetType()).Key;
-    public static IDmxOutput DefinitionToModule(DmxOutputDefinition definition)
+    public static IDmxOutput CreateDmxOutput(DmxOutputType type)
     {
+        var output = System.Activator.CreateInstance(TypeMap[type]) as IDmxOutput;
+        output.Label = type.ToString();
+        return output;
+    }
+    public static IDmxOutput CreateDmxOutput(DmxOutputDefinition definition)
+    {
+        IDmxOutput dmxOutput;
         if (definition.type == DmxOutputType.Fixture)
-            return FixtureLibrary.LoadFixture(definition.label);
+            dmxOutput = FixtureLibrary.LoadFixture(definition.label);
+        else
+            dmxOutput = CreateDmxOutput(definition.type);
 
-        var dmxOutput = System.Activator.CreateInstance(TypeMap[definition.type]) as IDmxOutput;
         dmxOutput.Label = definition.label;
+        dmxOutput.StartChannel = definition.channel;
         var useFine = dmxOutput as IUseFine;
         if (useFine != null)
             useFine.UseFine = definition.useFine;
@@ -55,7 +65,7 @@ public static class DmxOutputUtility
             numChoices.SizeProp = definition.size;
         return dmxOutput;
     }
-    public static DmxOutputDefinition DefinitionFromModule(IDmxOutput output)
+    public static DmxOutputDefinition CreateDmxOutputDefinitioin(IDmxOutput output)
     {
         var outputType = GetDmxOutputType(output);
         var definition = new DmxOutputDefinition { type = outputType, label = output.Label, channel = output.StartChannel };

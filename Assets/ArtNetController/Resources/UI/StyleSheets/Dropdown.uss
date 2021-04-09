@@ -15,6 +15,7 @@
     margin-left: 5px;
     margin-right: -5px;
     opacity: 0.9;
+    min-height: 120px;
 }
 
 .unity-base-dropdown__item {

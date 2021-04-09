@@ -1,5 +1,6 @@
 public interface IDmxOutput
 {
+    public DmxOutputType Type { get; }
     public string Label { get; set; }
     int StartChannel { get; set; }
     int NumChannels { get; }

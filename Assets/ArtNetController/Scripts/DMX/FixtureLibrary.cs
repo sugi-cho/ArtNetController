@@ -1,6 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -11,24 +10,24 @@ public static class FixtureLibrary
     {
         get
         {
-            if (_fixtureLabelList == null)
+            if (m_fixtureLabelList == null)
                 LoadFixtureList();
-            return _fixtureLabelList;
+            return m_fixtureLabelList;
         }
     }
-    static List<string> _fixtureLabelList;
+    static List<string> m_fixtureLabelList;
     readonly static string folderPath = Path.Combine(Application.streamingAssetsPath, "Fixtures");
 
     public static void LoadFixtureList()
     {
         var filePathes = Directory.GetFiles(folderPath, "*.json");
-        if (_fixtureLabelList == null)
-            _fixtureLabelList = new List<string>();
+        if (m_fixtureLabelList == null)
+            m_fixtureLabelList = new List<string>();
         FixtureLabelList.Clear();
         foreach (var path in filePathes)
         {
             var label = Path.GetFileNameWithoutExtension(path);
-            _fixtureLabelList.Add(label);
+            m_fixtureLabelList.Add(label);
         }
     }
     public static DmxOutputFixture CreateFixture()
@@ -60,6 +59,7 @@ public static class FixtureLibrary
             var fixture = new DmxOutputFixture { Label = label };
             var json = JsonUtility.ToJson(fixture);
             File.WriteAllText(filePath, json);
+            fixture.Initialize();
             return fixture;
         }
         else
@@ -75,6 +75,7 @@ public static class FixtureLibrary
         var filePath = Path.Combine(folderPath, $"{fixture.Label}.json");
         var json = File.ReadAllText(filePath);
         JsonUtility.FromJsonOverwrite(json, fixture);
+        fixture.Initialize();
     }
     public static void SaveFixture(DmxOutputFixture fixture)
     {

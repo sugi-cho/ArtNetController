@@ -38,13 +38,17 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         {
             targetDmxOutput.Label = evt.newValue;
             labelField.SetValueWithoutNotify(targetDmxOutput.Label);
+            onValueChanged?.Invoke();
         });
 
         if (useFine != null)
         {
             fineToggle.value = useFine.UseFine;
-            fineToggle.RegisterValueChangedCallback(evt => useFine.UseFine = evt.newValue);
-            onUseFineChanged?.Invoke();
+            fineToggle.RegisterValueChangedCallback(evt =>
+            {
+                useFine.UseFine = evt.newValue;
+                onValueChanged?.Invoke();
+            });
         }
         else
             fineToggle.style.display = DisplayStyle.None;
@@ -59,7 +63,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 {
                     sizeProp.SizeProp = size;
                     labelField.value = targetDmxOutput.Label;
-                    onSizePropChanged?.Invoke();
+                    onValueChanged?.Invoke();
                 }
                 else
                     sizeField.SetValueWithoutNotify(evt.previousValue);
@@ -68,7 +72,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         else
             sizeField.style.display = DisplayStyle.None;
 
-        removeButton.clicked += onRemoveButtonClicked;
+        removeButton.clicked += () => { onRemoveButtonClicked?.Invoke(); };
     }
     protected virtual void BuildControlUI()
     {
@@ -88,6 +92,7 @@ public abstract class DmxOutputUI
     static DmxOutputFloatUI Create(DmxOutputFloat dmxOutput) => new DmxOutputFloatUI(dmxOutput);
     static DmxOutputXYUI Create(DmxOutputXY dmxOutput) => new DmxOutputXYUI(dmxOutput);
     static DmxOutputColorUI Create(DmxOutputColor dmxOutput) => new DmxOutputColorUI(dmxOutput);
+    static DmxOutputFixtureUI Create(DmxOutputFixture dmxOutput) => new DmxOutputFixtureUI(dmxOutput);
 
     public static DmxOutputUI CreateUI(IDmxOutput dmxOutput)
     {
@@ -103,6 +108,8 @@ public abstract class DmxOutputUI
         if (outputXY != null) return Create(outputXY);
         var outputColor = dmxOutput as DmxOutputColor;
         if (outputColor != null) return Create(outputColor);
+        var outputFixture = dmxOutput as DmxOutputFixture;
+        if (outputFixture != null) return Create(outputFixture);
 
         return new DmxOutputUI<IDmxOutput>(dmxOutput);
     }
@@ -113,6 +120,5 @@ public abstract class DmxOutputUI
     public VisualElement ControlUI => controlUI;
 
     public System.Action onRemoveButtonClicked;
-    public System.Action onUseFineChanged;
-    public System.Action onSizePropChanged;
+    public System.Action onValueChanged;
 }

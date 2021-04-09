@@ -29,8 +29,8 @@ public class XYPad : VisualElement
         {
             value.x = Mathf.Clamp01(value.x);
             value.y = Mathf.Clamp01(value.y);
-            lineX.style.left = (localBound.width - 1) * value.x;
-            lineY.style.bottom = (localBound.height - 1) * value.y;
+            lineX.style.left = Length.Percent(100 * value.x);
+            lineY.style.bottom = Length.Percent(100 * value.y);
             m_value = value;
             onValueChanged?.Invoke(m_value);
         }
@@ -53,6 +53,7 @@ public class XYPad : VisualElement
         lineX.style.width = lineY.style.height = 1;
         lineX.style.height = lineY.style.width = Length.Percent(100f);
         lineX.style.position = lineY.style.position = Position.Absolute;
+        lineX.style.left = lineY.style.bottom = 0;
         lineX.style.backgroundColor = lineY.style.backgroundColor = Color.black;
         Add(lineX);
         Add(lineY);

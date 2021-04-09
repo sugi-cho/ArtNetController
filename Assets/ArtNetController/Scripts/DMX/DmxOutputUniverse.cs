@@ -5,16 +5,35 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputUniverse : IDmxOutput
 {
+    public DmxOutputType Type => DmxOutputType.Universe;
+    public string Label { get => label; set => label = value; }
+    [SerializeField] string label;
+    public int Universe { get => universe; set => universe = value; }
+    [SerializeField] int universe;
+    public int StartChannel
+    {
+        get => 0;
+        set { }
+    }
+    public int NumChannels => dmxOutputList
+        .Select(o => o.StartChannel + o.NumChannels)
+        .OrderBy(ch => ch)
+        .LastOrDefault();
+    public void SetDmx(ref byte[] dmx)
+    {
+        foreach (var output in dmxOutputList)
+            output.SetDmx(ref dmx);
+    }
+
     public void Initialize()
     {
         if (dmxOutputDefinitions != null)
             dmxOutputList = dmxOutputDefinitions
-                .Select(d => DmxOutputUtility.DefinitionToModule(d))
+                .Select(d => DmxOutputUtility.CreateDmxOutput(d))
                 .ToList();
         if (dmxOutputList == null)
             dmxOutputList = new List<IDmxOutput>();
     }
-
     public void AddModule(IDmxOutput module)
     {
         dmxOutputList.Add(module);
@@ -29,28 +48,8 @@ public class DmxOutputUniverse : IDmxOutput
     {
         dmxOutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
         dmxOutputDefinitions = dmxOutputList
-            .Select(output => DmxOutputUtility.DefinitionFromModule(output))
+            .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
             .ToArray();
-    }
-
-    public int Universe { get => universe; set => universe = value; }
-    [SerializeField] int universe;
-    public string Label { get => label; set => label = value; }
-    [SerializeField] string label;
-
-    public int StartChannel
-    {
-        get => 0;
-        set { }
-    }
-    public int NumChannels => dmxOutputList
-        .Select(o => o.StartChannel + o.NumChannels)
-        .OrderBy(ch => ch)
-        .LastOrDefault();
-    public void SetDmx(ref byte[] dmx)
-    {
-        foreach (var output in dmxOutputList)
-            output.SetDmx(ref dmx);
     }
 
     List<IDmxOutput> dmxOutputList;

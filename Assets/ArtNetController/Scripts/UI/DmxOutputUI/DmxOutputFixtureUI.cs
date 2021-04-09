@@ -13,40 +13,108 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
     {
         get
         {
-            if (m_dmxOutputUIList == null | m_dmxOutputUIList.Count != targetDmxOutput.DmxOutputList.Count)
+            if (m_dmxOutputUIList == null || m_dmxOutputUIList.Count != targetDmxOutput.DmxOutputList.Count)
                 BuildDmxOutputUIList();
             return m_dmxOutputUIList;
         }
     }
     List<DmxOutputUI> m_dmxOutputUIList = null;
-    void BuildDmxOutputUIList() => m_dmxOutputUIList = targetDmxOutput.DmxOutputList.Select(dmxOutput => CreateUI(dmxOutput)).ToList();
-
-    public void RebuildUI()
+    void BuildDmxOutputUIList() => m_dmxOutputUIList =
+        targetDmxOutput.DmxOutputList.Select(dmxOutput => CreateUI(dmxOutput)).ToList();
+    void UpdateStructures()
     {
-        var editorParent = editorUI.parent;
-        editorUI.RemoveFromHierarchy();
-        editorUI.Clear();
-        BuildEditorUI();
-        editorParent.Add(editorUI);
+        targetDmxOutput.BuildDefinitions();
+        editorUI.Q<Label>("info-label").text =
+            $"Start Channel: {targetDmxOutput.StartChannel:000}\nNum Channels: {targetDmxOutput.NumChannels}";
+        RebuildControlUI();
+    }
 
-        var controlParent = controlUI.parent;
-        controlUI.RemoveFromHierarchy();
-        controlUI.Clear();
+    void RebuildUIEditorUI()
+    {
+        var editorParent = editorUI?.parent;
+        editorUI?.RemoveFromHierarchy();
+        editorUI?.Clear();
+        BuildEditorUI();
+        editorParent?.Add(editorUI);
+    }
+    void RebuildControlUI()
+    {
+        var controlParent = controlUI?.parent;
+        controlUI?.RemoveFromHierarchy();
+        controlUI?.Clear();
         BuildControlUI();
-        controlParent.Add(controlUI);
+        controlParent?.Add(controlUI);
     }
     protected override void BuildEditorUI()
     {
         var tree = Resources.Load<VisualTreeAsset>(EditorUIResourcePath);
         editorUI = tree.CloneTree("");
 
-        foreach (var dmxOutputUI in DmxOutputUIList)
-        {
+        var label = editorUI.Q<Label>();
+        var labelField = editorUI.Q<TextField>("label");
+        var infoLabel = editorUI.Q<Label>("info-label");
+        var uiContainer = editorUI.Q("output-container");
+        var dropdownEdit = editorUI.Q<EditableDropdownField>();
+        var saveButton = editorUI.Q<Button>("save-button");
 
+        void SetLabel(string text)
+        {
+            targetDmxOutput.Label = text;
+            label.text = targetDmxOutput.Label;
+            RebuildControlUI();
         }
+        SetLabel(targetDmxOutput.Label);
+        labelField.RegisterValueChangedCallback(evt => SetLabel(evt.newValue));
+        labelField.value = targetDmxOutput.Label;
+        labelField.isDelayed = true;
+
+        UpdateStructures();
+        for (var i = 0; i < DmxOutputUIList.Count; i++)
+        {
+            var dmxOutput = targetDmxOutput.DmxOutputList[i];
+            var dmxOutputUI = DmxOutputUIList[i];
+            uiContainer.Add(dmxOutputUI.EditorUI);
+            dmxOutputUI.onRemoveButtonClicked += () =>
+            {
+                targetDmxOutput.RemoveModule(dmxOutput);
+                RebuildUIEditorUI();
+                RebuildControlUI();
+            };
+            dmxOutputUI.onValueChanged += UpdateStructures;
+        }
+
+        dropdownEdit.onValueCanged += (val) =>
+        {
+            DmxOutputType outputType;
+            if (System.Enum.TryParse(val, out outputType))
+            {
+                var output = DmxOutputUtility.CreateDmxOutput(outputType);
+                targetDmxOutput.AddModule(output);
+                dropdownEdit.Q<DropdownField>().index = 0;
+                RebuildUIEditorUI();
+                RebuildControlUI();
+            }
+        };
+
+        saveButton.clicked += () =>
+         {
+             targetDmxOutput.BuildDefinitions();
+             FixtureLibrary.SaveFixture(targetDmxOutput);
+         };
     }
+
     protected override void BuildControlUI()
     {
         base.BuildControlUI();
+        var label = controlUI.Q<Label>();
+        var uiContainer = controlUI.Q("output-container");
+
+        label.text = targetDmxOutput.Label;
+        for (var i = 0; i < DmxOutputUIList.Count; i++)
+        {
+            var dmxOutputUI = DmxOutputUIList[i];
+            uiContainer.Add(dmxOutputUI.ControlUI);
+            Debug.Log(targetDmxOutput.DmxOutputList[i].Label);
+        }
     }
 }

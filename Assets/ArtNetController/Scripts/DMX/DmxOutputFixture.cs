@@ -5,15 +5,22 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputFixture : IDmxOutput
 {
+    public DmxOutputType Type => DmxOutputType.Fixture;
     #region IDmxOutput
-    public string Label { get; set; }
+    public string Label { get => label; set => label = value; }
+    [SerializeField] string label;
     public int StartChannel
     {
-        get => m_startChannel;
+        get
+        {
+            if (!m_initialized)
+                Initialize();
+            return m_startChannel;
+        }
         set
         {
             m_startChannel = value;
-            foreach (var output in m_dmxOutputList)
+            foreach (var output in DmxOutputList)
             {
                 output.StartChannel = value;
                 value += output.NumChannels;
@@ -21,7 +28,7 @@ public class DmxOutputFixture : IDmxOutput
         }
     }
     int m_startChannel;
-    public int NumChannels => m_dmxOutputList.Sum(output => output.NumChannels);
+    public int NumChannels => DmxOutputList.Sum(output => output.NumChannels);
 
     public void SetDmx(ref byte[] dmx)
     {
@@ -31,35 +38,47 @@ public class DmxOutputFixture : IDmxOutput
     #endregion
 
     #region Fixture methods
-    public List<IDmxOutput> DmxOutputList => m_dmxOutputList;
+    public List<IDmxOutput> DmxOutputList
+    {
+        get
+        {
+            if (!m_initialized)
+                Initialize();
+            return m_dmxOutputList;
+        }
+    }
     List<IDmxOutput> m_dmxOutputList;
     public DmxOutputDefinition[] dmxOutputDefinitions;
+    bool m_initialized;
     public void Initialize()
     {
         if (dmxOutputDefinitions != null)
             m_dmxOutputList = dmxOutputDefinitions
-                .Select(d => DmxOutputUtility.DefinitionToModule(d))
+                .Select(d => DmxOutputUtility.CreateDmxOutput(d))
                 .ToList();
         if (m_dmxOutputList == null)
             m_dmxOutputList = new List<IDmxOutput>();
+        m_initialized = true;
     }
 
     public void AddModule(IDmxOutput module)
     {
-        m_dmxOutputList.Add(module);
+        DmxOutputList.Add(module);
         BuildDefinitions();
     }
     public void RemoveModule(IDmxOutput module)
     {
-        m_dmxOutputList.Remove(module);
+        DmxOutputList.Remove(module);
         BuildDefinitions();
     }
-    void BuildDefinitions()
+    public void BuildDefinitions()
     {
-        m_dmxOutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
-        dmxOutputDefinitions = m_dmxOutputList
-            .Select(output => DmxOutputUtility.DefinitionFromModule(output))
+        var startChannel = StartChannel;
+        StartChannel = 0;
+        dmxOutputDefinitions = DmxOutputList
+            .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
             .ToArray();
+        StartChannel = startChannel;
     }
     #endregion
 }
