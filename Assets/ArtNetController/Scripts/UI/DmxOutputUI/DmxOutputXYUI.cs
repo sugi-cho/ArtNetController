@@ -32,6 +32,8 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
                     v2[idx] = value;
                     xyPad.Value = v2;
                 }
+                else
+                    textFields[idx].SetValueWithoutNotify(evt.previousValue);
             });
             textFields[idx].isDelayed = true;
         }

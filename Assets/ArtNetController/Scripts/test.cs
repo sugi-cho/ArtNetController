@@ -7,13 +7,6 @@ public class test : MonoBehaviour
     public DmxOutputFixture fixture;
     public DmxOutputFixture newFixture;
 
-    public DmxOutputFloat outputFloat;
-    public DmxOutputInt outputInt;
-    public DmxOutputSelector outputSelector;
-    public DmxOutputBool outputBool;
-    public DmxOutputXY outputXY;
-    public DmxOutputColor outputColor;
-
     [SerializeReference]
     public List<IDmxOutput> dmxOutputList;
 
@@ -30,6 +23,7 @@ public class test : MonoBehaviour
     {
         dmxOutputList = new List<IDmxOutput>();
 
+        dmxOutputList.Add(new DmxOutputEmpty { Label = "Empty", SizeProp = 3 });
         dmxOutputList.Add(new DmxOutputFloat { Label = "Dimmer", UseFine = true });
         dmxOutputList.Add(new DmxOutputInt { Label = "IntTest" });
         dmxOutputList.Add(new DmxOutputSelector { Label = "Selector", SizeProp = 5 });
@@ -44,7 +38,7 @@ public class test : MonoBehaviour
 
         foreach (var output in dmxOutputList)
         {
-            var dmxOutputUI = DmxOutputUI.Create(output);
+            var dmxOutputUI = DmxOutputUI.CreateUI(output);
             editorView.Add(dmxOutputUI.EditorUI);
             controlView.Add(dmxOutputUI.ControlUI);
         }

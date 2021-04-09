@@ -38,6 +38,8 @@ public static class DmxOutputUtility
             {DmxOutputType.Fixture,typeof(DmxOutputFixture)},
         };
 
+    public static DmxOutputType GetDmxOutputType(IDmxOutput output) =>
+        TypeMap.FirstOrDefault(pair => pair.Value == output.GetType()).Key;
     public static IDmxOutput DefinitionToModule(DmxOutputDefinition definition)
     {
         if (definition.type == DmxOutputType.Fixture)
@@ -55,8 +57,7 @@ public static class DmxOutputUtility
     }
     public static DmxOutputDefinition DefinitionFromModule(IDmxOutput output)
     {
-        var type = output.GetType();
-        var outputType = TypeMap.FirstOrDefault(pair => pair.Value == type).Key;
+        var outputType = GetDmxOutputType(output);
         var definition = new DmxOutputDefinition { type = outputType, label = output.Label, channel = output.StartChannel };
         var useFine = output as IUseFine;
         if (useFine != null)

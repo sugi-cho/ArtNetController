@@ -47,6 +47,8 @@ public class DmxOutputFloatUI : DmxOutputUI<DmxOutputFloat>
             float value;
             if (float.TryParse(evt.newValue, out value))
                 SetValue(value);
+            else
+                textField.SetValueWithoutNotify(evt.previousValue);
         });
         textField.isDelayed = true;
         SetValue(targetDmxOutput.Value);

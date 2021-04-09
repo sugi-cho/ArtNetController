@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -70,6 +67,8 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
                     color[idx] = value;
                     SetValue(color);
                 }
+                else
+                    textFields[idx].SetValueWithoutNotify(evt.previousValue);
             });
             valueVisualizes[idx].style.backgroundColor = rgb[idx];
             textFields[idx].isDelayed = true;

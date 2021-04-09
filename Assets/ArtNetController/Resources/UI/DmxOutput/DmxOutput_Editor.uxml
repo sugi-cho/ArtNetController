@@ -1,12 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/DmxOutputUI.uss" />
-    <ui:VisualElement style="margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; background-color: rgb(128, 128, 128); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; flex-shrink: 0;">
-        <ui:Label text="DmxOutputType" display-tooltip-when-elided="true" name="Type" style="-unity-text-align: middle-center; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; font-size: 16px;" />
+    <ui:VisualElement name="dmx-output-module" style="margin-left: 5px; margin-right: 5px; margin-top: 2px; margin-bottom: 2px; background-color: rgb(178, 178, 178); border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; flex-shrink: 0;">
+        <ui:VisualElement style="flex-direction: row; justify-content: space-between;">
+            <ui:Label text="DmxOutputType" display-tooltip-when-elided="true" name="Type" style="-unity-text-align: middle-center; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; font-size: 16px;" />
+            <ui:Button text="X" display-tooltip-when-elided="true" name="remove-button" style="background-color: rgb(128, 38, 38); color: rgb(255, 255, 255); margin-top: 0; margin-bottom: 4px; margin-left: 0; margin-right: 4px; width: 24px; height: 24px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; border-top-right-radius: 12px; border-bottom-right-radius: 12px; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; opacity: 0.75;" />
+        </ui:VisualElement>
         <ui:VisualElement style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
             <ui:TextField picking-mode="Ignore" label="Label" value="filler text" text="Name" name="Label" />
             <ui:Toggle label="Use Fine" name="UseFine" />
             <ui:TextField picking-mode="Ignore" label="Size" value="filler text" text="10&#10;" name="SizeProp" />
-            <ui:Button text="Remove" display-tooltip-when-elided="true" style="background-color: rgb(128, 38, 38); color: rgb(255, 255, 255); margin-top: 8px;" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

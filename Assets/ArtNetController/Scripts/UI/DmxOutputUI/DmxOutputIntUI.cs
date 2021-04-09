@@ -47,6 +47,8 @@ public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
             int value;
             if (int.TryParse(evt.newValue, out value))
                 SetValue(value);
+            else
+                textField.SetValueWithoutNotify(evt.previousValue);
         });
         textField.isDelayed = true;
         SetValue(targetDmxOutput.Value);
