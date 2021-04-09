@@ -12,9 +12,11 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
         var selector = controlUI.Q<IntSelector>();
         var textField = controlUI.Q<TextField>();
 
-        label.text = targetDmxOutput.Label.Split('?')[0];
+        label.text = targetDmxOutput.Label;
+        onLabelChanged += (val) => label.text = val;
         selector.style.flexDirection = FlexDirection.ColumnReverse;
         selector.NumChoices = targetDmxOutput.SizeProp;
+        onSizePropChanged += (val) => selector.NumChoices = val;
         selector.onValueChanged += (val) =>
         {
             targetDmxOutput.Value = val;
@@ -22,11 +24,8 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
                 textField.value = $"{Mathf.FloorToInt((targetDmxOutput.Value + 0.5f) / targetDmxOutput.SizeProp * 255)}";
             else
                 textField.value = "0";
-            onValueChaned?.Invoke(val);
         };
         textField.SetEnabled(false);
         selector.Value = 0;
     }
-
-    public event System.Action<int> onValueChaned;
 }

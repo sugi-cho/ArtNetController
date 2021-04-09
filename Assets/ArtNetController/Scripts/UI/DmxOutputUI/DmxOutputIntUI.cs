@@ -14,13 +14,13 @@ public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
         var textField = controlUI.Q<TextField>();
 
         label.text = targetDmxOutput.Label;
+        onLabelChanged += (val) => label.text = val;
 
         void SetValue(int value)
         {
             valueVisualize.style.height = Length.Percent(value * 100 / 255);
             textField.value = value.ToString();
             targetDmxOutput.Value = value;
-            onControlValueChanged?.Invoke(value);
         }
         void PointerInput(IPointerEvent evt)
         {
@@ -53,6 +53,4 @@ public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
         textField.isDelayed = true;
         SetValue(targetDmxOutput.Value);
     }
-
-    public event System.Action<float> onControlValueChanged;
 }

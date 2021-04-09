@@ -39,6 +39,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             targetDmxOutput.Label = evt.newValue;
             labelField.SetValueWithoutNotify(targetDmxOutput.Label);
             onValueChanged?.Invoke();
+            onLabelChanged?.Invoke(targetDmxOutput.Label);
         });
 
         if (useFine != null)
@@ -48,6 +49,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             {
                 useFine.UseFine = evt.newValue;
                 onValueChanged?.Invoke();
+                onUseFineChanged?.Invoke(useFine.UseFine);
             });
         }
         else
@@ -64,6 +66,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                     sizeProp.SizeProp = size;
                     labelField.value = targetDmxOutput.Label;
                     onValueChanged?.Invoke();
+                    onSizePropChanged?.Invoke(size);
                 }
                 else
                     sizeField.SetValueWithoutNotify(evt.previousValue);
@@ -82,6 +85,9 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
     }
 
+    protected System.Action<string> onLabelChanged;
+    protected System.Action<bool> onUseFineChanged;
+    protected System.Action<int> onSizePropChanged;
 }
 
 public abstract class DmxOutputUI

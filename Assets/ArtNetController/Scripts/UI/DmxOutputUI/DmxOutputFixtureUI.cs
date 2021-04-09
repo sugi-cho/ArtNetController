@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +25,6 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         targetDmxOutput.BuildDefinitions();
         editorUI.Q<Label>("info-label").text =
             $"Start Channel: {targetDmxOutput.StartChannel:000}\nNum Channels: {targetDmxOutput.NumChannels}";
-        RebuildControlUI();
     }
 
     void RebuildUIEditorUI()
@@ -61,7 +59,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         {
             targetDmxOutput.Label = text;
             label.text = targetDmxOutput.Label;
-            RebuildControlUI();
+            onLabelChanged?.Invoke(text);
         }
         SetLabel(targetDmxOutput.Label);
         labelField.RegisterValueChangedCallback(evt => SetLabel(evt.newValue));
@@ -71,6 +69,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         UpdateStructures();
         for (var i = 0; i < DmxOutputUIList.Count; i++)
         {
+            var idx = i;
             var dmxOutput = targetDmxOutput.DmxOutputList[i];
             var dmxOutputUI = DmxOutputUIList[i];
             uiContainer.Add(dmxOutputUI.EditorUI);
@@ -110,11 +109,11 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         var uiContainer = controlUI.Q("output-container");
 
         label.text = targetDmxOutput.Label;
+        onLabelChanged += (val) => label.text = val;
         for (var i = 0; i < DmxOutputUIList.Count; i++)
         {
             var dmxOutputUI = DmxOutputUIList[i];
             uiContainer.Add(dmxOutputUI.ControlUI);
-            Debug.Log(targetDmxOutput.DmxOutputList[i].Label);
         }
     }
 }

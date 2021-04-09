@@ -28,10 +28,11 @@ public class DmxOutputBoolUI : DmxOutputUI<DmxOutputBool>
             }
             targetDmxOutput.Value = val;
             textField.value = (val ? 255 : 0).ToString();
-            onValueChanged?.Invoke(val);
         }
 
         label.text = targetDmxOutput.Label;
+        onLabelChanged += (val) => label.text = val;
+
         toggle.RegisterCallback<PointerUpEvent>(evt => SetValue(!targetDmxOutput.Value));
         trigger.RegisterCallback<PointerDownEvent>(evt =>
         {
@@ -47,6 +48,4 @@ public class DmxOutputBoolUI : DmxOutputUI<DmxOutputBool>
         textField.SetEnabled(false);
         SetValue(false);
     }
-
-    public event System.Action<bool> onValueChanged;
 }

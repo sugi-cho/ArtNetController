@@ -14,11 +14,11 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
         var textFields = controlUI.Query<TextField>().ToList();
 
         label.text = targetDmxOutput.Label;
+        onLabelChanged += (val) => label.text = val;
         xyPad.onValueChanged += (v2) =>
         {
             for (var i = 0; i < 2; i++)
                 textFields[i].value = v2[i].ToString();
-            onValueChanged?.Invoke(v2);
         };
         for (var i = 0; i < 2; i++)
         {
@@ -40,6 +40,4 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
 
         xyPad.Value = targetDmxOutput.Value;
     }
-
-    public event System.Action<Vector2> onValueChanged;
 }

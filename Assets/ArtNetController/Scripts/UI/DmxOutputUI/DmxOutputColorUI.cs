@@ -15,7 +15,8 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
         var textFields = controlUI.Query<TextField>().ToList();
 
         label.text = targetDmxOutput.Label;
-        
+        onLabelChanged += (val) => label.text = val;
+
         void SetValue(Color color)
         {
             for (var i = 0; i < 3; i++)
@@ -25,7 +26,6 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
             }
             color.a = 1f;
             targetDmxOutput.Value = color;
-            onControlValueChanged?.Invoke(color);
             label.style.backgroundColor = background.style.backgroundColor = color;
             var labelColor = color;
             for (var i = 0; i < 3; i++)
@@ -78,7 +78,5 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
         }
         SetValue(targetDmxOutput.Value);
     }
-
-    public event System.Action<Color> onControlValueChanged;
     readonly Color[] rgb = new[] { Color.red, Color.green, Color.blue };
 }
