@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DmxOutputBoolUI : DmxOutputUI<DmxOutputBool>

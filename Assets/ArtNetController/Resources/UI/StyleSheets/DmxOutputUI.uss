@@ -44,3 +44,13 @@
 .switch-on #trigger {
     background-color: rgb(229, 229, 229);
 }
+
+#close-button {
+    background-color: rgba(153, 153, 153, 255);
+    opacity: 0.6;
+}
+
+#close-button:hover {
+    background-color: rgb(204, 204, 204);
+    opacity: 0.8;
+}
