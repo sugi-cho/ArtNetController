@@ -1,0 +1,45 @@
+.tab-group > .unity-base-field__input {
+    flex-direction: row;
+}
+
+.tab-group .unity-radio-button__checkmark-background {
+    flex-direction: row;
+    display: none;
+}
+
+.tab-group .unity-radio-button {
+    margin-left: 1px;
+    margin-right: 0;
+    margin-top: 8px;
+    margin-bottom: 0;
+    flex-grow: 1;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 0;
+    padding-left: 4px;
+    padding-right: 2px;
+    padding-top: 4px;
+    background-color: rgba(51, 51, 51, 255);
+    padding-bottom: 1px;
+}
+
+.tab-group .unity-radio-button:hover {
+    background-color: rgb(77, 77, 77);
+    opacity: 0.5;
+}
+
+.tab-group .unity-radio-button:checked {
+    flex-shrink: 0;
+    margin-top: 2px;
+    background-color: rgb(102, 102, 102);
+    opacity: 1;
+}
+
+.tab-group .unity-radio-button__input {
+    flex-direction: column-reverse;
+}
+
+.tab-group .unity-radio-button Label {
+    color: rgb(255, 255, 255);
+}

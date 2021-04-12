@@ -1,2 +1,3 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <MatrixSelector row="32" column="16" style="width: 1280px; height: 560px;" />
 </ui:UXML>

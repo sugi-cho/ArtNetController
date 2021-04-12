@@ -292,7 +292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 5ce67fabedc3c2543a7f2396dfe762f1, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: e634783837d05ac4da5b483b86ac4564, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: d811dc4beb075f54da2801d08c1c3224, type: 3}
   m_SortingOrder: 0
 --- !u!4 &833176890
 Transform:
@@ -315,7 +315,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833176888}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64a864b4723af2f44a674ffa368309eb, type: 3}
   m_Name: 
@@ -368,11 +368,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 833176888}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a7c7fe7837ab3d448586da30de434e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  universeTree: {fileID: 9197481963319205126, guid: eb21046b32ac123419ebf051f2475d6d, type: 3}
+  controlTree: {fileID: 0}
+  editorTree: {fileID: 0}
 --- !u!1 &982344159
 GameObject:
   m_ObjectHideFlags: 0

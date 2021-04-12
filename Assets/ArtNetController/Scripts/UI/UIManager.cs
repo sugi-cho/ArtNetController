@@ -5,6 +5,10 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] VisualTreeAsset universeTree;
+    [SerializeField] VisualTreeAsset controlTree;
+    [SerializeField] VisualTreeAsset editorTree;
+
     private void OnEnable()
     {
         var doc = GetComponent<UIDocument>();
@@ -14,6 +18,8 @@ public class UIManager : MonoBehaviour
         var controlView = root.Q("ControlView");
         var editorView = root.Q("EditorView");
         var closeButton = root.Q("close-button");
+
+        universeView.Add(universeTree.CloneTree(""));
 
         var closed = false;
         closeButton.RegisterCallback<PointerDownEvent>(evt =>
