@@ -1,4 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/TabSelectField.uss" />
-    <ui:RadioButtonGroup value="0" choices="test1,test2,test3,test4,test5" name="TabGroup" class="tab-group" />
+    <ui:RadioButtonGroup value="0" choices="test1,test2,test3,test4,test5" name="TabGroup" class="tab-group" style="margin-bottom: 0;" />
 </ui:UXML>

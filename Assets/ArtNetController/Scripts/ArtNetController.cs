@@ -9,12 +9,12 @@ using ArtNet.Packets;
 public class ArtNetController : MonoBehaviour
 {
     [SerializeField] ArtNetDmxPacket packetToOutput;
-    [SerializeField] UniverseManager universeManager;
+    [SerializeField] UniverseManager universeManager = UniverseManager.Instance;
 
 
     private void OnEnable()
     {
-        universeManager = new UniverseManager();
+        universeManager = UniverseManager.Instance;
     }
     private void OnDisable()
     {

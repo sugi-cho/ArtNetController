@@ -5,27 +5,26 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] VisualTreeAsset universeTree;
-    [SerializeField] VisualTreeAsset controlTree;
-    [SerializeField] VisualTreeAsset editorTree;
-
+    [SerializeField] UniverseView universeView;
     private void OnEnable()
     {
+        universeView = new UniverseView();
+
         var doc = GetComponent<UIDocument>();
         var root = doc.rootVisualElement;
 
-        var universeView = root.Q("UniverseView");
-        var controlView = root.Q("ControlView");
-        var editorView = root.Q("EditorView");
-        var closeButton = root.Q("close-button");
+        var universe = root.Q("UniverseView");
+        var control = root.Q("ControlView");
+        var editor = root.Q("EditorView");
+        var editorCloseButton = root.Q("close-button");
 
-        universeView.Add(universeTree.CloneTree(""));
+        universeView.BuildUI(universe);
 
         var closed = false;
-        closeButton.RegisterCallback<PointerDownEvent>(evt =>
+        editorCloseButton.RegisterCallback<PointerDownEvent>(evt =>
         {
             closed = !closed;
-            editorView.style.marginRight = closed ? -editorView.localBound.width : 0;
+            editor.style.marginRight = closed ? -editor.localBound.width : 0;
         });
     }
 }

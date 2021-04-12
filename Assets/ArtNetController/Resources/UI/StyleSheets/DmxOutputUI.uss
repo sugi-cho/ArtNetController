@@ -46,7 +46,7 @@
 }
 
 #close-button {
-    background-color: rgba(153, 153, 153, 255);
+    background-color: rgb(153, 153, 153);
     opacity: 0.6;
 }
 

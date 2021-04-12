@@ -13,45 +13,55 @@ public class DmxOutputUniverse : IDmxOutput
     public int StartChannel
     {
         get => 0;
-        set { }
+        set { Debug.Log("DmxOutputUniverse.StartChannel = 0, always"); }
     }
-    public int NumChannels => dmxOutputList
+    public int NumChannels => OutputList
         .Select(o => o.StartChannel + o.NumChannels)
         .OrderBy(ch => ch)
         .LastOrDefault();
     public void SetDmx(ref byte[] dmx)
     {
-        foreach (var output in dmxOutputList)
+        foreach (var output in OutputList)
             output.SetDmx(ref dmx);
     }
 
+    public List<IDmxOutput> OutputList
+    {
+        get
+        {
+            if (!m_initialized)
+                Initialize();
+            return m_outputList;
+        }
+    }
+    List<IDmxOutput> m_outputList;
+    public DmxOutputDefinition[] dmxOutputDefinitions;
+    bool m_initialized;
     public void Initialize()
     {
         if (dmxOutputDefinitions != null)
-            dmxOutputList = dmxOutputDefinitions
+            m_outputList = dmxOutputDefinitions
                 .Select(d => DmxOutputUtility.CreateDmxOutput(d))
                 .ToList();
-        if (dmxOutputList == null)
-            dmxOutputList = new List<IDmxOutput>();
+        if (m_outputList == null)
+            m_outputList = new List<IDmxOutput>();
+        m_initialized = true;
     }
     public void AddModule(IDmxOutput module)
     {
-        dmxOutputList.Add(module);
+        OutputList.Add(module);
         BuildDefinitions();
     }
     public void RemoveModule(IDmxOutput module)
     {
-        dmxOutputList.Remove(module);
+        OutputList.Remove(module);
         BuildDefinitions();
     }
     void BuildDefinitions()
     {
-        dmxOutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
-        dmxOutputDefinitions = dmxOutputList
+        OutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
+        dmxOutputDefinitions = OutputList
             .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
             .ToArray();
     }
-
-    List<IDmxOutput> dmxOutputList;
-    public DmxOutputDefinition[] dmxOutputDefinitions;
 }

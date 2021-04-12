@@ -1,3 +1,17 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <MatrixSelector row="32" column="16" style="width: 1280px; height: 560px;" />
+    <ui:Template name="TabSelector" src="CustomControlTest/TabSelector.uxml" />
+    <Style src="StyleSheets/DmxOutputUI.uss" />
+    <Style src="StyleSheets/MatrixSelector.uss" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Instance template="TabSelector" name="TabSelector" />
+        <ui:VisualElement name="main" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; background-color: rgb(102, 102, 102); flex-grow: 1; flex-direction: row;">
+            <ui:VisualElement name="ChannelsView" style="padding-left: 4px; padding-top: 8px; flex-grow: 1; align-items: center;">
+                <ui:VisualElement>
+                    <ui:Label text="DMX Channels" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
+                    <MatrixSelector row="32" column="16" style="width: 1280px; height: 480px;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="FixturesView" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
 </ui:UXML>

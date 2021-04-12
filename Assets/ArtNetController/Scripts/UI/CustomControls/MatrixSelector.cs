@@ -27,14 +27,14 @@ public class MatrixSelector : VisualElement
         Clear();
         for (var i = 0; i < column; i++)
         {
-            var container = new VisualElement();
-            container.AddToClassList($"row_{i}");
-            container.name = $"row_{i}";
-            container.style.flexDirection = FlexDirection.Row;
-            container.style.width = Length.Percent(100);
-            container.style.height = Length.Percent(100f / column);
-            container.style.marginTop = container.style.marginBottom = 2;
-            Add(container);
+            var rowContainer = new VisualElement();
+            rowContainer.AddToClassList($"row_{i}");
+            rowContainer.name = $"row_{i}";
+            rowContainer.style.flexDirection = FlexDirection.Row;
+            rowContainer.style.width = Length.Percent(100);
+            rowContainer.style.height = Length.Percent(100f / column);
+            rowContainer.style.marginTop = rowContainer.style.marginBottom = 2;
+            Add(rowContainer);
             for (var j = 0; j < row; j++)
             {
                 var idx = i * row + j;
@@ -42,14 +42,14 @@ public class MatrixSelector : VisualElement
                 if (onBindFunc != null)
                     ve = onBindFunc.Invoke(idx);
                 else
-                    ve = new Button { text = $"{idx}" };
+                    ve = new Toggle { text = $"{idx}" };
                 ve.AddToClassList($"element_{idx}");
                 ve.name = $"element_{idx}";
                 ve.style.width = Length.Percent(100f / row);
                 ve.style.height = Length.Percent(100);
                 ve.style.flexShrink = 1;
+                rowContainer.Add(ve);
                 onBindAction?.Invoke(ve, idx);
-                container.Add(ve);
             }
         }
     }

@@ -12,14 +12,14 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
     {
         get
         {
-            if (m_dmxOutputUIList == null || m_dmxOutputUIList.Count != targetDmxOutput.DmxOutputList.Count)
+            if (m_dmxOutputUIList == null || m_dmxOutputUIList.Count != targetDmxOutput.OutputList.Count)
                 BuildDmxOutputUIList();
             return m_dmxOutputUIList;
         }
     }
     List<DmxOutputUI> m_dmxOutputUIList = null;
     void BuildDmxOutputUIList() => m_dmxOutputUIList =
-        targetDmxOutput.DmxOutputList.Select(dmxOutput => CreateUI(dmxOutput)).ToList();
+        targetDmxOutput.OutputList.Select(dmxOutput => CreateUI(dmxOutput)).ToList();
     void UpdateStructures()
     {
         targetDmxOutput.BuildDefinitions();
@@ -70,7 +70,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         for (var i = 0; i < DmxOutputUIList.Count; i++)
         {
             var idx = i;
-            var dmxOutput = targetDmxOutput.DmxOutputList[i];
+            var dmxOutput = targetDmxOutput.OutputList[i];
             var dmxOutputUI = DmxOutputUIList[i];
             uiContainer.Add(dmxOutputUI.EditorUI);
             dmxOutputUI.onRemoveButtonClicked += () =>

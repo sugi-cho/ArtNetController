@@ -20,12 +20,11 @@
     padding-left: 4px;
     padding-right: 2px;
     padding-top: 4px;
-    background-color: rgba(51, 51, 51, 255);
+    background-color: rgb(51, 51, 51);
     padding-bottom: 1px;
 }
 
 .tab-group .unity-radio-button:hover {
-    background-color: rgb(77, 77, 77);
     opacity: 0.5;
 }
 
