@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,6 +26,8 @@ public class MatrixSelector : VisualElement
     public void SetMatrix(int row, int column, System.Func<int, VisualElement> onBindFunc = null, System.Action<VisualElement, int> onBindAction = null)
     {
         Clear();
+        m_selectElementValues = new (VisualElement, bool)[row * column];
+
         for (var i = 0; i < column; i++)
         {
             var rowContainer = new VisualElement();
@@ -38,22 +41,63 @@ public class MatrixSelector : VisualElement
             for (var j = 0; j < row; j++)
             {
                 var idx = i * row + j;
-                VisualElement ve;
+                VisualElement vle;
                 if (onBindFunc != null)
-                    ve = onBindFunc.Invoke(idx);
+                    vle = onBindFunc.Invoke(idx);
                 else
-                    ve = new Toggle { text = $"{idx}" };
-                ve.AddToClassList($"element_{idx}");
-                ve.name = $"element_{idx}";
-                ve.style.width = Length.Percent(100f / row);
-                ve.style.height = Length.Percent(100);
-                ve.style.flexShrink = 1;
-                rowContainer.Add(ve);
-                onBindAction?.Invoke(ve, idx);
+                {
+                    vle = new Label { text = $"{idx}" };
+                    vle.name = "select-element";
+                    m_selectElementValues[idx] = (vle, false);
+                    vle.RegisterCallback<PointerUpEvent>(evt =>
+                    {
+                        var vleValue = m_selectElementValues[idx];
+                        var shift = evt.shiftKey;
+                        vleValue.value = !vleValue.value;
+                        if (shift && m_selectElementValues[m_lastActiveIdx].value == vleValue.value)
+                            SetValueFromTo(m_lastActiveIdx, idx, vleValue.value);
+                        else
+                            SetValue(idx, vleValue.value);
+                        m_lastActiveIdx = idx;
+                    });
+                }
+                vle.AddToClassList($"element_{idx}");
+                vle.style.width = Length.Percent(100f / row);
+                vle.style.height = Length.Percent(100);
+                vle.style.flexShrink = 1;
+                rowContainer.Add(vle);
+                onBindAction?.Invoke(vle, idx);
             }
         }
     }
-    public MatrixSelector() : base() {
+    public void SetValueFromTo(int from, int to, bool value)
+    {
+        var minMax = (Mathf.Min(from, to), Mathf.Max(from, to));
+        for (var i = minMax.Item1; i <= minMax.Item2; i++)
+            SetValue(i, value);
+    }
+    public void SetAllValues(bool value)
+    {
+        for (var i = 0; i < m_selectElementValues.Length; i++)
+            SetValue(i, value);
+    }
+    public void SetValue(int idx, bool value)
+    {
+        var vle = m_selectElementValues[idx].vle;
+        m_selectElementValues[idx].value = value;
+        if (value)
+            vle.AddToClassList("checked");
+        else
+            vle.RemoveFromClassList("checked");
+        onValueChanged?.Invoke(idx, value);
+    }
+    int m_lastActiveIdx;
+    (VisualElement vle, bool value)[] m_selectElementValues;
+
+    public event System.Action<int, bool> onValueChanged;
+
+    public MatrixSelector() : base()
+    {
 
     }
 }

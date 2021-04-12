@@ -31,52 +31,35 @@ public class UniverseView
             return info;
         }
 
-        var chToggles = matrixSelector.Query<Toggle>().ToList();
-        var groups = chToggles.Select((toggle, ch) =>
+        var selectElements = matrixSelector.Query("select-element").ToList();
+        var groups = selectElements.Select((vle, idx) =>
         {
-            var info = GetChannelInfo(ch);
-            var targetCh = ch;
-            return (info.output, info.startCh, info.endCh, targetCh, toggle);
+            var info = GetChannelInfo(idx);
+            return (info.output, info.startCh, info.endCh, idx, vle);
         }).Where(info =>
         {
             if (info.output == null)
-            {
-                info.toggle.AddToClassList("null-channel");
-                info.toggle.RegisterCallback<MouseDownEvent>(evt => Debug.Log("down"));
-                info.toggle.RegisterValueChangedCallback(evt =>
-                {
-                    if (evt.newValue)
-                    {
-                        universeManager.SelectChannel(info.targetCh);
-                        matrixSelector.Focus();
-                    }
-                });
-            }
+                info.vle.AddToClassList("null-channel");
             return info.output != null;
-        }).GroupBy(info => info.output, info => (info.startCh, info.endCh, info.targetCh, info.toggle));
+        }).GroupBy(info => info.output, info => (info.startCh, info.endCh, info.idx, info.vle));
         foreach (var group in groups)
         {
             var output = group.Key;
-            var toggles = group.Select(info => info.toggle).ToList();
-            foreach (var info in group)
+            group.FirstOrDefault(g => g.idx == g.startCh).vle.AddToClassList("start-channel");
+            group.FirstOrDefault(g => g.idx == g.endCh).vle.AddToClassList("end-channel");
+            var start = output.StartChannel;
+            var end = output.StartChannel + output.NumChannels - 1;
+            matrixSelector.onValueChanged += (idx, val) =>
             {
-                var toggle = info.toggle;
-                if (info.startCh == info.targetCh)
-                    toggle.AddToClassList("start-channel");
-                if (info.endCh == info.targetCh)
-                    toggle.AddToClassList("end-channel");
-                toggle.RegisterValueChangedCallback(evt =>
+                if (start <= idx && idx <= end)
                 {
-                    if (evt.newValue)
-                    {
-                        universeManager.SelectOutput(output);
-                    }
-                    toggles.ForEach(t => t.SetValueWithoutNotify(evt.newValue));
-                });
-            }
+                    matrixSelector.SetValueFromTo(start, end, val);
+                    universeManager.SelectOutput(output);
+                }
+            };
         }
         clearButton.clicked += () => {
-            chToggles.ForEach(t => t.SetValueWithoutNotify(false));
+            matrixSelector.SetAllValues(false);
             universeManager.ClearSelections();
         };
     }

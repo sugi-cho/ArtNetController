@@ -14,7 +14,7 @@ MatrixSelector #unity-checkmark {
     display: none;
 }
 
-MatrixSelector .unity-toggle {
+MatrixSelector #select-element {
     flex-grow: 1;
     align-items: center;
     background-color: rgb(102, 102, 102);
@@ -29,6 +29,19 @@ MatrixSelector .unity-toggle {
     border-bottom-color: rgb(0, 0, 0);
     border-top-width: 2px;
     border-bottom-width: 2px;
+    -unity-text-align: middle-center;
+}
+
+MatrixSelector #select-element:hover {
+    opacity: 0.5;
+}
+
+MatrixSelector #select-element.checked {
+    opacity: 1;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
 }
 
 MatrixSelector .null-channel {
@@ -50,18 +63,6 @@ MatrixSelector .end-channel {
     border-right-width: 2px;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
-}
-
-MatrixSelector .unity-toggle:hover {
-    opacity: 0.5;
-}
-
-MatrixSelector .unity-toggle:checked {
-    opacity: 1;
-    border-left-color: rgb(255, 255, 255);
-    border-right-color: rgb(255, 255, 255);
-    border-top-color: rgb(255, 255, 255);
-    border-bottom-color: rgb(255, 255, 255);
 }
 
 MatrixSelector Label {

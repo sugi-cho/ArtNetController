@@ -35,21 +35,37 @@ class UniverseManager
         m_selectingChannelList.Clear();
         m_selectingOutputList.Clear();
     }
-    public void SelectChannel(int ch, bool multiple = true)
+    public void SelectChannel(int ch)
     {
-        if (!multiple)
-            m_selectingChannelList.Clear();
-        m_selectingChannelList.Add(ch);
-
-        onSelectNullChannel?.Invoke(m_selectingChannelList);
+        if (!m_selectingChannelList.Contains(ch))
+        {
+            m_selectingChannelList.Add(ch);
+            onSelectNullChannel?.Invoke(m_selectingChannelList);
+        }
     }
-    public void SelectOutput(IDmxOutput output, bool multiple = true)
+    public void RemoveChannel(int ch)
     {
-        if (!multiple)
-            m_selectingOutputList.Clear();
-        m_selectingOutputList.Add(output);
-
-        onSelectOutput?.Invoke(m_selectingOutputList);
+        if (m_selectingChannelList.Contains(ch))
+        {
+            m_selectingChannelList.Remove(ch);
+            onSelectNullChannel?.Invoke(m_selectingChannelList);
+        }
+    }
+    public void SelectOutput(IDmxOutput output)
+    {
+        if (!m_selectingOutputList.Contains(output))
+        {
+            m_selectingOutputList.Add(output);
+            onSelectOutput?.Invoke(m_selectingOutputList);
+        }
+    }
+    public void RemoveOutput(IDmxOutput output)
+    {
+        if (m_selectingOutputList.Contains(output))
+        {
+            m_selectingOutputList.Remove(output);
+            onSelectOutput?.Invoke(m_selectingOutputList);
+        }
     }
     public void CreateUniverse()
     {
