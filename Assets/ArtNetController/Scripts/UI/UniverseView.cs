@@ -12,12 +12,14 @@ public class UniverseView
 
         var tabGroup = view.Q<RadioButtonGroup>("TabGroup");
         var matrixSelector = view.Q<MatrixSelector>();
+        var clearButton = view.Q<Button>("ClearButton");
 
         var activeUniverse = universeManager.ActiveUniverse;
         var outputList = activeUniverse.OutputList;
 
         tabGroup.choices = universeManager.Universes.Select(u => u.Label);
         tabGroup.SetValueWithoutNotify(universeManager.ActiveUniverseIdx);
+
 
         (IDmxOutput output, int startCh, int endCh) GetChannelInfo(int ch)
         {
@@ -40,11 +42,13 @@ public class UniverseView
             if (info.output == null)
             {
                 info.toggle.AddToClassList("null-channel");
+                info.toggle.RegisterCallback<MouseDownEvent>(evt => Debug.Log("down"));
                 info.toggle.RegisterValueChangedCallback(evt =>
                 {
                     if (evt.newValue)
                     {
                         universeManager.SelectChannel(info.targetCh);
+                        matrixSelector.Focus();
                     }
                 });
             }
@@ -71,6 +75,10 @@ public class UniverseView
                 });
             }
         }
+        clearButton.clicked += () => {
+            chToggles.ForEach(t => t.SetValueWithoutNotify(false));
+            universeManager.ClearSelections();
+        };
     }
 
 }

@@ -30,7 +30,7 @@ class UniverseManager
         if (m_universes.Count == 0)
             CreateUniverse();
     }
-    public void ClearSelection()
+    public void ClearSelections()
     {
         m_selectingChannelList.Clear();
         m_selectingOutputList.Clear();
