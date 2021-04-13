@@ -57,7 +57,7 @@ public class MatrixSelector : VisualElement
                         if (shift && m_selectElementValues[m_lastActiveIdx].value == vleValue.value)
                             SetValueFromTo(m_lastActiveIdx, idx, vleValue.value);
                         else
-                            SetValue(idx, vleValue.value);
+                            SetValue(idx, vleValue.value, notify: true, singleSelect: true);
                         m_lastActiveIdx = idx;
                     });
                 }
@@ -74,14 +74,21 @@ public class MatrixSelector : VisualElement
     {
         var minMax = (Mathf.Min(from, to), Mathf.Max(from, to));
         for (var i = minMax.Item1; i <= minMax.Item2; i++)
-            SetValue(i, value);
+            SetValue(i, value, notify: true, singleSelect: false);
+        onSelectComplete?.Invoke();
+    }
+    public void SetValueFromToWithoutNotify(int from, int to, bool value)
+    {
+        var minMax = (Mathf.Min(from, to), Mathf.Max(from, to));
+        for (var i = minMax.Item1; i <= minMax.Item2; i++)
+            SetValue(i, value, notify: false, singleSelect: false);
     }
     public void SetAllValues(bool value)
     {
         for (var i = 0; i < m_selectElementValues.Length; i++)
-            SetValue(i, value);
+            SetValue(i, value, false, false);
     }
-    public void SetValue(int idx, bool value)
+    public void SetValue(int idx, bool value, bool notify, bool singleSelect)
     {
         var vle = m_selectElementValues[idx].vle;
         m_selectElementValues[idx].value = value;
@@ -89,12 +96,16 @@ public class MatrixSelector : VisualElement
             vle.AddToClassList("checked");
         else
             vle.RemoveFromClassList("checked");
-        onValueChanged?.Invoke(idx, value);
+        if (notify)
+            onValueChanged?.Invoke(idx, value);
+        if (singleSelect)
+            onSelectComplete?.Invoke();
     }
     int m_lastActiveIdx;
     (VisualElement vle, bool value)[] m_selectElementValues;
 
     public event System.Action<int, bool> onValueChanged;
+    public event System.Action onSelectComplete;
 
     public MatrixSelector() : base()
     {

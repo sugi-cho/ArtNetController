@@ -16,11 +16,6 @@ class UniverseManager
     public int ActiveUniverseIdx { get; set; }
     public DmxOutputUniverse ActiveUniverse => m_universes[ActiveUniverseIdx];
 
-    List<IDmxOutput> m_selectingOutputList = new List<IDmxOutput>();
-    List<int> m_selectingChannelList = new List<int>();
-    public event System.Action<IEnumerable<int>> onSelectNullChannel;
-    public event System.Action<IEnumerable<IDmxOutput>> onSelectOutput;
-
     private UniverseManager()
     {
         m_universes = Directory.GetFiles(folderPath, "*.json")
@@ -29,43 +24,6 @@ class UniverseManager
             .ToList();
         if (m_universes.Count == 0)
             CreateUniverse();
-    }
-    public void ClearSelections()
-    {
-        m_selectingChannelList.Clear();
-        m_selectingOutputList.Clear();
-    }
-    public void SelectChannel(int ch)
-    {
-        if (!m_selectingChannelList.Contains(ch))
-        {
-            m_selectingChannelList.Add(ch);
-            onSelectNullChannel?.Invoke(m_selectingChannelList);
-        }
-    }
-    public void RemoveChannel(int ch)
-    {
-        if (m_selectingChannelList.Contains(ch))
-        {
-            m_selectingChannelList.Remove(ch);
-            onSelectNullChannel?.Invoke(m_selectingChannelList);
-        }
-    }
-    public void SelectOutput(IDmxOutput output)
-    {
-        if (!m_selectingOutputList.Contains(output))
-        {
-            m_selectingOutputList.Add(output);
-            onSelectOutput?.Invoke(m_selectingOutputList);
-        }
-    }
-    public void RemoveOutput(IDmxOutput output)
-    {
-        if (m_selectingOutputList.Contains(output))
-        {
-            m_selectingOutputList.Remove(output);
-            onSelectOutput?.Invoke(m_selectingOutputList);
-        }
     }
     public void CreateUniverse()
     {
@@ -81,7 +39,8 @@ class UniverseManager
     }
     public void SaveUniverse(DmxOutputUniverse universe)
     {
-        var fileName = $"{universe.Label}_u{universe.Universe:000}.json";
+        var idx = Universes.IndexOf(universe);
+        var fileName = $"Universe_{idx:000}.json";
         var path = Path.Combine(folderPath, fileName);
         var json = JsonUtility.ToJson(universe);
         File.WriteAllText(path, json);

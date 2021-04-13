@@ -6,9 +6,13 @@ using UnityEngine.UIElements;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] UniverseView universeView;
+    [SerializeField] ControlView controlView;
+    [SerializeField] EditorView editorView;
     private void OnEnable()
     {
         universeView = new UniverseView();
+        controlView = new ControlView();
+        editorView = new EditorView();
 
         var doc = GetComponent<UIDocument>();
         var root = doc.rootVisualElement;
@@ -19,6 +23,8 @@ public class UIManager : MonoBehaviour
         var editorCloseButton = root.Q("close-button");
 
         universeView.BuildUI(universe);
+        controlView.BuildUI(control);
+        editorView.BuildUI(editor);
 
         var closed = false;
         editorCloseButton.RegisterCallback<PointerDownEvent>(evt =>
