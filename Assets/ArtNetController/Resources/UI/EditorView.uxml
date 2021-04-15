@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="StyleSheets/DmxOutputUI.uss" />
+    <ui:VisualElement name="AddOutputModuleView" />
+    <ui:VisualElement name="AddFixtureView" />
+    <ui:VisualElement name="CreateNewFixtureView" />
+</ui:UXML>

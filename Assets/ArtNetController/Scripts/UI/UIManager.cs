@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -25,6 +26,22 @@ public class UIManager : MonoBehaviour
         universeView.BuildUI(universe);
         controlView.BuildUI(control);
         editorView.BuildUI(editor);
+
+        var outputUIList = new List<IDmxOutput>();
+        universeView.onSelectionChanged += (chList, outputList) =>
+         {
+             if(0 < outputList.Count)
+             {
+                 var groups = outputList.GroupBy(o => (o.Type, o.Label));
+                 foreach(var g in groups)
+                 {
+                     var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
+                     uiList[0].AddMultiTargeUIs(uiList.Where(ui => ui != uiList[0]));
+                     editorView.Add(uiList[0]);
+                     uiList.ForEach(ui => controlView.Add(ui));
+                 }
+             }
+         };
 
         var closed = false;
         editorCloseButton.RegisterCallback<PointerDownEvent>(evt =>

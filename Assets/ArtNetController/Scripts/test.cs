@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,7 +13,15 @@ public class test : MonoBehaviour
     [ContextMenu("test")]
     void Test()
     {
+        dmxOutputList.Add(new DmxOutputFloat { Label = "float" });
+        dmxOutputList.Add(new DmxOutputFloat { Label = "float" });
+        dmxOutputList.Add(new DmxOutputFloat { Label = "float" });
+        dmxOutputList.Add(new DmxOutputInt { Label = "int" });
+        dmxOutputList.Add(new DmxOutputInt { Label = "int" });
+        dmxOutputList.Add(new DmxOutputInt { Label = "float" });
 
+        var gs = dmxOutputList.GroupBy(o => (o.Type, o.Label));
+        Debug.Log(gs.Count());
     }
 
     private void OnEnable()

@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputFixture : IDmxOutput
 {
+    public string FilePath { get; set; }
     public DmxOutputType Type => DmxOutputType.Fixture;
     #region IDmxOutput
     public string Label { get => label; set => label = value; }

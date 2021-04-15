@@ -1,5 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:Template name="UniverseView" src="UniverseView.uxml" />
+    <ui:Template name="ControlView" src="ControlView.uxml" />
+    <ui:Template name="EditorView" src="EditorView.uxml" />
     <Style src="StyleSheets/DmxOutputUI.uss" />
     <Style src="StyleSheets/Dropdown.uss" />
     <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
@@ -7,9 +9,12 @@
             <ui:VisualElement name="UniverseView" style="flex-grow: 1;">
                 <ui:Instance template="UniverseView" name="UniverseView" style="flex-grow: 1;" />
             </ui:VisualElement>
-            <ui:VisualElement name="ControlView" style="min-height: 240px; flex-direction: row; height: 364px;" />
+            <ui:VisualElement name="ControlView" style="min-height: 240px; flex-direction: column; height: 364px;">
+                <ui:Instance template="ControlView" name="ControlView" style="flex-grow: 1;" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="EditorView" style="min-width: 320px; border-left-width: 1px; border-left-color: rgb(255, 255, 255);">
+            <ui:Instance template="EditorView" name="EditorView" style="flex-grow: 1;" />
             <ui:VisualElement name="close-button" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-left-width: 1px; border-left-color: rgb(255, 255, 255); width: 20px; height: 300px; position: absolute; margin-left: -15px; margin-top: 240px;" />
         </ui:VisualElement>
     </ui:VisualElement>

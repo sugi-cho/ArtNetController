@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,11 @@ using UnityEngine.UIElements;
 public class ControlView 
 {
     public void BuildUI(VisualElement view)
+    {
+
+    }
+
+    internal void Add(DmxOutputUI dmxOutputUI)
     {
 
     }

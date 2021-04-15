@@ -60,6 +60,7 @@ public static class FixtureLibrary
             var json = JsonUtility.ToJson(fixture);
             File.WriteAllText(filePath, json);
             fixture.Initialize();
+            fixture.FilePath = filePath;
             return fixture;
         }
         else
@@ -67,6 +68,7 @@ public static class FixtureLibrary
             var json = File.ReadAllText(filePath);
             var fixture = JsonUtility.FromJson<DmxOutputFixture>(json);
             fixture.Initialize();
+            fixture.FilePath = filePath;
             return fixture;
         }
     }
@@ -81,6 +83,9 @@ public static class FixtureLibrary
     {
         var filePath = Path.Combine(folderPath, $"{fixture.Label}.json");
         var json = JsonUtility.ToJson(fixture);
+        if (fixture.FilePath != filePath)
+            if (File.Exists(fixture.FilePath))
+                File.Move(fixture.FilePath, filePath);
         File.WriteAllText(filePath, json);
         LoadFixtureList();
     }

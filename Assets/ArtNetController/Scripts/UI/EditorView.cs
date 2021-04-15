@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,5 +9,20 @@ public class EditorView
 {
     public void BuildUI(VisualElement view) { 
     
+    }
+
+    internal void Add(DmxOutputUI dmxOutputUI)
+    {
+
+    }
+
+    internal void EmptyChannelsView(List<int> chList)
+    {
+
+    }
+
+    internal void NoSelection()
+    {
+
     }
 }

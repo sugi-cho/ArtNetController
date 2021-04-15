@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEngine;
 
@@ -11,6 +13,10 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
     }
 
     internal T targetDmxOutput;
+    public List<DmxOutputUI<T>> multiEditUIs = new List<DmxOutputUI<T>>();
+    public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis) =>
+        multiEditUIs.AddRange((uis as IEnumerable<DmxOutputUI<T>>));
+
     string EditorUIBaseResourcePath => $"UI/DmxOutput/DmxOutput_Editor";
     internal string EditorUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Editor";
     internal string ControlUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Control";
@@ -36,7 +42,14 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         labelField.isDelayed = true;
         labelField.RegisterValueChangedCallback(evt =>
         {
+            if (FixtureLibrary.FixtureLabelList.Contains(evt.newValue))
+                return;
             targetDmxOutput.Label = evt.newValue;
+            foreach (var ui in multiEditUIs)
+            {
+                ui.targetDmxOutput.Label = evt.newValue;
+                ui.onLabelChanged?.Invoke(evt.newValue);
+            }
             labelField.SetValueWithoutNotify(targetDmxOutput.Label);
             onValueChanged?.Invoke();
             onLabelChanged?.Invoke(targetDmxOutput.Label);
@@ -51,6 +64,8 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 onValueChanged?.Invoke();
                 onUseFineChanged?.Invoke(useFine.UseFine);
             });
+            if (0 < multiEditUIs.Count)
+                fineToggle.SetEnabled(false);
         }
         else
             fineToggle.style.display = DisplayStyle.None;
@@ -64,6 +79,11 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 if (int.TryParse(evt.newValue, out size))
                 {
                     sizeProp.SizeProp = size;
+                    foreach (var ui in multiEditUIs)
+                    {
+                        (ui.targetDmxOutput as ISizeProp).SizeProp = size;
+                        ui.onSizePropChanged?.Invoke(size);
+                    }
                     labelField.value = targetDmxOutput.Label;
                     onValueChanged?.Invoke();
                     onSizePropChanged?.Invoke(size);
@@ -76,6 +96,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             sizeField.style.display = DisplayStyle.None;
 
         removeButton.clicked += () => { onRemoveButtonClicked?.Invoke(); };
+
     }
     protected virtual void BuildControlUI()
     {
@@ -119,7 +140,7 @@ public abstract class DmxOutputUI
 
         return new DmxOutputUI<IDmxOutput>(dmxOutput);
     }
-
+    public abstract void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis);
     protected VisualElement editorUI;
     protected VisualElement controlUI;
     public VisualElement EditorUI => editorUI;
