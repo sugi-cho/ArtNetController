@@ -32,7 +32,7 @@ public static class FixtureLibrary
     }
     public static DmxOutputFixture CreateFixture()
     {
-        var label = GenerateUniqueLabel("Fixture");
+        var label = GenerateUniqueLabel("New Fixture");
         var newFixture = new DmxOutputFixture { Label = label };
         return newFixture;
     }
@@ -40,14 +40,17 @@ public static class FixtureLibrary
     {
         if (!FixtureLabelList.Contains(label))
             return label;
-        var splits = label.Split(' ');
-        if (splits.Length == 1)
+        int idx;
+        if (!int.TryParse(label.Split(' ').Last(), out idx))
             label = $"{label} 1";
-        var intStr = label.Split(' ').Last();
-        int idx = 0;
-        if (int.TryParse(intStr, out idx))
-            while (FixtureLabelList.Contains(label))
-                label = $"{splits[0]} {idx++}";
+
+        var splits = label.Split(' ');
+        var baseName = "";
+        for (var i = 0; i < splits.Length - 1; i++)
+            baseName += $"{splits[i]} ";
+        while (FixtureLabelList.Contains(label))
+            label = $"{baseName}{idx++}";
+
         return label;
     }
     public static DmxOutputFixture LoadFixture(string label)

@@ -28,16 +28,18 @@ public class UIManager : MonoBehaviour
         editorView.BuildUI(editor);
 
         var outputUIList = new List<IDmxOutput>();
+        editorView.NoSelection();
         universeView.onSelectionChanged += (chList, outputList) =>
          {
              if(0 < outputList.Count)
              {
+                 editorView.DisplayOutputEditorUI();
                  var groups = outputList.GroupBy(o => (o.Type, o.Label));
                  foreach(var g in groups)
                  {
                      var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
                      uiList[0].AddMultiTargeUIs(uiList.Where(ui => ui != uiList[0]));
-                     editorView.Add(uiList[0]);
+                     editorView.AddOutputEditorUI(uiList[0].EditorUI);
                      uiList.ForEach(ui => controlView.Add(ui));
                  }
              }

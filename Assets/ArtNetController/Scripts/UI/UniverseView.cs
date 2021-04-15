@@ -65,36 +65,37 @@ public class UniverseView
         matrixSelector = view.Q<MatrixSelector>();
         var clearButton = view.Q<Button>("ClearButton");
 
-        (IDmxOutput output, int startCh, int endCh) GetChannelInfo(int ch) => outputList
-                .Select(o => (o, o.StartChannel, o.StartChannel + o.NumChannels - 1))
-                .FirstOrDefault(info => info.StartChannel <= ch && ch <= info.Item3);
 
         var selectElements = matrixSelector.Query("select-element").ToList();
-        var groups = selectElements.Select((vle, idx) =>
+        var groups = selectElements.Select((vle, ch) =>
         {
-            var info = GetChannelInfo(idx);
-            return (info.output, info.startCh, info.endCh, idx, vle);
-        }).Where(info =>
-        {
-            if (info.output == null)
+            var output = activeUniverse.GetChannelOutput(ch);
+            if (output == null)
             {
-                info.vle.AddToClassList("null-channel");
+                vle.AddToClassList("null-channel");
                 matrixSelector.onValueChanged += (idx, val) =>
                 {
-                    if (idx == info.idx)
+                    if (idx == ch)
                         if (val)
                             SelectChannel(idx);
                         else
                             ReleaseChannel(idx);
                 };
             }
-            return info.output != null;
-        }).GroupBy(info => info.output, info => (info.startCh, info.endCh, info.idx, info.vle));
+            else
+                vle.RemoveFromClassList("null-channel");
+            return (output, ch, vle);
+        }).Where(info => info.output != null)
+        .GroupBy(info => info.output, info => (
+            startCh: info.output.StartChannel,
+            endCh: info.output.StartChannel + info.output.NumChannels - 1,
+            info.ch, info.vle));
+
         foreach (var group in groups)
         {
             var output = group.Key;
-            group.FirstOrDefault(g => g.idx == g.startCh).vle.AddToClassList("start-channel");
-            group.FirstOrDefault(g => g.idx == g.endCh).vle.AddToClassList("end-channel");
+            group.First(g => g.ch == g.startCh).vle.AddToClassList("start-channel");
+            group.First(g => g.ch == g.endCh).vle.AddToClassList("end-channel");
             var start = output.StartChannel;
             var end = output.StartChannel + output.NumChannels - 1;
             matrixSelector.onValueChanged += (idx, val) =>
@@ -116,6 +117,7 @@ public class UniverseView
         }
         clearButton.clicked += Clear;
         Clear();
+        matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
     }
     void BuildInfoView()
     {
@@ -183,5 +185,4 @@ public class UniverseView
 
         return view;
     }
-
 }

@@ -24,7 +24,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
     {
         targetDmxOutput.BuildDefinitions();
         editorUI.Q<Label>("info-label").text =
-            $"Start Channel: {targetDmxOutput.StartChannel:000}\nNum Channels: {targetDmxOutput.NumChannels}";
+            $"Num Channels: {targetDmxOutput.NumChannels}";
     }
 
     void RebuildUIEditorUI()
@@ -57,13 +57,23 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 
         void SetLabel(string text)
         {
+            if (FixtureLibrary.FixtureLabelList.Contains(text))
+            {
+                labelField.SetValueWithoutNotify(targetDmxOutput.Label);
+                return;
+            }
             targetDmxOutput.Label = text;
+            foreach (var ui in multiEditUIs)
+            {
+                ui.targetDmxOutput.Label = text;
+                ui.onLabelChanged?.Invoke(text);
+            }
             label.text = targetDmxOutput.Label;
             onLabelChanged?.Invoke(text);
         }
-        SetLabel(targetDmxOutput.Label);
+        label.text = targetDmxOutput.Label;
         labelField.RegisterValueChangedCallback(evt => SetLabel(evt.newValue));
-        labelField.value = targetDmxOutput.Label;
+        labelField.SetValueWithoutNotify(targetDmxOutput.Label);
         labelField.isDelayed = true;
 
         UpdateStructures();

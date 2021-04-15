@@ -11,19 +11,19 @@
             <ui:VisualElement name="ChannelsView" style="padding-left: 4px; padding-top: 8px; flex-grow: 1; align-items: center;">
                 <ui:VisualElement style="flex-grow: 1; width: 90%;">
                     <ui:Label text="DMX Channels" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
-                    <MatrixSelector row="32" column="16" focusable="true" style="width: 100%; height: 90%;" />
+                    <MatrixSelector row="32" column="16" focusable="true" style="width: 100%; height: 90%; flex-shrink: 0; min-width: 1000px;" />
                     <ui:VisualElement style="flex-direction: row-reverse;">
                         <ui:Button text="Clear Selections" display-tooltip-when-elided="true" name="ClearButton" style="max-width: 240px; flex-grow: 1; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="UniverseInfo" style="border-left-width: 1px; border-left-color: rgb(128, 128, 128); background-color: rgb(115, 115, 115); border-top-left-radius: 5px; border-bottom-left-radius: 5px; border-top-right-radius: 5px; border-bottom-right-radius: 5px; width: 280px; margin-right: 5px;">
-                <ui:VisualElement name="Editable-Area">
+                <ui:VisualElement name="Editable-Area" style="flex-shrink: 0;">
                     <ui:Label text="Universe Info" display-tooltip-when-elided="true" style="flex-shrink: 1; -unity-text-align: upper-center; font-size: 18px; color: rgb(255, 255, 255); margin-top: 4px; margin-bottom: 8px;" />
                     <ui:TextField picking-mode="Ignore" label="Name" value="UniverseName" text="Universe Name" name="info-name" style="flex-wrap: wrap;" />
                     <ui:SliderInt picking-mode="Ignore" label="Universe" value="42" high-value="255" show-input-field="true" direction="Horizontal" name="info-universe" style="flex-wrap: wrap; flex-direction: column;" />
                 </ui:VisualElement>
-                <ui:VisualElement name="Controls" style="margin-top: 4px;">
+                <ui:VisualElement name="Controls" style="margin-top: 4px; flex-shrink: 0;">
                     <ui:Label text="DMX Controllers" display-tooltip-when-elided="true" style="-unity-text-align: upper-center;" />
                     <ui:ScrollView name="container" />
                 </ui:VisualElement>

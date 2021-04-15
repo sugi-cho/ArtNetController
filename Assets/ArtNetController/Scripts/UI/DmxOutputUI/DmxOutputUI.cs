@@ -42,8 +42,6 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         labelField.isDelayed = true;
         labelField.RegisterValueChangedCallback(evt =>
         {
-            if (FixtureLibrary.FixtureLabelList.Contains(evt.newValue))
-                return;
             targetDmxOutput.Label = evt.newValue;
             foreach (var ui in multiEditUIs)
             {
@@ -106,9 +104,9 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
     }
 
-    protected System.Action<string> onLabelChanged;
-    protected System.Action<bool> onUseFineChanged;
-    protected System.Action<int> onSizePropChanged;
+    internal System.Action<string> onLabelChanged;
+    internal System.Action<bool> onUseFineChanged;
+    internal System.Action<int> onSizePropChanged;
 }
 
 public abstract class DmxOutputUI

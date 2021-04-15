@@ -25,6 +25,9 @@ public class DmxOutputUniverse : IDmxOutput
             output.SetDmx(ref dmx);
     }
 
+    public bool IsEmpty(int ch) => GetChannelOutput(ch) == null;
+    public IDmxOutput GetChannelOutput(int ch) =>
+        OutputList.FirstOrDefault(o => o.StartChannel <= ch && ch <= o.StartChannel + o.NumChannels - 1);
     public List<IDmxOutput> OutputList
     {
         get

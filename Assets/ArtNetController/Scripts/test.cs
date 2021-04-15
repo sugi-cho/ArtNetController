@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class test : MonoBehaviour
 {
+    public List<string> list;
     public DmxOutputFixture fixture;
 
     [SerializeReference]

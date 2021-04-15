@@ -26,7 +26,7 @@ public enum DmxOutputType
 
 public static class DmxOutputUtility
 {
-    readonly static Dictionary<DmxOutputType, System.Type> TypeMap
+    public readonly static Dictionary<DmxOutputType, System.Type> TypeMap
         = new Dictionary<DmxOutputType, System.Type>
         {
             {DmxOutputType.Empty,typeof( DmxOutputEmpty)},
