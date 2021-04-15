@@ -41,6 +41,14 @@ public class UIManager : MonoBehaviour
                      uiList.ForEach(ui => controlView.Add(ui));
                  }
              }
+             else if (0 < chList.Count)
+             {
+                 editorView.EmptyChannelsView(chList);
+             }
+             else
+             {
+                 editorView.NoSelection();
+             }
          };
 
         var closed = false;
