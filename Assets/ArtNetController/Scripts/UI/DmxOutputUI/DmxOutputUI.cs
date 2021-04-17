@@ -15,7 +15,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
     internal T targetDmxOutput;
     public List<DmxOutputUI<T>> multiEditUIs = new List<DmxOutputUI<T>>();
     public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis) =>
-        multiEditUIs.AddRange((uis as IEnumerable<DmxOutputUI<T>>));
+        multiEditUIs.AddRange(uis.Select(ui => ui as DmxOutputUI<T>));
 
     string EditorUIBaseResourcePath => $"UI/DmxOutput/DmxOutput_Editor";
     internal string EditorUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Editor";

@@ -59,12 +59,12 @@ public class UniverseView
             BuildInfoView();
         };
     }
+
     void BuildChannelsView()
     {
         var view = channelsView;
         matrixSelector = view.Q<MatrixSelector>();
         var clearButton = view.Q<Button>("ClearButton");
-
 
         var selectElements = matrixSelector.Query("select-element").ToList();
         var groups = selectElements.Select((vle, ch) =>
@@ -86,16 +86,14 @@ public class UniverseView
                 vle.RemoveFromClassList("null-channel");
             return (output, ch, vle);
         }).Where(info => info.output != null)
-        .GroupBy(info => info.output, info => (
-            startCh: info.output.StartChannel,
-            endCh: info.output.StartChannel + info.output.NumChannels - 1,
-            info.ch, info.vle));
+        .GroupBy(info => info.output, info => (info.ch, info.vle));
 
         foreach (var group in groups)
         {
             var output = group.Key;
-            group.First(g => g.ch == g.startCh).vle.AddToClassList("start-channel");
-            group.First(g => g.ch == g.endCh).vle.AddToClassList("end-channel");
+            group.First(g => g.ch == output.StartChannel).vle.AddToClassList("start-channel");
+            group.First(g => g.ch == output.StartChannel + output.NumChannels - 1).vle.AddToClassList("end-channel");
+            group.ToList().ForEach(info => info.vle.AddToClassList("output"));
             var start = output.StartChannel;
             var end = output.StartChannel + output.NumChannels - 1;
             matrixSelector.onValueChanged += (idx, val) =>
@@ -143,7 +141,17 @@ public class UniverseView
             controllerContainer.Add(UniverseControllerView(output));
         }
     }
-
+    void ClearChannelSelections()
+    {
+        selectChannelList.ForEach(ch => matrixSelector.SetValue(ch, false, false, false));
+        selectChannelList.Clear();
+    }
+    void ClearOutputSelections()
+    {
+        selectOutputList.ForEach(output =>
+            matrixSelector.SetValueFromToWithoutNotify(output.StartChannel, output.StartChannel + output.NumChannels - 1, false));
+        selectOutputList.Clear();
+    }
     void ClearSelections()
     {
         selectChannelList.Clear();
@@ -154,6 +162,7 @@ public class UniverseView
     {
         if (!selectChannelList.Contains(channel))
             selectChannelList.Add(channel);
+        ClearOutputSelections();
     }
     void ReleaseChannel(int channel)
     {
@@ -164,6 +173,7 @@ public class UniverseView
     {
         if (!selectOutputList.Contains(output))
             selectOutputList.Add(output);
+        ClearChannelSelections();
     }
     void ReleaseOutput(IDmxOutput output)
     {

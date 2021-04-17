@@ -112,6 +112,7 @@ public class EditorView
         addFixtureView.style.display = DisplayStyle.None;
         newFixtureView.style.display = DisplayStyle.None;
         editorUIContainer.style.display = DisplayStyle.Flex;
+        editorUIContainer.Clear();
     }
     internal void AddOutputEditorUI(VisualElement outputEditorUI)
     {
