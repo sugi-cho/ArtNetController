@@ -66,6 +66,9 @@ public class UniverseView
         matrixSelector = view.Q<MatrixSelector>();
         var clearButton = view.Q<Button>("ClearButton");
 
+        matrixSelector.SetMatrix(32, 16);
+        matrixSelector.Dispose();
+
         var selectElements = matrixSelector.Query("select-element").ToList();
         var groups = selectElements.Select((vle, ch) =>
         {
@@ -73,6 +76,9 @@ public class UniverseView
             if (output == null)
             {
                 vle.AddToClassList("null-channel");
+                vle.RemoveFromClassList("start-channel");
+                vle.RemoveFromClassList("end-channel");
+                vle.RemoveFromClassList("output");
                 matrixSelector.onValueChanged += (idx, val) =>
                 {
                     if (idx == ch)

@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class MatrixSelector : VisualElement
+public class MatrixSelector : VisualElement, System.IDisposable
 {
     public new class UxmlFactory : UxmlFactory<MatrixSelector, UxmlTraits> { }
     public new class UxmlTraits : VisualElement.UxmlTraits
@@ -70,6 +70,7 @@ public class MatrixSelector : VisualElement
             }
         }
     }
+
     public void SetValueFromTo(int from, int to, bool value)
     {
         var minMax = (Mathf.Min(from, to), Mathf.Max(from, to));
@@ -106,6 +107,11 @@ public class MatrixSelector : VisualElement
 
     public event System.Action<int, bool> onValueChanged;
     public event System.Action onSelectComplete;
+    public void Dispose()
+    {
+        onValueChanged = null;
+        onSelectComplete = null;
+    }
 
     public MatrixSelector() : base()
     {
