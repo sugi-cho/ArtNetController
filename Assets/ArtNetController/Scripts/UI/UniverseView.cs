@@ -9,7 +9,6 @@ public class UniverseView
 {
     UniverseManager universeManager => UniverseManager.Instance;
     DmxOutputUniverse activeUniverse => universeManager.ActiveUniverse;
-    List<IDmxOutput> outputList => universeManager.ActiveUniverse.OutputList;
 
     VisualElement tabView;
     VisualElement channelsView;
@@ -39,24 +38,24 @@ public class UniverseView
         var tabGroup = view.Q<RadioButtonGroup>("TabGroup");
         var newButton = view.Q<Button>("new-button");
 
-        tabGroup.choices = universeManager.Universes.Select(u => u.Label);
-        tabGroup.SetValueWithoutNotify(universeManager.ActiveUniverseIdx);
+        void SetTabChoices()
+        {
+            tabGroup.choices = universeManager.Universes.Select(u => u.Label);
+            tabGroup.SetValueWithoutNotify(universeManager.ActiveUniverseIdx);
+        }
+        void ResetChoices(string dummy) => SetTabChoices();
+        SetTabChoices();
         tabGroup.RegisterValueChangedCallback(evt =>
         {
+            activeUniverse.onLabelChanged -= ResetChoices;
             universeManager.ActiveUniverseIdx = evt.newValue;
-
-            BuildChannelsView();
-            BuildInfoView();
+            activeUniverse.onLabelChanged += ResetChoices;
         });
         newButton.clicked += () =>
         {
             universeManager.CreateUniverse();
             universeManager.ActiveUniverseIdx = universeManager.Universes.Count - 1;
-            tabGroup.choices = universeManager.Universes.Select(u => u.Label);
-            tabGroup.SetValueWithoutNotify(universeManager.ActiveUniverseIdx);
-
-            BuildChannelsView();
-            BuildInfoView();
+            SetTabChoices();
         };
     }
 
@@ -66,59 +65,73 @@ public class UniverseView
         matrixSelector = view.Q<MatrixSelector>();
         var clearButton = view.Q<Button>("ClearButton");
 
-        matrixSelector.SetMatrix(32, 16);
-        matrixSelector.Dispose();
-
-        var selectElements = matrixSelector.Query("select-element").ToList();
-        var groups = selectElements.Select((vle, ch) =>
+        void SetupMatrixSelector()
         {
-            var output = activeUniverse.GetChannelOutput(ch);
-            if (output == null)
+            matrixSelector.SetMatrix(32, 16);
+            matrixSelector.Dispose();
+
+            var selectElements = matrixSelector.Query("select-element").ToList();
+            var groups = selectElements.Select((vle, ch) =>
             {
-                vle.AddToClassList("null-channel");
-                vle.RemoveFromClassList("start-channel");
-                vle.RemoveFromClassList("end-channel");
-                vle.RemoveFromClassList("output");
+                var output = activeUniverse.GetChannelOutput(ch);
+                if (output == null)
+                {
+                    vle.AddToClassList("null-channel");
+                    vle.RemoveFromClassList("start-channel");
+                    vle.RemoveFromClassList("end-channel");
+                    vle.RemoveFromClassList("output");
+                    vle.style.backgroundColor = UIConfig.GetTypeColor(DmxOutputType.Empty);
+                    matrixSelector.onValueChanged += (idx, val) =>
+                    {
+                        if (idx == ch)
+                            if (val)
+                                SelectChannel(idx);
+                            else
+                                ReleaseChannel(idx);
+                    };
+                }
+                else
+                    vle.RemoveFromClassList("null-channel");
+                return (output, ch, vle);
+            }).Where(info => info.output != null)
+            .GroupBy(info => info.output, info => (info.ch, info.vle));
+
+            foreach (var group in groups)
+            {
+                var output = group.Key;
+                group.First(g => g.ch == output.StartChannel).vle.AddToClassList("start-channel");
+                group.First(g => g.ch == output.StartChannel + output.NumChannels - 1).vle.AddToClassList("end-channel");
+                group.ToList().ForEach(info =>
+                {
+                    info.vle.AddToClassList("output");
+                    info.vle.style.backgroundColor = UIConfig.GetTypeColor(output.Type);
+                });
+                var start = output.StartChannel;
+                var end = output.StartChannel + output.NumChannels - 1;
                 matrixSelector.onValueChanged += (idx, val) =>
                 {
-                    if (idx == ch)
+                    if (start <= idx && idx <= end)
+                    {
+                        matrixSelector.SetValueFromToWithoutNotify(start, end, val);
                         if (val)
-                            SelectChannel(idx);
+                            SelectOutput(output);
                         else
-                            ReleaseChannel(idx);
+                            ReleaseOutput(output);
+                    }
                 };
             }
-            else
-                vle.RemoveFromClassList("null-channel");
-            return (output, ch, vle);
-        }).Where(info => info.output != null)
-        .GroupBy(info => info.output, info => (info.ch, info.vle));
-
-        foreach (var group in groups)
-        {
-            var output = group.Key;
-            group.First(g => g.ch == output.StartChannel).vle.AddToClassList("start-channel");
-            group.First(g => g.ch == output.StartChannel + output.NumChannels - 1).vle.AddToClassList("end-channel");
-            group.ToList().ForEach(info => info.vle.AddToClassList("output"));
-            var start = output.StartChannel;
-            var end = output.StartChannel + output.NumChannels - 1;
-            matrixSelector.onValueChanged += (idx, val) =>
-            {
-                if (start <= idx && idx <= end)
-                {
-                    matrixSelector.SetValueFromToWithoutNotify(start, end, val);
-                    if (val)
-                        SelectOutput(output);
-                    else
-                        ReleaseOutput(output);
-                }
-            };
         }
+        universeManager.onActiveUniverseChanged += univ => SetupMatrixSelector();
+        activeUniverse.onEditOutputList += list => SetupMatrixSelector();
+        SetupMatrixSelector();
+
+
         void Clear()
         {
             matrixSelector.SetAllValues(false);
             ClearSelections();
         }
+        clearButton.clicked -= Clear;
         clearButton.clicked += Clear;
         Clear();
         matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
@@ -131,21 +144,28 @@ public class UniverseView
         var controllerContainer = view.Q("container");
         var saveButton = view.Q<Button>("save-button");
 
-        nameField.value = activeUniverse.Label;
-        nameField.RegisterValueChangedCallback(evt => activeUniverse.Label = evt.newValue);
-        universeField.value = activeUniverse.Universe;
-        universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = evt.newValue);
-        saveButton.clicked += () =>
+        void SetupInfoFields(DmxOutputUniverse universe)
         {
-            universeManager.SaveUniverse(activeUniverse);
-            BuildTabView();
-        };
-
-        controllerContainer.Clear();
-        foreach (var output in outputList)
-        {
-            controllerContainer.Add(UniverseControllerView(output));
+            nameField.value = universe.Label;
+            universeField.value = universe.Universe;
         }
+        universeManager.onActiveUniverseChanged += SetupInfoFields;
+        SetupInfoFields(activeUniverse);
+        nameField.RegisterValueChangedCallback(evt => activeUniverse.Label = evt.newValue);
+        universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = evt.newValue);
+
+        void SetupControllerContainer(List<IDmxOutput> outputList)
+        {
+            controllerContainer.Clear();
+            foreach (var output in outputList)
+                controllerContainer.Add(UniverseControllerView(output));
+        }
+        universeManager.onActiveUniverseChanged += univ => SetupControllerContainer(univ.OutputList);
+        activeUniverse.onEditOutputList += SetupControllerContainer;
+        SetupControllerContainer(activeUniverse.OutputList);
+
+        saveButton.clicked += () =>
+            universeManager.SaveUniverse(activeUniverse);
     }
     void ClearChannelSelections()
     {
@@ -179,12 +199,14 @@ public class UniverseView
     {
         if (!selectOutputList.Contains(output))
             selectOutputList.Add(output);
+        matrixSelector.SetValueFromToWithoutNotify(output.StartChannel, output.StartChannel + output.NumChannels - 1, true);
         ClearChannelSelections();
     }
     void ReleaseOutput(IDmxOutput output)
     {
         if (selectOutputList.Contains(output))
             selectOutputList.Remove(output);
+        matrixSelector.SetValueFromToWithoutNotify(output.StartChannel, output.StartChannel + output.NumChannels - 1, false);
     }
     VisualElement UniverseControllerView(IDmxOutput output)
     {
@@ -195,9 +217,43 @@ public class UniverseView
         var label = view.Q<Label>("info-label");
         var removeButton = view.Q<Button>("remove-button");
 
+        bool selected = false;
+
         chField.value = output.StartChannel.ToString();
         label.text = output.Label;
         removeButton.clicked += () => activeUniverse.RemoveModule(output);
+        view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));
+
+        void Select(bool select)
+        {
+            if (select)
+            {
+                view.AddToClassList("selected");
+                SelectOutput(output);
+            }
+            else
+            {
+                view.RemoveFromClassList("selected");
+                ReleaseOutput(output);
+            }
+            selected = select;
+        }
+        view.RegisterCallback<PointerUpEvent>(evt =>
+        {
+            if (view.HasPointerCapture(evt.pointerId))
+            {
+                Select(!selected);
+                onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
+                view.ReleasePointer(evt.pointerId);
+            }
+        });
+        void OnSelectionChanged(List<int> cs, List<IDmxOutput> os)
+        {
+            var select = os.Contains(output);
+            Select(select);
+        }
+        onSelectionChanged += OnSelectionChanged;
+        view.RegisterCallback<DetachFromPanelEvent>(evt => onSelectionChanged -= OnSelectionChanged);
 
         return view;
     }

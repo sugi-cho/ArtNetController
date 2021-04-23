@@ -5,8 +5,26 @@ using UnityEngine;
 public class DmxOutputFloat : IDmxOutput, IUseFine
 {
     public DmxOutputType Type => DmxOutputType.Float;
-    public string Label { get; set; }
-    public bool UseFine { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
+    public bool UseFine
+    {
+        get => m_useFine; set
+        {
+            m_useFine = value;
+            onUseFineChanged?.Invoke(value);
+        }
+    }
+    bool m_useFine;
+    public event System.Action<bool> onUseFineChanged;
     public int StartChannel { get; set; }
     public int NumChannels => UseFine ? 2 : 1;
 
@@ -28,7 +46,16 @@ public class DmxOutputFloat : IDmxOutput, IUseFine
 public class DmxOutputInt : IDmxOutput
 {
     public DmxOutputType Type => DmxOutputType.Int;
-    public string Label { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
@@ -41,11 +68,29 @@ public class DmxOutputInt : IDmxOutput
 public class DmxOutputSelector : IDmxOutput, ISizeProp
 {
     public DmxOutputType Type => DmxOutputType.Selector;
-    public string Label { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
-    public int SizeProp { get; set; }
+    public int SizeProp
+    {
+        get => m_size; set
+        {
+            m_size = value;
+            onSizePropChanged?.Invoke(value);
+        }
+    }
+    int m_size;
+    public event System.Action<int> onSizePropChanged;
     public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, SizeProp - 1); }
     int m_value;
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / SizeProp * 255);
@@ -56,7 +101,16 @@ public class DmxOutputSelector : IDmxOutput, ISizeProp
 public class DmxOutputBool : IDmxOutput
 {
     public DmxOutputType Type => DmxOutputType.Bool;
-    public string Label { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
@@ -69,7 +123,16 @@ public class DmxOutputBool : IDmxOutput
 public class DmxOutputXY : IDmxOutput, IUseFine
 {
     public DmxOutputType Type => DmxOutputType.XY;
-    public string Label { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
     public DmxOutputXY()
     {
         dmxOutputX = new DmxOutputFloat();
@@ -87,8 +150,10 @@ public class DmxOutputXY : IDmxOutput, IUseFine
         {
             dmxOutputX.UseFine = dmxOutputY.UseFine = value;
             StartChannel = (dmxOutputs[0].StartChannel);
+            onUseFineChanged?.Invoke(value);
         }
     }
+    public event System.Action<bool> onUseFineChanged;
     public int StartChannel
     {
         get => dmxOutputs[0].StartChannel;
@@ -127,7 +192,16 @@ public class DmxOutputXY : IDmxOutput, IUseFine
 public class DmxOutputColor : IDmxOutput, IUseFine
 {
     public DmxOutputType Type => DmxOutputType.Color;
-    public string Label { get; set; }
+    public string Label
+    {
+        get => m_label; set
+        {
+            m_label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
+    string m_label;
+    public event System.Action<string> onLabelChanged;
     public DmxOutputColor()
     {
         dmxOutputR = new DmxOutputFloat();
@@ -147,8 +221,10 @@ public class DmxOutputColor : IDmxOutput, IUseFine
         {
             dmxOutputR.UseFine = dmxOutputG.UseFine = dmxOutputB.UseFine = value;
             StartChannel = dmxOutputs[0].StartChannel;
+            onUseFineChanged?.Invoke(value);
         }
     }
+    public event System.Action<bool> onUseFineChanged;
 
     public int StartChannel
     {
@@ -188,8 +264,18 @@ public class DmxOutputColor : IDmxOutput, IUseFine
 public class DmxOutputEmpty : IDmxOutput, ISizeProp
 {
     public DmxOutputType Type => DmxOutputType.Empty;
+    public event System.Action<string> onLabelChanged;
     public string Label { get => $"Empty_{SizeProp}"; set { } }
-    public int SizeProp { get; set; }
+    public int SizeProp
+    {
+        get => m_size; set
+        {
+            m_size = value;
+            onSizePropChanged?.Invoke(value);
+        }
+    }
+    int m_size;
+    public event System.Action<int> onSizePropChanged;
     public int StartChannel { get; set; }
     public int NumChannels => SizeProp;
     public void SetDmx(ref byte[] dmx) =>

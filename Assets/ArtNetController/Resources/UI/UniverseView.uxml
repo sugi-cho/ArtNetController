@@ -25,7 +25,7 @@
                 </ui:VisualElement>
                 <ui:VisualElement name="Controls" style="margin-top: 4px; flex-shrink: 0;">
                     <ui:Label text="DMX Controllers" display-tooltip-when-elided="true" style="-unity-text-align: upper-center;" />
-                    <ui:ScrollView name="container" />
+                    <ui:ScrollView name="container" style="max-height: 520px; margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px;" />
                 </ui:VisualElement>
                 <ui:VisualElement style="flex-direction: row; margin-top: auto;">
                     <ui:Button text="Save Universe" display-tooltip-when-elided="true" name="save-button" style="margin-left: auto; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />

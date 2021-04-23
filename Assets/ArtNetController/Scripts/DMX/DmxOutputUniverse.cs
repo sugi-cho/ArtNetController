@@ -5,8 +5,18 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputUniverse : IDmxOutput
 {
+    public event System.Action<List<IDmxOutput>> onEditOutputList;
+    public event System.Action<string> onLabelChanged;
+
     public DmxOutputType Type => DmxOutputType.Universe;
-    public string Label { get => label; set => label = value; }
+    public string Label
+    {
+        get => label; set
+        {
+            label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
     [SerializeField] string label;
     public int Universe { get => universe; set => universe = value; }
     [SerializeField] int universe;
@@ -45,6 +55,7 @@ public class DmxOutputUniverse : IDmxOutput
         if (dmxOutputDefinitions != null)
             m_outputList = dmxOutputDefinitions
                 .Select(d => DmxOutputUtility.CreateDmxOutput(d))
+                .OrderBy(o => o.StartChannel)
                 .ToList();
         if (m_outputList == null)
             m_outputList = new List<IDmxOutput>();
@@ -54,11 +65,13 @@ public class DmxOutputUniverse : IDmxOutput
     {
         OutputList.Add(module);
         BuildDefinitions();
+        onEditOutputList?.Invoke(OutputList);
     }
     public void RemoveModule(IDmxOutput module)
     {
         OutputList.Remove(module);
         BuildDefinitions();
+        onEditOutputList?.Invoke(OutputList);
     }
     void BuildDefinitions()
     {

@@ -6,8 +6,6 @@ using UnityEngine.UIElements;
 public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 {
     public DmxOutputFixtureUI(DmxOutputFixture dmxOutput) : base(dmxOutput) { }
-
-    public DmxOutputUniverse TargetUniverse { get; set; }
     List<DmxOutputUI> DmxOutputUIList
     {
         get
@@ -66,10 +64,8 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             foreach (var ui in multiEditUIs)
             {
                 ui.targetDmxOutput.Label = text;
-                ui.onLabelChanged?.Invoke(text);
             }
             label.text = targetDmxOutput.Label;
-            onLabelChanged?.Invoke(text);
         }
         label.text = targetDmxOutput.Label;
         labelField.RegisterValueChangedCallback(evt => SetLabel(evt.newValue));
@@ -89,7 +85,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
                 RebuildUIEditorUI();
                 RebuildControlUI();
             };
-            dmxOutputUI.onValueChanged += UpdateStructures;
+            (dmxOutputUI as DmxOutputUI<IDmxOutput>).targetDmxOutput.onLabelChanged += (val) => UpdateStructures();
         }
 
         dropdownEdit.onValueCanged += (val) =>
@@ -115,11 +111,8 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
     protected override void BuildControlUI()
     {
         base.BuildControlUI();
-        var label = controlUI.Q<Label>();
         var uiContainer = controlUI.Q("output-container");
 
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
         for (var i = 0; i < DmxOutputUIList.Count; i++)
         {
             var dmxOutputUI = DmxOutputUIList[i];

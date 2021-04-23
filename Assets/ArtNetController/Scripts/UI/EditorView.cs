@@ -92,8 +92,9 @@ public class EditorView
             {
                 var output = DmxOutputUtility.CreateDmxOutput(definition);
                 output.StartChannel = ch;
-                if (Enumerable.Range(ch, ch += output.NumChannels - 1).All(idx => activeUniverse.IsEmpty(idx)))
+                if (Enumerable.Range(ch, output.NumChannels).All(idx => activeUniverse.IsEmpty(idx)))
                     activeUniverse.AddModule(output);
+                ch += output.NumChannels;
             }
             onUniverseModified?.Invoke();
         };
@@ -103,7 +104,41 @@ public class EditorView
         sizePropField.SetEnabled(false);
         addButton.SetEnabled(false);
     }
-    void BuildAddFixtureView() { }
+    void BuildAddFixtureView()
+    {
+        var view = addFixtureView;
+        var fixtureSelectField = view.Q<EditableDropdownField>();
+        var addButton = view.Q<Button>("add-button");
+
+        void SetChoices()
+        {
+            fixtureSelectField.ClearChoices();
+            fixtureSelectField.AddChoices(new[] { "Select Fixture..." });
+            fixtureSelectField.AddChoices(FixtureLibrary.FixtureLabelList);
+        }
+        SetChoices();
+
+        fixtureSelectField.onValueCanged += val => addButton.SetEnabled(FixtureLibrary.FixtureLabelList.Contains(val));
+
+        addButton.clicked += () =>
+        {
+            var label = "";
+            var ch = activeChannels[0];
+            if (FixtureLibrary.FixtureLabelList.Contains(label = fixtureSelectField.Value))
+            {
+                while (activeChannels.Contains(ch))
+                {
+                    var output = FixtureLibrary.LoadFixture(label);
+                    output.StartChannel = ch;
+                    if (Enumerable.Range(ch, output.NumChannels).All(idx => activeUniverse.IsEmpty(idx)))
+                        activeUniverse.AddModule(output);
+                    ch += output.NumChannels;
+                }
+            }
+        };
+
+        FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
+    }
 
 
     internal void DisplayOutputEditorUI()

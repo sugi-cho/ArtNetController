@@ -14,9 +14,6 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
         var valueVisualizes = controlUI.Query("value").ToList();
         var textFields = controlUI.Query<TextField>().ToList();
 
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
-
         void SetValue(Color color)
         {
             for (var i = 0; i < 3; i++)

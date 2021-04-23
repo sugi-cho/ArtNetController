@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/DmxOutputUI.uss" />
-    <ui:VisualElement name="universe-controller" style="flex-direction: row; justify-content: space-between; background-color: rgba(77, 77, 77, 255); padding-left: 4px; padding-right: 4px; padding-top: 2px; padding-bottom: 2px; border-top-left-radius: 8px; border-bottom-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; align-items: center;">
+    <ui:VisualElement name="universe-controller" style="flex-direction: row; justify-content: space-between; background-color: rgb(102, 102, 102); padding-left: 4px; padding-right: 4px; padding-top: 0; padding-bottom: 0; border-top-left-radius: 8px; border-bottom-left-radius: 8px; border-top-right-radius: 8px; border-bottom-right-radius: 8px; align-items: center; margin-left: 2px; margin-right: 2px; margin-top: 2px; margin-bottom: 2px;">
         <ui:Label text="ch." display-tooltip-when-elided="true" name="info-channel-label" />
         <ui:TextField picking-mode="Ignore" value="filler text" name="info-channel__input" style="width: 32px;" />
         <ui:Label text="Color" display-tooltip-when-elided="true" name="info-label" style="flex-grow: 1;" />
-        <ui:Button text="X" display-tooltip-when-elided="true" name="remove-button" style="width: 18px; height: 18px; border-top-left-radius: 9px; border-bottom-left-radius: 9px; border-top-right-radius: 9px; border-bottom-right-radius: 9px; background-color: rgba(118, 19, 19, 255);" />
+        <ui:Button text="X" display-tooltip-when-elided="true" name="remove-button" style="width: 18px; height: 18px; border-top-left-radius: 9px; border-bottom-left-radius: 9px; border-top-right-radius: 9px; border-bottom-right-radius: 9px; background-color: rgb(118, 19, 19); color: rgba(153, 153, 153, 255);" />
     </ui:VisualElement>
 </ui:UXML>

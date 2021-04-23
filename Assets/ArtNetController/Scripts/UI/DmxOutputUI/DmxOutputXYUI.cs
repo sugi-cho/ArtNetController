@@ -9,12 +9,9 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
     {
         base.BuildControlUI();
 
-        var label = controlUI.Q<Label>();
         var xyPad = controlUI.Q<XYPad>();
         var textFields = controlUI.Query<TextField>().ToList();
 
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
         xyPad.onValueChanged += (v2) =>
         {
             for (var i = 0; i < 2; i++)

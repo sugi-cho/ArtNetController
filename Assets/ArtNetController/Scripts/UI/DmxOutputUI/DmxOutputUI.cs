@@ -46,22 +46,15 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             foreach (var ui in multiEditUIs)
             {
                 ui.targetDmxOutput.Label = evt.newValue;
-                ui.onLabelChanged?.Invoke(evt.newValue);
             }
             labelField.SetValueWithoutNotify(targetDmxOutput.Label);
-            onValueChanged?.Invoke();
-            onLabelChanged?.Invoke(targetDmxOutput.Label);
         });
 
         if (useFine != null)
         {
             fineToggle.value = useFine.UseFine;
             fineToggle.RegisterValueChangedCallback(evt =>
-            {
-                useFine.UseFine = evt.newValue;
-                onValueChanged?.Invoke();
-                onUseFineChanged?.Invoke(useFine.UseFine);
-            });
+                useFine.UseFine = evt.newValue);
             if (0 < multiEditUIs.Count)
                 fineToggle.SetEnabled(false);
         }
@@ -78,13 +71,8 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 {
                     sizeProp.SizeProp = size;
                     foreach (var ui in multiEditUIs)
-                    {
                         (ui.targetDmxOutput as ISizeProp).SizeProp = size;
-                        ui.onSizePropChanged?.Invoke(size);
-                    }
                     labelField.value = targetDmxOutput.Label;
-                    onValueChanged?.Invoke();
-                    onSizePropChanged?.Invoke(size);
                 }
                 else
                     sizeField.SetValueWithoutNotify(evt.previousValue);
@@ -102,11 +90,13 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         controlUI = tree?.CloneTree("");
         if (controlUI == null)
             Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
-    }
 
-    internal System.Action<string> onLabelChanged;
-    internal System.Action<bool> onUseFineChanged;
-    internal System.Action<int> onSizePropChanged;
+        var label = controlUI.Q<Label>();
+        label.text = targetDmxOutput.Label;
+        void OnLabelChanged(string val) => label.text = val;
+        targetDmxOutput.onLabelChanged += OnLabelChanged;
+        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => targetDmxOutput.onLabelChanged -= OnLabelChanged);
+    }
 }
 
 public abstract class DmxOutputUI
@@ -145,5 +135,4 @@ public abstract class DmxOutputUI
     public VisualElement ControlUI => controlUI;
 
     public System.Action onRemoveButtonClicked;
-    public System.Action onValueChanged;
 }

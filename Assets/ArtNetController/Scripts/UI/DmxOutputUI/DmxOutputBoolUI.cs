@@ -9,7 +9,6 @@ public class DmxOutputBoolUI : DmxOutputUI<DmxOutputBool>
     {
         base.BuildControlUI();
 
-        var label = controlUI.Q<Label>();
         var area = controlUI.Q("input-area");
         var toggle = controlUI.Q("toggle-switch");
         var trigger = controlUI.Q("trigger");
@@ -31,8 +30,6 @@ public class DmxOutputBoolUI : DmxOutputUI<DmxOutputBool>
             textField.value = (val ? 255 : 0).ToString();
         }
 
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
 
         toggle.RegisterCallback<PointerUpEvent>(evt => SetValue(!targetDmxOutput.Value));
         trigger.RegisterCallback<PointerDownEvent>(evt =>

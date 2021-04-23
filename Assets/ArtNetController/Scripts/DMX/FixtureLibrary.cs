@@ -6,6 +6,8 @@ using UnityEngine;
 
 public static class FixtureLibrary
 {
+    public static event System.Action OnFixtureLabelListLoaded;
+
     public static List<string> FixtureLabelList
     {
         get
@@ -29,6 +31,7 @@ public static class FixtureLibrary
             var label = Path.GetFileNameWithoutExtension(path);
             m_fixtureLabelList.Add(label);
         }
+        OnFixtureLabelListLoaded?.Invoke();
     }
     public static DmxOutputFixture CreateFixture()
     {

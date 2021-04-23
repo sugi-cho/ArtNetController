@@ -32,6 +32,7 @@ public class EditableDropdownField : VisualElement
         m_dropdownField.value = m_choices[m_dropdownField.index];
     }
     DropdownField m_dropdownField;
+    public string Value => m_dropdownField.value;
 
     public EditableDropdownField()
     {

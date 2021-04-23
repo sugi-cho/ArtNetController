@@ -5,10 +5,20 @@ using UnityEngine;
 [System.Serializable]
 public class DmxOutputFixture : IDmxOutput
 {
+    public event System.Action<List<IDmxOutput>> onEditOutputList;
+    public event System.Action<string> onLabelChanged;
+
     public string FilePath { get; set; }
     public DmxOutputType Type => DmxOutputType.Fixture;
     #region IDmxOutput
-    public string Label { get => label; set => label = value; }
+    public string Label
+    {
+        get => label; set
+        {
+            label = value;
+            onLabelChanged?.Invoke(value);
+        }
+    }
     [SerializeField] string label;
     public int StartChannel
     {
@@ -60,11 +70,13 @@ public class DmxOutputFixture : IDmxOutput
     public void AddModule(IDmxOutput module)
     {
         OutputList.Add(module);
+        onEditOutputList?.Invoke(m_outputList);
         BuildDefinitions();
     }
     public void RemoveModule(IDmxOutput module)
     {
         OutputList.Remove(module);
+        onEditOutputList?.Invoke(m_outputList);
         BuildDefinitions();
     }
     public void BuildDefinitions()

@@ -8,13 +8,9 @@ public class DmxOutputFloatUI : DmxOutputUI<DmxOutputFloat>
     {
         base.BuildControlUI();
 
-        var label = controlUI.Q<Label>();
         var inputArea = controlUI.Q("input-area");
         var valueVisualize = controlUI.Q("value");
         var textField = controlUI.Q<TextField>();
-
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
 
         void SetValue(float value)
         {

@@ -8,15 +8,15 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
     {
         base.BuildControlUI();
 
-        var label = controlUI.Q<Label>();
         var selector = controlUI.Q<IntSelector>();
         var textField = controlUI.Q<TextField>();
 
-        label.text = targetDmxOutput.Label;
-        onLabelChanged += (val) => label.text = val;
         selector.style.flexDirection = FlexDirection.ColumnReverse;
         selector.NumChoices = targetDmxOutput.SizeProp;
-        onSizePropChanged += (val) => selector.NumChoices = val;
+        void SetSelectorSize(int size) => selector.NumChoices = size;
+        targetDmxOutput.onSizePropChanged += SetSelectorSize;
+        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => targetDmxOutput.onSizePropChanged -= SetSelectorSize);
+
         selector.onValueChanged += (val) =>
         {
             targetDmxOutput.Value = val;

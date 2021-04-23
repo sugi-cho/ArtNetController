@@ -9,7 +9,7 @@
             <ui:VisualElement name="UniverseView" style="flex-grow: 1;">
                 <ui:Instance template="UniverseView" name="UniverseView" style="flex-grow: 1;" />
             </ui:VisualElement>
-            <ui:VisualElement name="ControlView" style="min-height: 240px; flex-direction: column; height: 364px;">
+            <ui:VisualElement name="ControlView" style="min-height: 240px; flex-direction: column; height: 364px; flex-shrink: 0;">
                 <ui:Instance template="ControlView" name="ControlView" style="flex-grow: 1;" />
             </ui:VisualElement>
         </ui:VisualElement>
