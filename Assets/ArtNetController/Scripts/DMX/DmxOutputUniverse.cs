@@ -44,6 +44,7 @@ public class DmxOutputUniverse : IDmxOutput
         {
             if (!m_initialized)
                 Initialize();
+            m_outputList.Sort((a, b) => a.StartChannel - b.StartChannel);
             return m_outputList;
         }
     }
@@ -75,7 +76,7 @@ public class DmxOutputUniverse : IDmxOutput
     }
     void BuildDefinitions()
     {
-        OutputList.Sort((a, b) => b.StartChannel - a.StartChannel);
+        OutputList.Sort((a, b) => a.StartChannel - b.StartChannel);
         dmxOutputDefinitions = OutputList
             .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
             .ToArray();

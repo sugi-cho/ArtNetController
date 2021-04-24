@@ -143,6 +143,7 @@ public class EditorView
 
     internal void DisplayOutputEditorUI()
     {
+        Debug.Log("output editor");
         addOutputView.style.display = DisplayStyle.None;
         addFixtureView.style.display = DisplayStyle.None;
         newFixtureView.style.display = DisplayStyle.None;
@@ -155,6 +156,7 @@ public class EditorView
     }
     internal void EmptyChannelsView(List<int> chList)
     {
+        Debug.Log("empty");
         activeChannels = chList;
         activeChannels.Sort();
         addOutputView.style.display = DisplayStyle.Flex;
@@ -166,6 +168,7 @@ public class EditorView
     }
     internal void NoSelection()
     {
+        Debug.Log("no selection");
         newFixtureView.style.display = DisplayStyle.Flex;
         editorUIContainer.style.display = DisplayStyle.None;
         addOutputView.SetEnabled(false);

@@ -30,12 +30,13 @@ public class UIManager : MonoBehaviour
         var outputUIList = new List<IDmxOutput>();
         editorView.NoSelection();
         universeView.onSelectionChanged += (chList, outputList) =>
-         {
-             if(0 < outputList.Count)
+        {
+            Debug.Log("changed");
+             if (0 < outputList.Count)
              {
                  editorView.DisplayOutputEditorUI();
                  var groups = outputList.GroupBy(o => (o.Type, o.Label));
-                 foreach(var g in groups)
+                 foreach (var g in groups)
                  {
                      var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
                      uiList[0].AddMultiTargeUIs(uiList.Where(ui => ui != uiList[0]));
@@ -51,7 +52,7 @@ public class UIManager : MonoBehaviour
              {
                  editorView.NoSelection();
              }
-         };
+        };
 
         var closed = false;
         editorCloseButton.RegisterCallback<PointerDownEvent>(evt =>

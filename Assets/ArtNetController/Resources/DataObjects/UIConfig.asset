@@ -10,6 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0b53758528aad8498bc01571b5a7674, type: 3}
-  m_Name: newUIConfig
+  m_Name: UIConfig
   m_EditorClassIdentifier: 
-  typeColors: []
+  typeColors:
+  - type: 0
+    color: {r: 0.4, g: 0.4, b: 0.4, a: 1}
+  - type: 1
+    color: {r: 0.6, g: 0.3, b: 0.3, a: 1}
+  - type: 2
+    color: {r: 0.6, g: 0.5, b: 0.3, a: 1}
+  - type: 3
+    color: {r: 0.50000006, g: 0.6, b: 0.3, a: 1}
+  - type: 4
+    color: {r: 0.3, g: 0.6, b: 0.3, a: 1}
+  - type: 5
+    color: {r: 0.3, g: 0.6, b: 0.50000006, a: 1}
+  - type: 6
+    color: {r: 0.3, g: 0.5000001, b: 0.6, a: 1}
+  - type: 7
+    color: {r: 0.3, g: 0.3, b: 0.6, a: 1}
+  - type: 8
+    color: {r: 0.49999997, g: 0.3, b: 0.6, a: 1}

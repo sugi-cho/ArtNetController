@@ -15,8 +15,8 @@ public class UniverseView
     VisualElement infoView;
 
     MatrixSelector matrixSelector;
-    List<int> selectChannelList;
-    List<IDmxOutput> selectOutputList;
+    [SerializeField] List<int> selectChannelList;
+    [SerializeReference] List<IDmxOutput> selectOutputList;
 
     public event System.Action<List<int>, List<IDmxOutput>> onSelectionChanged;
 
@@ -120,11 +120,11 @@ public class UniverseView
                     }
                 };
             }
+            matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
         }
         universeManager.onActiveUniverseChanged += univ => SetupMatrixSelector();
         activeUniverse.onEditOutputList += list => SetupMatrixSelector();
         SetupMatrixSelector();
-
 
         void Clear()
         {
@@ -134,7 +134,6 @@ public class UniverseView
         clearButton.clicked -= Clear;
         clearButton.clicked += Clear;
         Clear();
-        matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
     }
     void BuildInfoView()
     {
@@ -213,15 +212,21 @@ public class UniverseView
         var tree = Resources.Load<VisualTreeAsset>("UI/DmxOutput/UniverseControllerView");
         var view = tree.CloneTree("");
 
+        var area = view.Q("universe-controller");
         var chField = view.Q<TextField>("info-channel__input");
         var label = view.Q<Label>("info-label");
         var removeButton = view.Q<Button>("remove-button");
 
         bool selected = false;
 
+        area.style.backgroundColor = UIConfig.GetTypeColor(output.Type);
         chField.value = output.StartChannel.ToString();
         label.text = output.Label;
-        removeButton.clicked += () => activeUniverse.RemoveModule(output);
+        removeButton.clicked += () =>
+        {
+            activeUniverse.RemoveModule(output);
+            ReleaseOutput(output);
+        };
         view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));
 
         void Select(bool select)

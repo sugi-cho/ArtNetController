@@ -4,6 +4,6 @@
         <ui:Label text="ch." display-tooltip-when-elided="true" name="info-channel-label" />
         <ui:TextField picking-mode="Ignore" value="filler text" name="info-channel__input" style="width: 32px;" />
         <ui:Label text="Color" display-tooltip-when-elided="true" name="info-label" style="flex-grow: 1;" />
-        <ui:Button text="X" display-tooltip-when-elided="true" name="remove-button" style="width: 18px; height: 18px; border-top-left-radius: 9px; border-bottom-left-radius: 9px; border-top-right-radius: 9px; border-bottom-right-radius: 9px; background-color: rgb(118, 19, 19); color: rgba(153, 153, 153, 255);" />
+        <ui:Button text="X" display-tooltip-when-elided="true" name="remove-button" style="width: 18px; height: 18px; border-top-left-radius: 9px; border-bottom-left-radius: 9px; border-top-right-radius: 9px; border-bottom-right-radius: 9px; background-color: rgb(118, 19, 19); color: rgb(153, 153, 153);" />
     </ui:VisualElement>
 </ui:UXML>
