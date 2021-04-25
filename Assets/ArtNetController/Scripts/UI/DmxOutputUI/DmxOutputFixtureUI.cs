@@ -62,9 +62,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             }
             targetDmxOutput.Label = text;
             foreach (var ui in multiEditUIs)
-            {
-                ui.targetDmxOutput.Label = text;
-            }
+                ui.TargetDmxOutput.Label = text;
             label.text = targetDmxOutput.Label;
         }
         label.text = targetDmxOutput.Label;
@@ -79,13 +77,8 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             var dmxOutput = targetDmxOutput.OutputList[i];
             var dmxOutputUI = DmxOutputUIList[i];
             uiContainer.Add(dmxOutputUI.EditorUI);
-            dmxOutputUI.onRemoveButtonClicked += () =>
-            {
-                targetDmxOutput.RemoveModule(dmxOutput);
-                RebuildUIEditorUI();
-                RebuildControlUI();
-            };
-            (dmxOutputUI as DmxOutputUI<IDmxOutput>).targetDmxOutput.onLabelChanged += (val) => UpdateStructures();
+            dmxOutputUI.SetParent(targetDmxOutput);
+            dmxOutputUI.TargetDmxOutput.onLabelChanged += (val) => UpdateStructures();
         }
 
         dropdownEdit.onValueCanged += (val) =>

@@ -8,7 +8,7 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
     {
         base.BuildControlUI();
 
-        var selector = controlUI.Q<IntSelector>();
+        selector = controlUI.Q<IntSelector>();
         var textField = controlUI.Q<TextField>();
 
         selector.style.flexDirection = FlexDirection.ColumnReverse;
@@ -26,6 +26,11 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
                 textField.value = "0";
         };
         textField.SetEnabled(false);
-        selector.Value = 0;
+        SetValue(targetDmxOutput.Value);
     }
+
+    IntSelector selector;
+
+    void SetValue(int value) =>
+        selector.Value = value;
 }

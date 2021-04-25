@@ -32,6 +32,8 @@ public class UniverseView
         BuildChannelsView();
         BuildInfoView();
     }
+
+    #region TabView
     void BuildTabView()
     {
         var view = tabView;
@@ -58,7 +60,9 @@ public class UniverseView
             SetTabChoices();
         };
     }
+    #endregion
 
+    #region ChannelView
     void BuildChannelsView()
     {
         var view = channelsView;
@@ -119,10 +123,16 @@ public class UniverseView
                             ReleaseOutput(output);
                     }
                 };
+                if (selectOutputList.Contains(output))
+                    matrixSelector.SetValue(output.StartChannel, true, true, true);
             }
             matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
         }
-        universeManager.onActiveUniverseChanged += univ => SetupMatrixSelector();
+        universeManager.onActiveUniverseChanged += univ =>
+        {
+            SetupMatrixSelector();
+            Clear();
+        };
         activeUniverse.onEditOutputList += list => SetupMatrixSelector();
         SetupMatrixSelector();
 
@@ -135,6 +145,9 @@ public class UniverseView
         clearButton.clicked += Clear;
         Clear();
     }
+    #endregion
+
+    #region InfoView
     void BuildInfoView()
     {
         var view = infoView;
@@ -166,6 +179,98 @@ public class UniverseView
         saveButton.clicked += () =>
             universeManager.SaveUniverse(activeUniverse);
     }
+    VisualElement UniverseControllerView(IDmxOutput output)
+    {
+        var tree = Resources.Load<VisualTreeAsset>("UI/DmxOutput/UniverseControllerView");
+        var view = tree.CloneTree("");
+
+        var area = view.Q("universe-controller");
+        var chField = view.Q<TextField>("info-channel__input");
+        var label = view.Q<Label>("info-label");
+        var removeButton = view.Q<Button>("remove-button");
+
+        bool selected = false;
+
+        area.style.backgroundColor = UIConfig.GetTypeColor(output.Type);
+
+        chField.value = output.StartChannel.ToString();
+        chField.RegisterValueChangedCallback(evt =>
+        {
+            int ch;
+            if (int.TryParse(evt.newValue, out ch))
+            {
+                var checkCh = Enumerable.Range(ch, output.NumChannels).All(i =>
+                {
+                    var chOut = activeUniverse.GetChannelOutput(i);
+                    return chOut == null || chOut == output;
+                });
+                if (checkCh)
+                {
+                    output.StartChannel = ch;
+                    activeUniverse.NotifyEditOutputList();
+                }
+                else
+                    chField.SetValueWithoutNotify(evt.previousValue);
+            }
+            else
+                chField.SetValueWithoutNotify(evt.previousValue);
+        });
+        chField.isDelayed = true;
+
+        label.text = output.Label;
+        removeButton.clicked += () =>
+        {
+            activeUniverse.RemoveModule(output);
+            activeUniverse.NotifyEditOutputList();
+            ReleaseOutput(output);
+        };
+        view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));
+
+        void Select(bool select)
+        {
+            if (select)
+            {
+                view.AddToClassList("selected");
+                SelectOutput(output);
+            }
+            else
+            {
+                view.RemoveFromClassList("selected");
+                ReleaseOutput(output);
+            }
+            selected = select;
+        }
+        view.RegisterCallback<PointerUpEvent>(evt =>
+        {
+            if (view.HasPointerCapture(evt.pointerId))
+            {
+                Select(!selected);
+                onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
+                view.ReleasePointer(evt.pointerId);
+            }
+        });
+        void OnSelectionChanged(List<int> cs, List<IDmxOutput> os)
+        {
+            var select = os.Contains(output);
+            Select(select);
+        }
+        onSelectionChanged += OnSelectionChanged;
+        void OnLabelChanged(string val) => label.text = val;
+        output.onLabelChanged += OnLabelChanged;
+        view.RegisterCallback<DetachFromPanelEvent>(evt =>
+        {
+            onSelectionChanged -= OnSelectionChanged;
+            output.onLabelChanged -= OnLabelChanged;
+        });
+
+        if (selectOutputList.Contains(output))
+            Select(true);
+
+        return view;
+    }
+    #endregion
+
+    #region Select Channels,Outputs
     void ClearChannelSelections()
     {
         selectChannelList.ForEach(ch => matrixSelector.SetValue(ch, false, false, false));
@@ -207,59 +312,5 @@ public class UniverseView
             selectOutputList.Remove(output);
         matrixSelector.SetValueFromToWithoutNotify(output.StartChannel, output.StartChannel + output.NumChannels - 1, false);
     }
-    VisualElement UniverseControllerView(IDmxOutput output)
-    {
-        var tree = Resources.Load<VisualTreeAsset>("UI/DmxOutput/UniverseControllerView");
-        var view = tree.CloneTree("");
-
-        var area = view.Q("universe-controller");
-        var chField = view.Q<TextField>("info-channel__input");
-        var label = view.Q<Label>("info-label");
-        var removeButton = view.Q<Button>("remove-button");
-
-        bool selected = false;
-
-        area.style.backgroundColor = UIConfig.GetTypeColor(output.Type);
-        chField.value = output.StartChannel.ToString();
-        label.text = output.Label;
-        removeButton.clicked += () =>
-        {
-            activeUniverse.RemoveModule(output);
-            ReleaseOutput(output);
-        };
-        view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));
-
-        void Select(bool select)
-        {
-            if (select)
-            {
-                view.AddToClassList("selected");
-                SelectOutput(output);
-            }
-            else
-            {
-                view.RemoveFromClassList("selected");
-                ReleaseOutput(output);
-            }
-            selected = select;
-        }
-        view.RegisterCallback<PointerUpEvent>(evt =>
-        {
-            if (view.HasPointerCapture(evt.pointerId))
-            {
-                Select(!selected);
-                onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
-                view.ReleasePointer(evt.pointerId);
-            }
-        });
-        void OnSelectionChanged(List<int> cs, List<IDmxOutput> os)
-        {
-            var select = os.Contains(output);
-            Select(select);
-        }
-        onSelectionChanged += OnSelectionChanged;
-        view.RegisterCallback<DetachFromPanelEvent>(evt => onSelectionChanged -= OnSelectionChanged);
-
-        return view;
-    }
+    #endregion
 }

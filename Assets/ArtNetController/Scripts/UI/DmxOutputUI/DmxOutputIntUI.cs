@@ -9,21 +9,17 @@ public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
         base.BuildControlUI();
 
         var inputArea = controlUI.Q("input-area");
-        var valueVisualize = controlUI.Q("value");
-        var textField = controlUI.Q<TextField>();
+        valueVisualize = controlUI.Q("value");
+        textField = controlUI.Q<TextField>();
 
-        void SetValue(int value)
-        {
-            valueVisualize.style.height = Length.Percent(value * 100 / 255);
-            textField.value = value.ToString();
-            targetDmxOutput.Value = value;
-        }
         void PointerInput(IPointerEvent evt)
         {
             var pos = evt.localPosition;
             var value = pos.y / inputArea.localBound.height;
             value = Mathf.Clamp01(1f - value) * 255;
             SetValue((int)value);
+            if (evt.shiftKey)
+                multiEditUIs.ForEach(ui => (ui as DmxOutputIntUI).SetValue((int)value));
         }
 
         inputArea.RegisterCallback<PointerDownEvent>(evt =>
@@ -48,5 +44,15 @@ public class DmxOutputIntUI : DmxOutputUI<DmxOutputInt>
         });
         textField.isDelayed = true;
         SetValue(targetDmxOutput.Value);
+    }
+
+    VisualElement valueVisualize;
+    TextField textField;
+
+    void SetValue(int value)
+    {
+        valueVisualize.style.height = Length.Percent(value * 100 / 255);
+        textField.value = value.ToString();
+        targetDmxOutput.Value = value;
     }
 }

@@ -5,15 +5,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 [System.Serializable]
-public class ControlView 
+public class ControlView
 {
-    public void BuildUI(VisualElement view)
-    {
+    VisualElement uiContainer;
+    public void BuildUI(VisualElement view) => uiContainer = view.Q("ControlContainer");
 
-    }
+    public void ClearUI() => uiContainer.Clear();
 
-    internal void Add(DmxOutputUI dmxOutputUI)
-    {
-
-    }
+    public void AddUI(VisualElement controlUI) => uiContainer.Add(controlUI);
 }

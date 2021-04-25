@@ -265,7 +265,7 @@ public class DmxOutputEmpty : IDmxOutput, ISizeProp
 {
     public DmxOutputType Type => DmxOutputType.Empty;
     public event System.Action<string> onLabelChanged;
-    public string Label { get => $"Empty_{SizeProp}"; set { } }
+    public string Label { get => $"Empty_{SizeProp}"; set => onLabelChanged?.Invoke(value); }
     public int SizeProp
     {
         get => m_size; set

@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <ui:VisualElement name="DmxOutputSelector" style="align-items: center; width: 64px; overflow: hidden; padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; margin-left: 2px; margin-right: 2px; display: flex;">
-        <ui:Label text="Label" display-tooltip-when-elided="true" style="flex-grow: 1; width: 100%; background-color: rgb(77, 77, 77); border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden;" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" style="flex-grow: 1; width: 100%; background-color: rgb(77, 77, 77); border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden; white-space: normal;" />
         <ui:VisualElement name="input-area" style="flex-direction: column-reverse; height: 300px; width: 100%; background-color: rgb(77, 77, 77); padding-left: 8px; padding-right: 8px;">
             <IntSelector style="flex-grow: 1;" />
         </ui:VisualElement>

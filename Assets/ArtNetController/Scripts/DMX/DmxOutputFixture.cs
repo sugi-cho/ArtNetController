@@ -34,6 +34,9 @@ public class DmxOutputFixture : IDmxOutput
         }
     }
     int m_startChannel;
+
+    internal void NotifyEditOutputList() => onEditOutputList?.Invoke(OutputList);
+
     public int NumChannels => OutputList.Sum(output => output.NumChannels);
 
     public void SetDmx(ref byte[] dmx)
@@ -70,13 +73,11 @@ public class DmxOutputFixture : IDmxOutput
     public void AddModule(IDmxOutput module)
     {
         OutputList.Add(module);
-        onEditOutputList?.Invoke(m_outputList);
         BuildDefinitions();
     }
     public void RemoveModule(IDmxOutput module)
     {
         OutputList.Remove(module);
-        onEditOutputList?.Invoke(m_outputList);
         BuildDefinitions();
     }
     public void BuildDefinitions()

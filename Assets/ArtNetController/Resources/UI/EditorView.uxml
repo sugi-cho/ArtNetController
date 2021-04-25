@@ -3,7 +3,7 @@
     <ui:ScrollView name="base-scroll">
         <ui:VisualElement name="AddOutputView" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; background-color: rgba(128, 128, 128, 255); margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; flex-shrink: 0;">
             <ui:Label text="Add DMX Output Module" display-tooltip-when-elided="true" style="font-size: 18px; -unity-text-align: middle-center; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
-            <EditableDropdownField choices="Select DmxOuput Module..,Float,Selector,XY,Color,Int" />
+            <EditableDropdownField choices="Select DmxOuput Module..,Float,Selector,XY,Color,Bool,Int" />
             <ui:TextField picking-mode="Ignore" label="Label" value="filler text" text="filler text" name="label-field" />
             <ui:Toggle label="Use Fine" name="use-fine" />
             <ui:TextField picking-mode="Ignore" label="Size" value="filler text" text="0" name="size-prop" />

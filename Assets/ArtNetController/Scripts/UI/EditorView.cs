@@ -96,7 +96,7 @@ public class EditorView
                     activeUniverse.AddModule(output);
                 ch += output.NumChannels;
             }
-            onUniverseModified?.Invoke();
+            activeUniverse.NotifyEditOutputList();
         };
 
         labelField.value = "Name";
@@ -134,6 +134,7 @@ public class EditorView
                         activeUniverse.AddModule(output);
                     ch += output.NumChannels;
                 }
+                activeUniverse.NotifyEditOutputList();
             }
         };
 
@@ -143,20 +144,16 @@ public class EditorView
 
     internal void DisplayOutputEditorUI()
     {
-        Debug.Log("output editor");
         addOutputView.style.display = DisplayStyle.None;
         addFixtureView.style.display = DisplayStyle.None;
         newFixtureView.style.display = DisplayStyle.None;
         editorUIContainer.style.display = DisplayStyle.Flex;
         editorUIContainer.Clear();
     }
-    internal void AddOutputEditorUI(VisualElement outputEditorUI)
-    {
-        editorUIContainer.Add(outputEditorUI);
-    }
+    internal void AddOutputEditorUI(VisualElement editorUI) => editorUIContainer.Add(editorUI);
+
     internal void EmptyChannelsView(List<int> chList)
     {
-        Debug.Log("empty");
         activeChannels = chList;
         activeChannels.Sort();
         addOutputView.style.display = DisplayStyle.Flex;
@@ -168,12 +165,9 @@ public class EditorView
     }
     internal void NoSelection()
     {
-        Debug.Log("no selection");
         newFixtureView.style.display = DisplayStyle.Flex;
         editorUIContainer.style.display = DisplayStyle.None;
         addOutputView.SetEnabled(false);
         addFixtureView.SetEnabled(false);
     }
-
-    internal event System.Action onUniverseModified;
 }

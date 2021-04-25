@@ -12,7 +12,33 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         BuildControlUI();
     }
 
-    internal T targetDmxOutput;
+    public override void SetParent(IDmxOutput parentOutput)
+    {
+        var universe = parentOutput as DmxOutputUniverse;
+        var fixture = parentOutput as DmxOutputFixture;
+        if (universe != null)
+        {
+            onRemoveButtonClicked += () =>
+            {
+                universe.RemoveModule(TargetDmxOutput);
+                foreach (var ui in multiEditUIs)
+                    universe.RemoveModule(ui.TargetDmxOutput);
+                universe.NotifyEditOutputList();
+            };
+            editorUI.Q<Toggle>().SetEnabled(false);
+        }
+        if (fixture != null)
+        {
+            onRemoveButtonClicked += () =>
+            {
+                fixture.RemoveModule(TargetDmxOutput);
+                fixture.NotifyEditOutputList();
+            };
+            editorUI.Q<Toggle>().SetEnabled(true);
+        }
+    }
+    public override IDmxOutput TargetDmxOutput => targetDmxOutput;
+    protected T targetDmxOutput;
     public List<DmxOutputUI<T>> multiEditUIs = new List<DmxOutputUI<T>>();
     public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis) =>
         multiEditUIs.AddRange(uis.Select(ui => ui as DmxOutputUI<T>));
@@ -32,22 +58,20 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         var sizeField = uiBase.Q<TextField>("SizeProp");
         var removeButton = uiBase.Q<Button>("remove-button");
 
-        var outputType = DmxOutputUtility.GetDmxOutputType(targetDmxOutput);
+        var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
 
-        var useFine = targetDmxOutput as IUseFine;
-        var sizeProp = targetDmxOutput as ISizeProp;
+        var useFine = TargetDmxOutput as IUseFine;
+        var sizeProp = TargetDmxOutput as ISizeProp;
 
         typeLabel.text = outputType.ToString();
-        labelField.value = targetDmxOutput.Label;
+        labelField.value = TargetDmxOutput.Label;
         labelField.isDelayed = true;
         labelField.RegisterValueChangedCallback(evt =>
         {
-            targetDmxOutput.Label = evt.newValue;
+            TargetDmxOutput.Label = evt.newValue;
             foreach (var ui in multiEditUIs)
-            {
-                ui.targetDmxOutput.Label = evt.newValue;
-            }
-            labelField.SetValueWithoutNotify(targetDmxOutput.Label);
+                ui.TargetDmxOutput.Label = evt.newValue;
+            labelField.SetValueWithoutNotify(TargetDmxOutput.Label);
         });
 
         if (useFine != null)
@@ -70,9 +94,9 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 if (int.TryParse(evt.newValue, out size))
                 {
                     sizeProp.SizeProp = size;
-                    foreach (var ui in multiEditUIs)
-                        (ui.targetDmxOutput as ISizeProp).SizeProp = size;
-                    labelField.value = targetDmxOutput.Label;
+                    foreach (var output in multiEditUIs)
+                        (output as ISizeProp).SizeProp = size;
+                    labelField.value = TargetDmxOutput.Label;
                 }
                 else
                     sizeField.SetValueWithoutNotify(evt.previousValue);
@@ -92,11 +116,12 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
 
         var label = controlUI.Q<Label>();
-        label.text = targetDmxOutput.Label;
+        label.text = $"{TargetDmxOutput.Label} ({TargetDmxOutput.StartChannel})";
         void OnLabelChanged(string val) => label.text = val;
-        targetDmxOutput.onLabelChanged += OnLabelChanged;
-        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => targetDmxOutput.onLabelChanged -= OnLabelChanged);
+        TargetDmxOutput.onLabelChanged += OnLabelChanged;
+        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => TargetDmxOutput.onLabelChanged -= OnLabelChanged);
     }
+    private event System.Action onRemoveButtonClicked;
 }
 
 public abstract class DmxOutputUI
@@ -129,10 +154,10 @@ public abstract class DmxOutputUI
         return new DmxOutputUI<IDmxOutput>(dmxOutput);
     }
     public abstract void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis);
+    public abstract IDmxOutput TargetDmxOutput { get; }
     protected VisualElement editorUI;
     protected VisualElement controlUI;
     public VisualElement EditorUI => editorUI;
     public VisualElement ControlUI => controlUI;
-
-    public System.Action onRemoveButtonClicked;
+    public abstract void SetParent(IDmxOutput parentOutput);
 }

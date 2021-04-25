@@ -9,14 +9,16 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
     {
         base.BuildControlUI();
 
-        var xyPad = controlUI.Q<XYPad>();
+        xyPad = controlUI.Q<XYPad>();
         var textFields = controlUI.Query<TextField>().ToList();
 
-        xyPad.onValueChanged += (v2) =>
+        xyPad.onValueChanged += (value) =>
         {
             for (var i = 0; i < 2; i++)
-                textFields[i].value = v2[i].ToString();
+                textFields[i].value = value[i].ToString();
+            targetDmxOutput.Value = value;
         };
+        xyPad.onShiftKey += v2 => multiEditUIs.ForEach(ui => (ui as DmxOutputXYUI).SetValue(v2));
         for (var i = 0; i < 2; i++)
         {
             var idx = i;
@@ -35,6 +37,13 @@ public class DmxOutputXYUI : DmxOutputUI<DmxOutputXY>
             textFields[idx].isDelayed = true;
         }
 
-        xyPad.Value = targetDmxOutput.Value;
+        SetValue(targetDmxOutput.Value);
+    }
+
+    XYPad xyPad;
+
+    void SetValue(Vector2 value)
+    {
+        xyPad.Value = value;
     }
 }

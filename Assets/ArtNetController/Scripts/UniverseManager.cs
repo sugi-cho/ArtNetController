@@ -52,6 +52,7 @@ class UniverseManager
     }
     public void SaveUniverse(DmxOutputUniverse universe)
     {
+        universe.BuildDefinitions();
         var idx = Universes.IndexOf(universe);
         var fileName = $"Universe_{idx:000}.json";
         var path = Path.Combine(folderPath, fileName);

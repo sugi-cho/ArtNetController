@@ -66,15 +66,14 @@ public class DmxOutputUniverse : IDmxOutput
     {
         OutputList.Add(module);
         BuildDefinitions();
-        onEditOutputList?.Invoke(OutputList);
     }
     public void RemoveModule(IDmxOutput module)
     {
         OutputList.Remove(module);
         BuildDefinitions();
-        onEditOutputList?.Invoke(OutputList);
     }
-    void BuildDefinitions()
+    public void NotifyEditOutputList() => onEditOutputList?.Invoke(OutputList);
+    public void BuildDefinitions()
     {
         OutputList.Sort((a, b) => a.StartChannel - b.StartChannel);
         dmxOutputDefinitions = OutputList

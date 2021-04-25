@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,27 +9,11 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
     {
         base.BuildControlUI();
 
-        var label = controlUI.Q<Label>();
-        var background = ControlUI.Q("background");
+        label = controlUI.Q<Label>();
+        background = ControlUI.Q("background");
         var inputAreas = controlUI.Query("input-area").ToList();
-        var valueVisualizes = controlUI.Query("value").ToList();
-        var textFields = controlUI.Query<TextField>().ToList();
-
-        void SetValue(Color color)
-        {
-            for (var i = 0; i < 3; i++)
-            {
-                valueVisualizes[i].style.height = Length.Percent(color[i] * 100);
-                textFields[i].value = color[i].ToString();
-            }
-            color.a = 1f;
-            targetDmxOutput.Value = color;
-            label.style.backgroundColor = background.style.backgroundColor = color;
-            var labelColor = color;
-            for (var i = 0; i < 3; i++)
-                labelColor[i] = (1f - labelColor[i]);
-            label.style.color = labelColor;
-        }
+        valueVisualizes = controlUI.Query("value").ToList();
+        textFields = controlUI.Query<TextField>().ToList();
         void PointerInput(IPointerEvent evt, int idx)
         {
             var pos = evt.localPosition;
@@ -37,6 +22,8 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
             var color = targetDmxOutput.Value;
             color[idx] = value;
             SetValue(color);
+            if (evt.shiftKey)
+                multiEditUIs.ForEach(ui => (ui as DmxOutputColorUI).SetValue(color));
         }
 
         for (var i = 0; i < 3; i++)
@@ -74,6 +61,27 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
             textFields[idx].Q("unity-text-input").style.color = color;
         }
         SetValue(targetDmxOutput.Value);
+    }
+
+    Label label;
+    VisualElement background;
+    List<VisualElement> valueVisualizes;
+    List<TextField> textFields;
+
+    void SetValue(Color color)
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            valueVisualizes[i].style.height = Length.Percent(color[i] * 100);
+            textFields[i].value = color[i].ToString();
+        }
+        color.a = 1f;
+        targetDmxOutput.Value = color;
+        label.style.backgroundColor = background.style.backgroundColor = color;
+        var labelColor = color;
+        for (var i = 0; i < 3; i++)
+            labelColor[i] = (1f - labelColor[i]);
+        label.style.color = labelColor;
     }
     readonly Color[] rgb = new[] { Color.red, Color.green, Color.blue };
 }

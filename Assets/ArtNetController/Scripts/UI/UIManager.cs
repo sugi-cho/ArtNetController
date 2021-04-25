@@ -31,27 +31,30 @@ public class UIManager : MonoBehaviour
         editorView.NoSelection();
         universeView.onSelectionChanged += (chList, outputList) =>
         {
-            Debug.Log("changed");
-             if (0 < outputList.Count)
-             {
-                 editorView.DisplayOutputEditorUI();
-                 var groups = outputList.GroupBy(o => (o.Type, o.Label));
-                 foreach (var g in groups)
-                 {
-                     var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
-                     uiList[0].AddMultiTargeUIs(uiList.Where(ui => ui != uiList[0]));
-                     editorView.AddOutputEditorUI(uiList[0].EditorUI);
-                     uiList.ForEach(ui => controlView.Add(ui));
-                 }
-             }
-             else if (0 < chList.Count)
-             {
-                 editorView.EmptyChannelsView(chList);
-             }
-             else
-             {
-                 editorView.NoSelection();
-             }
+            controlView.ClearUI();
+            if (0 < outputList.Count)
+            {
+                editorView.DisplayOutputEditorUI();
+                var groups = outputList.GroupBy(o => (o.Type, o.Label));
+                foreach (var g in groups)
+                {
+                    var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
+                    uiList.ForEach(ui =>
+                    {
+                        ui.AddMultiTargeUIs(uiList.Where(element => element != ui));
+                        ui.SetParent(UniverseManager.Instance.ActiveUniverse);
+                        controlView.AddUI(ui.ControlUI);
+                    });
+                }
+            }
+            else if (0 < chList.Count)
+            {
+                editorView.EmptyChannelsView(chList);
+            }
+            else
+            {
+                editorView.NoSelection();
+            }
         };
 
         var closed = false;

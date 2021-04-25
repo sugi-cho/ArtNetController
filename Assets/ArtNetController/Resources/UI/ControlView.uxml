@@ -1,3 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="StyleSheets/DmxOutputUI.uss" />
+    <ui:ScrollView mode="Horizontal" name="ControlContainer" horizontal-scroller-visibility="AlwaysVisible" style="height: 100%;" />
 </ui:UXML>

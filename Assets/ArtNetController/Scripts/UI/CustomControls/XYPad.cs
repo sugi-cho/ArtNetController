@@ -35,9 +35,11 @@ public class XYPad : VisualElement
             onValueChanged?.Invoke(m_value);
         }
     }
-    public void SetValueWithoutNotify(Vector2 v2) => m_value = v2;
+
     Vector2 m_value;
     public event System.Action<Vector2> onValueChanged;
+    public event System.Action<Vector2> onShiftKey;
+
     public Color LineColor
     {
         set => lineX.style.backgroundColor = lineY.style.backgroundColor = value;
@@ -77,5 +79,7 @@ public class XYPad : VisualElement
         var v2 = Value;
         (v2.x, v2.y) = (pos.x / w, 1f - pos.y / h);
         Value = v2;
+        if (evt.shiftKey)
+            onShiftKey(Value);
     }
 }
