@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -262,7 +262,6 @@ GameObject:
   m_Component:
   - component: {fileID: 833176890}
   - component: {fileID: 833176889}
-  - component: {fileID: 833176891}
   - component: {fileID: 833176892}
   m_Layer: 0
   m_Name: UI
@@ -301,60 +300,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &833176891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 833176888}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a864b4723af2f44a674ffa368309eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  list: []
-  fixture:
-    label: NewFixtur
-    dmxOutputDefinitions:
-    - type: 1
-      label: Switch
-      channel: 0
-      useFine: 0
-      size: 0
-    - type: 2
-      label: IntSlider
-      channel: 0
-      useFine: 0
-      size: 0
-    - type: 3
-      label: Selector
-      channel: 7
-      useFine: 0
-      size: 7
-    - type: 4
-      label: FineSlider
-      channel: 0
-      useFine: 1
-      size: 0
-    - type: 5
-      label: XYPad
-      channel: 0
-      useFine: 0
-      size: 0
-    - type: 6
-      label: Color
-      channel: 0
-      useFine: 1
-      size: 0
-    - type: 0
-      label: 
-      channel: 3
-      useFine: 0
-      size: 5
-  dmxOutputList: []
-  references:
-    version: 1
 --- !u!114 &833176892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,6 +312,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7c7fe7837ab3d448586da30de434e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  universeView:
+    selectChannelList: 
+    selectOutputList: []
+  references:
+    version: 1
 --- !u!1 &982344159
 GameObject:
   m_ObjectHideFlags: 0

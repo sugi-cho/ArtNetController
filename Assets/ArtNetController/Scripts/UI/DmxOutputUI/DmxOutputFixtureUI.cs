@@ -5,6 +5,20 @@ using UnityEngine.UIElements;
 
 public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 {
+    public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis)
+    {
+        for(var i = 0; i < DmxOutputUIList.Count; i++)
+        {
+            var dmxOutputUI = DmxOutputUIList[i];
+            dmxOutputUI.AddMultiTargeUIs(uis.Select(ui => (ui as DmxOutputFixtureUI).DmxOutputUIList[i]));
+        }
+    }
+    public override void SetParent(IDmxOutput parentOutput)
+    {
+        var universe = parentOutput as DmxOutputUniverse;
+        if (universe != null)
+            editorUI.SetEnabled(false);
+    }
     public DmxOutputFixtureUI(DmxOutputFixture dmxOutput) : base(dmxOutput) { }
     List<DmxOutputUI> DmxOutputUIList
     {
@@ -25,22 +39,6 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             $"Num Channels: {targetDmxOutput.NumChannels}";
     }
 
-    void RebuildUIEditorUI()
-    {
-        var editorParent = editorUI?.parent;
-        editorUI?.RemoveFromHierarchy();
-        editorUI?.Clear();
-        BuildEditorUI();
-        editorParent?.Add(editorUI);
-    }
-    void RebuildControlUI()
-    {
-        var controlParent = controlUI?.parent;
-        controlUI?.RemoveFromHierarchy();
-        controlUI?.Clear();
-        BuildControlUI();
-        controlParent?.Add(controlUI);
-    }
     protected override void BuildEditorUI()
     {
         var tree = Resources.Load<VisualTreeAsset>(EditorUIResourcePath);
@@ -55,7 +53,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 
         void SetLabel(string text)
         {
-            if (FixtureLibrary.FixtureLabelList.Contains(text))
+            if (0 < FixtureLibrary.FixtureLabelList.Where(l => l.ToLower() == text.ToLower()).Count())
             {
                 labelField.SetValueWithoutNotify(targetDmxOutput.Label);
                 return;
@@ -74,11 +72,9 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         for (var i = 0; i < DmxOutputUIList.Count; i++)
         {
             var idx = i;
-            var dmxOutput = targetDmxOutput.OutputList[i];
             var dmxOutputUI = DmxOutputUIList[i];
             uiContainer.Add(dmxOutputUI.EditorUI);
             dmxOutputUI.SetParent(targetDmxOutput);
-            dmxOutputUI.TargetDmxOutput.onLabelChanged += (val) => UpdateStructures();
         }
 
         dropdownEdit.onValueCanged += (val) =>
@@ -89,16 +85,26 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
                 var output = DmxOutputUtility.CreateDmxOutput(outputType);
                 targetDmxOutput.AddModule(output);
                 dropdownEdit.Q<DropdownField>().index = 0;
-                RebuildUIEditorUI();
-                RebuildControlUI();
+                targetDmxOutput.NotifyEditOutputList();
+
+                var ui = DmxOutputUI.CreateUI(output);
+                uiContainer.Add(ui.EditorUI);
+                controlUI.Q("output-container").Add(ui.ControlUI);
+                ui.SetParent(targetDmxOutput);
             }
         };
 
         saveButton.clicked += () =>
-         {
-             targetDmxOutput.BuildDefinitions();
-             FixtureLibrary.SaveFixture(targetDmxOutput);
-         };
+        {
+            targetDmxOutput.BuildDefinitions();
+            FixtureLibrary.SaveFixture(targetDmxOutput);
+        };
+        saveButton.SetEnabled(0 < targetDmxOutput.NumChannels);
+        targetDmxOutput.onEditOutputList += oList =>
+        {
+            saveButton.SetEnabled(0 < oList.Count);
+            UpdateStructures();
+        };
     }
 
     protected override void BuildControlUI()

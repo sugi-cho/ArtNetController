@@ -87,6 +87,8 @@ public static class FixtureLibrary
     }
     public static void SaveFixture(DmxOutputFixture fixture)
     {
+        if (fixture.NumChannels < 1)
+            return;
         var filePath = Path.Combine(folderPath, $"{fixture.Label}.json");
         var json = JsonUtility.ToJson(fixture);
         if (fixture.FilePath != filePath)

@@ -33,8 +33,11 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             {
                 fixture.RemoveModule(TargetDmxOutput);
                 fixture.NotifyEditOutputList();
+                editorUI.RemoveFromHierarchy();
+                controlUI.RemoveFromHierarchy();
             };
             editorUI.Q<Toggle>().SetEnabled(true);
+            editorUI.Q<Toggle>().RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
         }
     }
     public override IDmxOutput TargetDmxOutput => targetDmxOutput;

@@ -52,3 +52,7 @@ Label {
     border-top-width: 1px;
     border-bottom-width: 1px;
 }
+
+.on-universe #save-button {
+    visibility: hidden;
+}

@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 [System.Serializable]
@@ -108,7 +106,9 @@ public class EditorView
     {
         var view = addFixtureView;
         var fixtureSelectField = view.Q<EditableDropdownField>();
+        var fixtureInfo = view.Q<Label>("fixture-info");
         var addButton = view.Q<Button>("add-button");
+        DmxOutputFixture fixture = null;
 
         void SetChoices()
         {
@@ -118,7 +118,21 @@ public class EditorView
         }
         SetChoices();
 
-        fixtureSelectField.onValueCanged += val => addButton.SetEnabled(FixtureLibrary.FixtureLabelList.Contains(val));
+        fixtureSelectField.onValueCanged += val =>
+        {
+            if (FixtureLibrary.FixtureLabelList.Contains(val))
+            {
+                addButton.SetEnabled(true);
+                fixture = FixtureLibrary.LoadFixture(val);
+                fixtureInfo.text = $"Fixture Label: {fixture.Label}\nNum Channels: {fixture.NumChannels}";
+            }
+            else
+            {
+                addButton.SetEnabled(false);
+                fixture = null;
+                fixtureInfo.text = $"Fixture Label: Null\nNum Channels: 0";
+            }
+        };
 
         addButton.clicked += () =>
         {

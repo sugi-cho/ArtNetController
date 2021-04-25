@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -39,6 +38,7 @@ public class UIManager : MonoBehaviour
                 foreach (var g in groups)
                 {
                     var uiList = g.Select(o => DmxOutputUI.CreateUI(o)).ToList();
+                    editorView.AddOutputEditorUI(uiList[0].EditorUI);
                     uiList.ForEach(ui =>
                     {
                         ui.AddMultiTargeUIs(uiList.Where(element => element != ui));
