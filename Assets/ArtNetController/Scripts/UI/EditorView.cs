@@ -163,6 +163,7 @@ public class EditorView
         var view = fixtureEditorView;
         var fixtureSelectField = view.Q<EditableDropdownField>();
         var container = view.Q("container");
+        var deleteButton = view.Q<Button>("delete-button");
         var saveButton = view.Q<Button>("save-button");
 
         void SetChoices()
@@ -173,6 +174,7 @@ public class EditorView
         }
         void SelectFixture(string label)
         {
+            fixtureSelectField.Value = label;
             if (editUI != null)
                 editUI.RemoveFromHierarchy();
             editingFixture = FixtureLibrary.LoadFixture(label);
@@ -180,16 +182,23 @@ public class EditorView
             editUI = fixtureUI.EditorUI;
             container.Add(editUI);
 
+            deleteButton.SetEnabled(!string.IsNullOrEmpty(editingFixture.FilePath));
             saveButton.SetEnabled(0 < editingFixture.NumChannels);
             editingFixture.onEditOutputList += list => saveButton.SetEnabled(0 < editingFixture.NumChannels);
         }
 
         fixtureSelectField.onValueCanged += SelectFixture;
 
+        deleteButton.clicked += () =>
+        {
+            FixtureLibrary.DeleteFixture(editingFixture);
+            SelectFixture("New Fixture");
+        };
         saveButton.clicked += () =>
         {
             if (editingFixture != null)
                 FixtureLibrary.SaveFixture(editingFixture);
+            SelectFixture(editingFixture.Label);
         };
 
         SetChoices();

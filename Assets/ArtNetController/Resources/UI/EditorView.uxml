@@ -19,7 +19,10 @@
             <ui:Label text="Fixture Editor" display-tooltip-when-elided="true" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; -unity-text-align: middle-center; font-size: 18px;" />
             <EditableDropdownField name="FixtureSelector" choices="New Fixture" />
             <ui:VisualElement name="container" />
-            <ui:Button text="Save Fixture" display-tooltip-when-elided="true" name="save-button" style="margin-top: 16px;" />
+            <ui:VisualElement style="flex-direction: row; margin-top: 16px;">
+                <ui:Button text="Delete Fixture" display-tooltip-when-elided="true" name="delete-button" style="background-color: rgba(88, 18, 18, 255); flex-grow: 1; color: rgba(255, 255, 255, 255);" />
+                <ui:Button text="Save Fixture" display-tooltip-when-elided="true" name="save-button" style="flex-grow: 1;" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="EditorUIContainer" />
     </ui:ScrollView>

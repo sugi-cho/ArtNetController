@@ -1,0 +1,1 @@
+{"label":"Second","dmxOutputDefinitions":[{"type":5,"label":"PanTilt","channel":0,"useFine":true,"size":0},{"type":6,"label":"Color","channel":4,"useFine":false,"size":0},{"type":4,"label":"Float","channel":7,"useFine":true,"size":0}]}

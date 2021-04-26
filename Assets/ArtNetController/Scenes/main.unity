@@ -155,6 +155,8 @@ MonoBehaviour:
   packetToOutput:
     universe: 0
     dmxData: 
+  m_useBroadcast: 1
+  m_remoteIP: localhost
 --- !u!4 &788946608
 Transform:
   m_ObjectHideFlags: 0

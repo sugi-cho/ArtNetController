@@ -82,6 +82,12 @@ public static class FixtureLibrary
         JsonUtility.FromJsonOverwrite(json, fixture);
         fixture.Initialize();
     }
+    public static void DeleteFixture(DmxOutputFixture fixture)
+    {
+        if (File.Exists(fixture.FilePath))
+            File.Delete(fixture.FilePath);
+        LoadFixtureList();
+    }
     public static void SaveFixture(DmxOutputFixture fixture)
     {
         if (fixture.NumChannels < 1)

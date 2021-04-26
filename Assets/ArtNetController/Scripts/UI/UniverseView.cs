@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -68,6 +67,8 @@ public class UniverseView
     {
         var view = channelsView;
         matrixSelector = view.Q<MatrixSelector>();
+        var broadcastToggle = view.Q<Toggle>("broadcast-toggle");
+        var ipField = view.Q<TextField>("remoteIP-field");
         var clearButton = view.Q<Button>("ClearButton");
 
         void SetupMatrixSelector()
@@ -154,6 +155,17 @@ public class UniverseView
             OnSelectionChanged();
         };
         SetupMatrixSelector();
+
+        var artnetController = Object.FindObjectOfType<ArtNetController>();
+        broadcastToggle.RegisterValueChangedCallback(evt =>
+        {
+            artnetController.UseBroadCast = evt.newValue;
+            ipField.SetEnabled(!artnetController.UseBroadCast);
+        });
+        ipField.RegisterValueChangedCallback(evt => artnetController.RemoteIp = evt.newValue);
+        broadcastToggle.value = artnetController.UseBroadCast;
+        ipField.value = artnetController.RemoteIp;
+        ipField.SetEnabled(!artnetController.UseBroadCast);
 
         void Clear()
         {

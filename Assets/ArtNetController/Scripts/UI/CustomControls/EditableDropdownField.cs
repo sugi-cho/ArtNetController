@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class EditableDropdownField : VisualElement
@@ -29,7 +30,7 @@ public class EditableDropdownField : VisualElement
     public void AddChoices(IEnumerable<string> choices)
     {
         m_choices.AddRange(choices);
-        m_dropdownField.value = m_choices[m_dropdownField.index];
+        m_dropdownField.value = m_choices[Mathf.Clamp(m_dropdownField.index, 0, m_choices.Count - 1)];
     }
     DropdownField m_dropdownField;
     public string Value { get => m_dropdownField.value; set => m_dropdownField.value = value; }
