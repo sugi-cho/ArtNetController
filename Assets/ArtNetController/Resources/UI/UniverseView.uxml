@@ -12,7 +12,11 @@
                 <ui:VisualElement style="flex-grow: 1; width: 90%;">
                     <ui:Label text="DMX Channels" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255);" />
                     <MatrixSelector row="32" column="16" focusable="true" style="width: 100%; height: 90%; flex-shrink: 0; min-width: 1000px;" />
-                    <ui:VisualElement style="flex-direction: row-reverse;">
+                    <ui:VisualElement style="flex-direction: row; justify-content: space-between; -unity-text-align: middle-left;">
+                        <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
+                            <ui:Toggle label="Send To Broadcast" name="broadcast-toggle" value="true" style="flex-direction: row-reverse;" />
+                            <ui:TextField picking-mode="Ignore" label="Remote IP" value="127.0.0.1" text="127.0.0.1" name="remoteIP-field" style="width: 220px; -unity-text-align: middle-right;" />
+                        </ui:VisualElement>
                         <ui:Button text="Clear Selections" display-tooltip-when-elided="true" name="ClearButton" style="max-width: 240px; flex-grow: 1; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
                     </ui:VisualElement>
                 </ui:VisualElement>

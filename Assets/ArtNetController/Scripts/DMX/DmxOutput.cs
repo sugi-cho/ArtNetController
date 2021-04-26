@@ -15,6 +15,7 @@ public class DmxOutputFloat : IDmxOutput, IUseFine
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public bool UseFine
     {
         get => m_useFine; set
@@ -28,7 +29,14 @@ public class DmxOutputFloat : IDmxOutput, IUseFine
     public int StartChannel { get; set; }
     public int NumChannels => UseFine ? 2 : 1;
 
-    public float Value { get => m_value; set => m_value = Mathf.Clamp01(value); }
+    public float Value
+    {
+        get => m_value; set
+        {
+            m_value = Mathf.Clamp01(value);
+            onValueChanged?.Invoke();
+        }
+    }
     float m_value;
     public void SetDmx(ref byte[] dmx)
     {
@@ -56,10 +64,18 @@ public class DmxOutputInt : IDmxOutput
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
-    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, 255); }
+    public int Value
+    {
+        get => m_value; set
+        {
+            m_value = Mathf.Clamp(value, 0, 255);
+            onValueChanged?.Invoke();
+        }
+    }
     int m_value;
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
 }
@@ -78,6 +94,7 @@ public class DmxOutputSelector : IDmxOutput, ISizeProp
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
@@ -91,7 +108,14 @@ public class DmxOutputSelector : IDmxOutput, ISizeProp
     }
     int m_size;
     public event System.Action<int> onSizePropChanged;
-    public int Value { get => m_value; set => m_value = Mathf.Clamp(value, 0, SizeProp - 1); }
+    public int Value
+    {
+        get => m_value; set
+        {
+            m_value = Mathf.Clamp(value, 0, SizeProp - 1);
+            onValueChanged?.Invoke();
+        }
+    }
     int m_value;
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / SizeProp * 255);
 
@@ -111,10 +135,18 @@ public class DmxOutputBool : IDmxOutput
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public int StartChannel { get; set; }
     public int NumChannels => 1;
 
-    public bool Value { get => m_value; set => m_value = value; }
+    public bool Value
+    {
+        get => m_value; set
+        {
+            m_value = value;
+            onValueChanged?.Invoke();
+        }
+    }
     bool m_value;
     public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)(m_value ? 255 : 0);
 }
@@ -133,6 +165,7 @@ public class DmxOutputXY : IDmxOutput, IUseFine
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public DmxOutputXY()
     {
         dmxOutputX = new DmxOutputFloat();
@@ -177,6 +210,7 @@ public class DmxOutputXY : IDmxOutput, IUseFine
             dmxOutputY.Value = value.y;
             m_value.x = dmxOutputX.Value;
             m_value.y = dmxOutputY.Value;
+            onValueChanged?.Invoke();
         }
     }
     Vector2 m_value;
@@ -202,6 +236,7 @@ public class DmxOutputColor : IDmxOutput, IUseFine
     }
     string m_label;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public DmxOutputColor()
     {
         dmxOutputR = new DmxOutputFloat();
@@ -249,6 +284,7 @@ public class DmxOutputColor : IDmxOutput, IUseFine
             dmxOutputR.Value = value.r;
             dmxOutputG.Value = value.g;
             dmxOutputB.Value = value.b;
+            onValueChanged?.Invoke();
         }
     }
     Color m_value;
@@ -265,6 +301,7 @@ public class DmxOutputEmpty : IDmxOutput, ISizeProp
 {
     public DmxOutputType Type => DmxOutputType.Empty;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
     public string Label { get => $"Empty_{SizeProp}"; set => onLabelChanged?.Invoke(value); }
     public int SizeProp
     {

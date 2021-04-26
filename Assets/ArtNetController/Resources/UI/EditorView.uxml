@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="StyleSheets/DmxOutputUI.uss" />
-    <ui:ScrollView name="base-scroll">
+    <ui:ScrollView name="base-scroll" style="flex-grow: 1;">
         <ui:VisualElement name="AddOutputView" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; background-color: rgb(128, 128, 128); margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; flex-shrink: 0;">
             <ui:Label text="Add DMX Output Module" display-tooltip-when-elided="true" style="font-size: 18px; -unity-text-align: middle-center; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;" />
             <EditableDropdownField choices="Select DmxOuput Module..,Float,Selector,XY,Color,Bool,Int" />
@@ -14,6 +14,12 @@
             <EditableDropdownField choices="Select Fixture...," />
             <ui:Label text="Fixture Label: Null&#10;Num Channels: 0" display-tooltip-when-elided="true" name="fixture-info" style="margin-left: 8px; margin-right: 8px; margin-top: 8px; margin-bottom: 8px; padding-left: 4px; padding-right: 4px; padding-top: 4px; padding-bottom: 4px; background-color: rgb(204, 204, 204); color: rgb(51, 51, 51); border-top-left-radius: 4px; border-bottom-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;" />
             <ui:Button text="Add To Channel" display-tooltip-when-elided="true" name="add-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="FixtureEditorView" style="margin-left: 4px; margin-right: 4px; margin-top: 4px; margin-bottom: 4px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; border-top-left-radius: 10px; border-bottom-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; background-color: rgb(128, 128, 128); flex-grow: 1; flex-shrink: 0;">
+            <ui:Label text="Fixture Editor" display-tooltip-when-elided="true" style="padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px; -unity-text-align: middle-center; font-size: 18px;" />
+            <EditableDropdownField name="FixtureSelector" choices="New Fixture" />
+            <ui:VisualElement name="container" />
+            <ui:Button text="Save Fixture" display-tooltip-when-elided="true" name="save-button" style="margin-top: 16px;" />
         </ui:VisualElement>
         <ui:VisualElement name="EditorUIContainer" />
     </ui:ScrollView>

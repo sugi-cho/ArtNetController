@@ -6,6 +6,7 @@ public interface IDmxOutput
     int NumChannels { get; }
     void SetDmx(ref byte[] dmx);
     event System.Action<string> onLabelChanged;
+    event System.Action onValueChanged;
 }
 public interface IUseFine
 {

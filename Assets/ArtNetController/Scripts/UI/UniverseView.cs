@@ -19,6 +19,7 @@ public class UniverseView
     [SerializeReference] List<IDmxOutput> selectOutputList;
 
     public event System.Action<List<int>, List<IDmxOutput>> onSelectionChanged;
+    void OnSelectionChanged() => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
 
     public void BuildUI(VisualElement view)
     {
@@ -74,6 +75,7 @@ public class UniverseView
             matrixSelector.SetMatrix(32, 16);
             matrixSelector.Dispose();
 
+            var selectingMultiOutput = false;
             var selectElements = matrixSelector.Query("select-element").ToList();
             var groups = selectElements.Select((vle, ch) =>
             {
@@ -87,6 +89,11 @@ public class UniverseView
                     vle.style.backgroundColor = UIConfig.GetTypeColor(DmxOutputType.Empty);
                     matrixSelector.onValueChanged += (idx, val) =>
                     {
+                        if (selectingMultiOutput)
+                        {
+                            matrixSelector.SetValue(idx, false, notify: false, singleSelect: false);
+                            return;
+                        }
                         if (idx == ch)
                             if (val)
                                 SelectChannel(idx);
@@ -116,6 +123,7 @@ public class UniverseView
                 {
                     if (start <= idx && idx <= end)
                     {
+                        selectingMultiOutput = true;
                         matrixSelector.SetValueFromToWithoutNotify(start, end, val);
                         if (val)
                             SelectOutput(output);
@@ -126,14 +134,25 @@ public class UniverseView
                 if (selectOutputList.Contains(output))
                     matrixSelector.SetValue(output.StartChannel, true, true, true);
             }
-            matrixSelector.onSelectComplete += () => onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
+            matrixSelector.onSelectComplete += () =>
+            {
+                selectingMultiOutput = false;
+                OnSelectionChanged();
+            };
         }
         universeManager.onActiveUniverseChanged += univ =>
         {
             SetupMatrixSelector();
             Clear();
         };
-        activeUniverse.onEditOutputList += list => SetupMatrixSelector();
+        activeUniverse.onEditOutputList += list =>
+        {
+            SetupMatrixSelector();
+            var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
+            foreach (var rem in removes)
+                selectOutputList.Remove(rem);
+            OnSelectionChanged();
+        };
         SetupMatrixSelector();
 
         void Clear()
@@ -164,7 +183,7 @@ public class UniverseView
         universeManager.onActiveUniverseChanged += SetupInfoFields;
         SetupInfoFields(activeUniverse);
         nameField.RegisterValueChangedCallback(evt => activeUniverse.Label = evt.newValue);
-        universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = evt.newValue);
+        universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = (short)evt.newValue);
 
         void SetupControllerContainer(List<IDmxOutput> outputList)
         {
@@ -245,7 +264,7 @@ public class UniverseView
             if (view.HasPointerCapture(evt.pointerId))
             {
                 Select(!selected);
-                onSelectionChanged?.Invoke(selectChannelList, selectOutputList);
+                this.OnSelectionChanged();
                 view.ReleasePointer(evt.pointerId);
             }
         });

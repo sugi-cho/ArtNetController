@@ -38,6 +38,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             };
             editorUI.Q<Toggle>().SetEnabled(true);
             editorUI.Q<Toggle>().RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
+            editorUI.Q<TextField>("SizeProp").RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
         }
     }
     public override IDmxOutput TargetDmxOutput => targetDmxOutput;
@@ -116,7 +117,11 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         var tree = Resources.Load<VisualTreeAsset>(ControlUIResourcePath);
         controlUI = tree?.CloneTree("");
         if (controlUI == null)
+        {
             Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
+            controlUI = new VisualElement();
+            return;
+        }
 
         var label = controlUI.Q<Label>();
         label.text = $"{TargetDmxOutput.Label} ({TargetDmxOutput.StartChannel})";

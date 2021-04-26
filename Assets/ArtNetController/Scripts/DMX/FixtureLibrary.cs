@@ -63,10 +63,7 @@ public static class FixtureLibrary
         {
             Debug.LogWarning($"Fixture: Label='{label}' does not exist.");
             var fixture = new DmxOutputFixture { Label = label };
-            var json = JsonUtility.ToJson(fixture);
-            File.WriteAllText(filePath, json);
             fixture.Initialize();
-            fixture.FilePath = filePath;
             return fixture;
         }
         else

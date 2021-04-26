@@ -41,8 +41,8 @@ class UniverseManager
     {
         var exists = m_universes.Select(u => u.Universe);
         var newUniverse = m_universes == null ?
-            0 : Enumerable.Range(0, 512).Where(idx => !exists.Contains(idx)).FirstOrDefault();
-        var newOutputUniverse = new DmxOutputUniverse { Universe = newUniverse, Label = "Set" };
+            0 : Enumerable.Range(0, 512).Where(idx => !exists.Contains((short)idx)).FirstOrDefault();
+        var newOutputUniverse = new DmxOutputUniverse { Universe = (short)newUniverse, Label = "Set" };
         m_universes.Add(newOutputUniverse);
         onEditUniverses?.Invoke(m_universes);
     }

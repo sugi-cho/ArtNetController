@@ -10,7 +10,7 @@ public class EditorView
     ScrollView baseScroll;
     VisualElement addOutputView;
     VisualElement addFixtureView;
-    VisualElement newFixtureView;
+    VisualElement fixtureEditorView;
     VisualElement editorUIContainer;
 
     List<int> activeChannels;
@@ -21,12 +21,11 @@ public class EditorView
 
         addOutputView = view.Q("AddOutputView");
         addFixtureView = view.Q("AddFixtureView");
+        fixtureEditorView = view.Q("FixtureEditorView");
+        editorUIContainer = view.Q("EditorUIContainer");
         BuildAddOutputView();
         BuildAddFixtureView();
-
-        newFixtureView = DmxOutputUI.CreateUI(FixtureLibrary.CreateFixture()).EditorUI;
-        baseScroll.Add(newFixtureView);
-        editorUIContainer = view.Q("EditorUIContainer");
+        BuildFixtureEditorView();
     }
     void BuildAddOutputView()
     {
@@ -63,10 +62,12 @@ public class EditorView
                 {
                     sizePropField.SetEnabled(false);
                 }
+                labelField.value = outputType.ToString();
                 addButton.SetEnabled(true);
             }
             else
             {
+                labelField.value = "Name";
                 useFineField.SetEnabled(false);
                 sizePropField.SetEnabled(false);
                 addButton.SetEnabled(false);
@@ -154,13 +155,53 @@ public class EditorView
 
         FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
     }
+    void BuildFixtureEditorView()
+    {
+        DmxOutputFixture editingFixture = null;
+        VisualElement editUI = null;
 
+        var view = fixtureEditorView;
+        var fixtureSelectField = view.Q<EditableDropdownField>();
+        var container = view.Q("container");
+        var saveButton = view.Q<Button>("save-button");
+
+        void SetChoices()
+        {
+            fixtureSelectField.ClearChoices();
+            fixtureSelectField.AddChoices(new[] { "New Fixture" });
+            fixtureSelectField.AddChoices(FixtureLibrary.FixtureLabelList);
+        }
+        void SelectFixture(string label)
+        {
+            if (editUI != null)
+                editUI.RemoveFromHierarchy();
+            editingFixture = FixtureLibrary.LoadFixture(label);
+            var fixtureUI = DmxOutputUI.CreateUI(editingFixture);
+            editUI = fixtureUI.EditorUI;
+            container.Add(editUI);
+
+            saveButton.SetEnabled(0 < editingFixture.NumChannels);
+            editingFixture.onEditOutputList += list => saveButton.SetEnabled(0 < editingFixture.NumChannels);
+        }
+
+        fixtureSelectField.onValueCanged += SelectFixture;
+
+        saveButton.clicked += () =>
+        {
+            if (editingFixture != null)
+                FixtureLibrary.SaveFixture(editingFixture);
+        };
+
+        SetChoices();
+        SelectFixture(fixtureSelectField.Value);
+        FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
+    }
 
     internal void DisplayOutputEditorUI()
     {
         addOutputView.style.display = DisplayStyle.None;
         addFixtureView.style.display = DisplayStyle.None;
-        newFixtureView.style.display = DisplayStyle.None;
+        fixtureEditorView.style.display = DisplayStyle.None;
         editorUIContainer.style.display = DisplayStyle.Flex;
         editorUIContainer.Clear();
     }
@@ -172,16 +213,16 @@ public class EditorView
         activeChannels.Sort();
         addOutputView.style.display = DisplayStyle.Flex;
         addFixtureView.style.display = DisplayStyle.Flex;
-        newFixtureView.style.display = DisplayStyle.Flex;
+        fixtureEditorView.style.display = DisplayStyle.Flex;
         editorUIContainer.style.display = DisplayStyle.None;
         addOutputView.SetEnabled(true);
         addFixtureView.SetEnabled(true);
     }
     internal void NoSelection()
     {
-        newFixtureView.style.display = DisplayStyle.Flex;
+        fixtureEditorView.style.display = DisplayStyle.Flex;
         editorUIContainer.style.display = DisplayStyle.None;
-        addOutputView.SetEnabled(false);
-        addFixtureView.SetEnabled(false);
+        addOutputView.style.display = DisplayStyle.None;
+        addFixtureView.style.display = DisplayStyle.None;
     }
 }

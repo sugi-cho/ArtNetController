@@ -44,12 +44,10 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         var tree = Resources.Load<VisualTreeAsset>(EditorUIResourcePath);
         editorUI = tree.CloneTree("");
 
-        var label = editorUI.Q<Label>();
         var labelField = editorUI.Q<TextField>("label");
         var infoLabel = editorUI.Q<Label>("info-label");
         var uiContainer = editorUI.Q("output-container");
         var dropdownEdit = editorUI.Q<EditableDropdownField>();
-        var saveButton = editorUI.Q<Button>("save-button");
 
         void SetLabel(string text)
         {
@@ -61,9 +59,8 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             targetDmxOutput.Label = text;
             foreach (var ui in multiEditUIs)
                 ui.TargetDmxOutput.Label = text;
-            label.text = targetDmxOutput.Label;
         }
-        label.text = targetDmxOutput.Label;
+
         labelField.RegisterValueChangedCallback(evt => SetLabel(evt.newValue));
         labelField.SetValueWithoutNotify(targetDmxOutput.Label);
         labelField.isDelayed = true;
@@ -93,18 +90,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
                 ui.SetParent(targetDmxOutput);
             }
         };
-
-        saveButton.clicked += () =>
-        {
-            targetDmxOutput.BuildDefinitions();
-            FixtureLibrary.SaveFixture(targetDmxOutput);
-        };
-        saveButton.SetEnabled(0 < targetDmxOutput.NumChannels);
-        targetDmxOutput.onEditOutputList += oList =>
-        {
-            saveButton.SetEnabled(0 < oList.Count);
-            UpdateStructures();
-        };
+        targetDmxOutput.onEditOutputList += list => UpdateStructures();
     }
 
     protected override void BuildControlUI()

@@ -7,6 +7,7 @@ public class DmxOutputUniverse : IDmxOutput
 {
     public event System.Action<List<IDmxOutput>> onEditOutputList;
     public event System.Action<string> onLabelChanged;
+    public event System.Action onValueChanged;
 
     public DmxOutputType Type => DmxOutputType.Universe;
     public string Label
@@ -18,8 +19,8 @@ public class DmxOutputUniverse : IDmxOutput
         }
     }
     [SerializeField] string label;
-    public int Universe { get => universe; set => universe = value; }
-    [SerializeField] int universe;
+    public short Universe { get => universe; set => universe = value; }
+    [SerializeField] short universe;
     public int StartChannel
     {
         get => 0;
@@ -60,10 +61,13 @@ public class DmxOutputUniverse : IDmxOutput
                 .ToList();
         if (m_outputList == null)
             m_outputList = new List<IDmxOutput>();
+        m_outputList.ForEach(output =>
+            output.onValueChanged += () => onValueChanged?.Invoke());
         m_initialized = true;
     }
     public void AddModule(IDmxOutput module)
     {
+        module.onValueChanged += () => onValueChanged?.Invoke();
         OutputList.Add(module);
         BuildDefinitions();
     }

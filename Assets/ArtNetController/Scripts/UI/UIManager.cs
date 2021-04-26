@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
+    DmxOutputUniverse activeUniverse => UniverseManager.Instance.ActiveUniverse;
+
     [SerializeField] UniverseView universeView;
     [SerializeField] ControlView controlView;
     [SerializeField] EditorView editorView;
@@ -33,6 +35,7 @@ public class UIManager : MonoBehaviour
             controlView.ClearUI();
             if (0 < outputList.Count)
             {
+                outputList.Sort((a, b) => a.StartChannel - b.StartChannel);
                 editorView.DisplayOutputEditorUI();
                 var groups = outputList.GroupBy(o => (o.Type, o.Label));
                 foreach (var g in groups)
@@ -42,7 +45,7 @@ public class UIManager : MonoBehaviour
                     uiList.ForEach(ui =>
                     {
                         ui.AddMultiTargeUIs(uiList.Where(element => element != ui));
-                        ui.SetParent(UniverseManager.Instance.ActiveUniverse);
+                        ui.SetParent(activeUniverse);
                         controlView.AddUI(ui.ControlUI);
                     });
                 }
