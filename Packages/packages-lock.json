@@ -110,6 +110,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "jp.cysharp.unirx": {
+      "version": "7.1.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://upm-packages.dev"
+    },
     "sugi.cc": {
       "version": "file:C:/Users/sugi-cho/source/repos/sugi-cho/ArtNetController/sugi.cc",
       "depth": 0,

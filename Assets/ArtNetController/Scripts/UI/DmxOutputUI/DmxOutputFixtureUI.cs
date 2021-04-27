@@ -34,7 +34,6 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
         targetDmxOutput.OutputList.Select(dmxOutput => CreateUI(dmxOutput)).ToList();
     void UpdateStructures()
     {
-        targetDmxOutput.BuildDefinitions();
         editorUI.Q<Label>("info-label").text =
             $"Num Channels: {targetDmxOutput.NumChannels}";
     }

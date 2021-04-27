@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="DmxOutputColor" style="align-items: center; width: 192px; overflow: hidden; padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; margin-left: 2px; margin-right: 2px; display: flex; flex-direction: column;">
-        <ui:Label text="Label" display-tooltip-when-elided="true" style="width: 100%; background-color: rgb(77, 77, 77); border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden; white-space: normal;" />
+    <ui:VisualElement name="dmx-output-module" style="align-items: center; width: 160px; overflow: hidden; margin-left: 2px; margin-right: 2px; display: flex; flex-direction: column; margin-top: 2px; margin-bottom: 2px; border-top-left-radius: 5px; border-bottom-left-radius: 0; border-top-right-radius: 5px; border-bottom-right-radius: 0;">
+        <ui:Label text="Label" display-tooltip-when-elided="true" style="width: 100%; border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden; white-space: normal;" />
         <ui:VisualElement name="background" style="flex-direction: row; flex-grow: 1; background-color: rgb(238, 55, 55);">
             <ui:VisualElement style="flex-grow: 1; width: 100%;">
                 <ui:VisualElement name="input-area" style="flex-direction: column-reverse; height: 300px; width: 100%; padding-left: 8px; padding-right: 8px;">

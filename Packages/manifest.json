@@ -10,6 +10,7 @@
     "com.unity.ugui": "1.0.0",
     "com.unity.ui": "1.0.0-preview.14",
     "com.unity.visualscripting": "1.6.0-pre.3",
+    "jp.cysharp.unirx": "7.1.0",
     "sugi.cc": "file:C:/Users/sugi-cho/source/repos/sugi-cho/ArtNetController/sugi.cc",
     "sugi.udp": "file:C:/Users/sugi-cho/source/repos/sugi-cho/ArtNetController/sugi.udp/sugi.udp",
     "com.unity.modules.ai": "1.0.0",
@@ -43,5 +44,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "Unofficial Unity Package Manager Registry",
+      "url": "https://upm-packages.dev",
+      "scopes": [
+        "jp.cysharp"
+      ]
+    }
+  ]
 }

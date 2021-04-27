@@ -155,6 +155,7 @@ public class EditorView
 
         FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
     }
+
     void BuildFixtureEditorView()
     {
         DmxOutputFixture editingFixture = null;

@@ -92,6 +92,7 @@ public static class FixtureLibrary
     {
         if (fixture.NumChannels < 1)
             return;
+        fixture.BuildDefinitions();
         var filePath = Path.Combine(folderPath, $"{fixture.Label}.json");
         var json = JsonUtility.ToJson(fixture);
         if (fixture.FilePath != filePath)

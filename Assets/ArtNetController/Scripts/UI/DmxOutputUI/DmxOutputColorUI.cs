@@ -77,11 +77,7 @@ public class DmxOutputColorUI : DmxOutputUI<DmxOutputColor>
         }
         color.a = 1f;
         targetDmxOutput.Value = color;
-        label.style.backgroundColor = background.style.backgroundColor = color;
-        var labelColor = color;
-        for (var i = 0; i < 3; i++)
-            labelColor[i] = (1f - labelColor[i]);
-        label.style.color = labelColor;
+        background.style.backgroundColor = color;
     }
     readonly Color[] rgb = new[] { Color.red, Color.green, Color.blue };
 }

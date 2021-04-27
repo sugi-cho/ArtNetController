@@ -39,6 +39,13 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             editorUI.Q<Toggle>().SetEnabled(true);
             editorUI.Q<Toggle>().RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
             editorUI.Q<TextField>("SizeProp").RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
+
+            var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
+            fixture.onEditOutputList += list =>
+            {
+                fixture.StartChannel = 0;
+                editorUI.Q<Label>("Type").text = $"{TargetDmxOutput.StartChannel}_{outputType}";
+            };
         }
     }
     public override IDmxOutput TargetDmxOutput => targetDmxOutput;
@@ -67,7 +74,8 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         var useFine = TargetDmxOutput as IUseFine;
         var sizeProp = TargetDmxOutput as ISizeProp;
 
-        typeLabel.text = outputType.ToString();
+        uiBase.style.backgroundColor = UIConfig.GetTypeColor(TargetDmxOutput.Type);
+        typeLabel.text = $"{targetDmxOutput.StartChannel}_{outputType}";
         labelField.value = TargetDmxOutput.Label;
         labelField.isDelayed = true;
         labelField.RegisterValueChangedCallback(evt =>
@@ -123,7 +131,10 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             return;
         }
 
+        var uiBase = controlUI.Q("dmx-output-module");
         var label = controlUI.Q<Label>();
+
+        uiBase.style.backgroundColor = UIConfig.GetTypeColor(TargetDmxOutput.Type);
         label.text = $"{TargetDmxOutput.Label} ({TargetDmxOutput.StartChannel})";
         void OnLabelChanged(string val) => label.text = val;
         TargetDmxOutput.onLabelChanged += OnLabelChanged;
