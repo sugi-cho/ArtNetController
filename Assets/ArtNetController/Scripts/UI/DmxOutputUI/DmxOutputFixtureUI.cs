@@ -84,7 +84,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
                 dropdownEdit.Q<DropdownField>().index = 0;
                 targetDmxOutput.NotifyEditChannel();
 
-                var ui = DmxOutputUI.CreateUI(output);
+                var ui = CreateUI(output);
                 uiContainer.Add(ui.EditorUI);
                 controlUI.Q("output-container").Add(ui.ControlUI);
                 ui.SetParent(targetDmxOutput);

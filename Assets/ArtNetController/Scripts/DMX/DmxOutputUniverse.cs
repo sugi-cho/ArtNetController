@@ -24,7 +24,22 @@ public class DmxOutputUniverse : DmxOutputBase
             output.SetDmx(ref dmx);
     }
 
-    public bool IsEmpty(int ch) => GetChannelOutput(ch) == null;
+    public void ValidateOutputs()
+    {
+        var inValidOutputList = OutputList.Where(o => !IsValid(o)).ToList();
+        inValidOutputList.ForEach(o => OutputList.Remove(o));
+        BuildDefinitions();
+        NotifyEditChannel();
+    }
+    public bool IsValid(IDmxOutput output) => Enumerable.Range(output.StartChannel, output.NumChannels).All(ch => {
+        if (ch < 0 || 511 < ch)
+            return false;
+        var existOutput = GetChannelOutput(ch);
+        if (existOutput != null || existOutput != output)
+            return false;
+        else
+            return true;
+    });
     public IDmxOutput GetChannelOutput(int ch) =>
         OutputList.FirstOrDefault(o => o.StartChannel <= ch && ch <= o.StartChannel + o.NumChannels - 1);
     public List<IDmxOutput> OutputList
@@ -49,9 +64,12 @@ public class DmxOutputUniverse : DmxOutputBase
                 .ToList();
         if (m_outputList == null)
             m_outputList = new List<IDmxOutput>();
+
         m_outputList.ForEach(output =>
             output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_)));
+
         m_initialized = true;
+        ValidateOutputs();
     }
     public void AddOutput(IDmxOutput output)
     {

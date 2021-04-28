@@ -231,11 +231,7 @@ public class UniverseView
             int ch;
             if (int.TryParse(evt.newValue, out ch))
             {
-                var checkCh = Enumerable.Range(ch, output.NumChannels).All(i =>
-                {
-                    var chOut = activeUniverse.GetChannelOutput(i);
-                    return chOut == null || chOut == output;
-                });
+                var checkCh = activeUniverse.IsValid(output);
                 if (checkCh)
                 {
                     output.StartChannel = ch;
