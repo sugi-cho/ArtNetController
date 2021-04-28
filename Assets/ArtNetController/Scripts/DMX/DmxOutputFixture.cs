@@ -1,32 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using UniRx;
 
 [System.Serializable]
-public class DmxOutputFixture : IDmxOutput
+public class DmxOutputFixture : DmxOutputBase
 {
-    public event System.Action<List<IDmxOutput>> onEditOutputList;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-
     public string FilePath { get; set; }
-    public DmxOutputType Type => DmxOutputType.Fixture;
     #region IDmxOutput
-    public string Label
+    public override DmxOutputType Type => DmxOutputType.Fixture;
+    public override int StartChannel
     {
-        get => label; set
-        {
-            label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    [SerializeField] string label;
-    public int StartChannel
-    {
-        get => m_startChannel;
+        get => base.StartChannel;
         set
         {
-            m_startChannel = value;
+            base.StartChannel = value;
             foreach (var output in OutputList)
             {
                 output.StartChannel = value;
@@ -34,13 +21,12 @@ public class DmxOutputFixture : IDmxOutput
             }
         }
     }
-    int m_startChannel;
 
-    internal void NotifyEditOutputList() => onEditOutputList?.Invoke(OutputList);
+    internal void NotifyEditChannel() => editChannelSubject.OnNext(Unit.Default);
 
-    public int NumChannels => OutputList.Sum(output => output.NumChannels);
+    public override int NumChannels => OutputList.Sum(output => output.NumChannels);
 
-    public void SetDmx(ref byte[] dmx)
+    public override void SetDmx(ref byte[] dmx)
     {
         foreach (var output in OutputList)
             output.SetDmx(ref dmx);
@@ -69,19 +55,19 @@ public class DmxOutputFixture : IDmxOutput
         if (m_outputList == null)
             m_outputList = new List<IDmxOutput>();
         m_outputList.ForEach(output =>
-            output.onValueChanged += () => onValueChanged?.Invoke());
+            output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_)));
         m_initialized = true;
     }
 
-    public void AddModule(IDmxOutput module)
+    public void AddOutput(IDmxOutput output)
     {
-        module.onValueChanged += () => onValueChanged?.Invoke();
-        OutputList.Add(module);
+        output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_));
+        OutputList.Add(output);
         BuildDefinitions();
     }
-    public void RemoveModule(IDmxOutput module)
+    public void RemoveOutput(IDmxOutput output)
     {
-        OutputList.Remove(module);
+        OutputList.Remove(output);
         BuildDefinitions();
     }
     public void BuildDefinitions()

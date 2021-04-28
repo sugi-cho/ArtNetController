@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UniRx;
 
 [System.Serializable]
 public class UniverseView
@@ -49,9 +50,8 @@ public class UniverseView
         SetTabChoices();
         tabGroup.RegisterValueChangedCallback(evt =>
         {
-            activeUniverse.onLabelChanged -= ResetChoices;
             universeManager.ActiveUniverseIdx = evt.newValue;
-            activeUniverse.onLabelChanged += ResetChoices;
+            activeUniverse.OnLabelChanged.Subscribe(ResetChoices);
         });
         newButton.clicked += () =>
         {
@@ -146,14 +146,15 @@ public class UniverseView
             SetupMatrixSelector();
             Clear();
         };
-        activeUniverse.onEditOutputList += list =>
+        activeUniverse.OnEditChannel.Subscribe(_ =>
         {
+            var list = activeUniverse.OutputList;
             SetupMatrixSelector();
             var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
             foreach (var rem in removes)
                 selectOutputList.Remove(rem);
             OnSelectionChanged();
-        };
+        });
         SetupMatrixSelector();
 
         var artnetController = Object.FindObjectOfType<ArtNetController>();
@@ -197,15 +198,15 @@ public class UniverseView
         nameField.RegisterValueChangedCallback(evt => activeUniverse.Label = evt.newValue);
         universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = (short)evt.newValue);
 
-        void SetupControllerContainer(List<IDmxOutput> outputList)
+        void SetupControllerContainer()
         {
             controllerContainer.Clear();
-            foreach (var output in outputList)
+            foreach (var output in activeUniverse.OutputList)
                 controllerContainer.Add(UniverseControllerView(output));
         }
-        universeManager.onActiveUniverseChanged += univ => SetupControllerContainer(univ.OutputList);
-        activeUniverse.onEditOutputList += SetupControllerContainer;
-        SetupControllerContainer(activeUniverse.OutputList);
+        universeManager.onActiveUniverseChanged += _ => SetupControllerContainer();
+        activeUniverse.OnEditChannel.Subscribe(_ => SetupControllerContainer());
+        SetupControllerContainer();
 
         saveButton.clicked += () =>
             universeManager.SaveUniverse(activeUniverse);
@@ -238,7 +239,7 @@ public class UniverseView
                 if (checkCh)
                 {
                     output.StartChannel = ch;
-                    activeUniverse.NotifyEditOutputList();
+                    activeUniverse.NotifyEditChannel();
                 }
                 else
                     chField.SetValueWithoutNotify(evt.previousValue);
@@ -251,8 +252,8 @@ public class UniverseView
         label.text = output.Label;
         removeButton.clicked += () =>
         {
-            activeUniverse.RemoveModule(output);
-            activeUniverse.NotifyEditOutputList();
+            activeUniverse.RemoveOutput(output);
+            activeUniverse.NotifyEditChannel();
             ReleaseOutput(output);
         };
         view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));
@@ -287,11 +288,11 @@ public class UniverseView
         }
         onSelectionChanged += OnSelectionChanged;
         void OnLabelChanged(string val) => label.text = val;
-        output.onLabelChanged += OnLabelChanged;
+        var disposable = output.OnLabelChanged.Subscribe(OnLabelChanged);
         view.RegisterCallback<DetachFromPanelEvent>(evt =>
         {
             onSelectionChanged -= OnSelectionChanged;
-            output.onLabelChanged -= OnLabelChanged;
+            disposable.Dispose();
         });
 
         if (selectOutputList.Contains(output))

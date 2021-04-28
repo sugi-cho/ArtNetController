@@ -25,21 +25,29 @@ MonoBehaviour:
     m_Scopes: []
     m_IsDefault: 1
     m_Capabilities: 7
-  m_UserSelectedRegistryName: 
+  - m_Id: scoped:Unofficial Unity Package Manager Registry
+    m_Name: Unofficial Unity Package Manager Registry
+    m_Url: https://upm-packages.dev
+    m_Scopes:
+    - jp.cysharp
+    m_IsDefault: 0
+    m_Capabilities: 0
+  m_UserSelectedRegistryName: Unofficial Unity Package Manager Registry
   m_UserAddingNewScopedRegistry: 0
   m_RegistryInfoDraft:
     m_ErrorMessage: 
     m_Original:
-      m_Id: 
-      m_Name: 
-      m_Url: 
-      m_Scopes: []
+      m_Id: scoped:Unofficial Unity Package Manager Registry
+      m_Name: Unofficial Unity Package Manager Registry
+      m_Url: https://upm-packages.dev
+      m_Scopes:
+      - jp.cysharp
       m_IsDefault: 0
       m_Capabilities: 0
     m_Modified: 0
-    m_Name: 
-    m_Url: 
+    m_Name: Unofficial Unity Package Manager Registry
+    m_Url: https://upm-packages.dev
     m_Scopes:
-    - 
+    - jp.cysharp
     m_SelectedScopeIndex: 0
   m_LoadAssets: 0

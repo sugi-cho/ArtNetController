@@ -2,6 +2,7 @@ using UnityEngine;
 
 using ArtNet.Packets;
 using sugi.cc.udp;
+using UniRx;
 
 public class ArtNetController : MonoBehaviour
 {
@@ -39,13 +40,13 @@ public class ArtNetController : MonoBehaviour
         sender.CreateRemoteEP(RemoteIp, 6454);
 
         universeManager.onActiveUniverseChanged += univ => packetToOutput.Universe = univ.Universe;
-        activeUniverse.onValueChanged += () =>
+        activeUniverse.OnValueChanged.Subscribe(_ =>
         {
             var dmx = new byte[512];
             activeUniverse.SetDmx(ref dmx);
             packetToOutput.DmxData = dmx;
             sender.Send(packetToOutput.ToArray());
-        };
+        });
     }
     private void OnDisable()
     {

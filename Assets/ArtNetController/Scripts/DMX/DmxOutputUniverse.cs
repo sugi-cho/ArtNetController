@@ -1,36 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UniRx;
 
 [System.Serializable]
-public class DmxOutputUniverse : IDmxOutput
+public class DmxOutputUniverse : DmxOutputBase
 {
-    public event System.Action<List<IDmxOutput>> onEditOutputList;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-
-    public DmxOutputType Type => DmxOutputType.Universe;
-    public string Label
-    {
-        get => label; set
-        {
-            label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    [SerializeField] string label;
+    public override DmxOutputType Type => DmxOutputType.Universe;
     public short Universe { get => universe; set => universe = value; }
     [SerializeField] short universe;
-    public int StartChannel
+    public override int StartChannel
     {
         get => 0;
         set { Debug.Log("DmxOutputUniverse.StartChannel = 0, always"); }
     }
-    public int NumChannels => OutputList
+    public override int NumChannels => OutputList
         .Select(o => o.StartChannel + o.NumChannels)
         .OrderBy(ch => ch)
         .LastOrDefault();
-    public void SetDmx(ref byte[] dmx)
+    public override void SetDmx(ref byte[] dmx)
     {
         foreach (var output in OutputList)
             output.SetDmx(ref dmx);
@@ -62,21 +50,21 @@ public class DmxOutputUniverse : IDmxOutput
         if (m_outputList == null)
             m_outputList = new List<IDmxOutput>();
         m_outputList.ForEach(output =>
-            output.onValueChanged += () => onValueChanged?.Invoke());
+            output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_)));
         m_initialized = true;
     }
-    public void AddModule(IDmxOutput module)
+    public void AddOutput(IDmxOutput output)
     {
-        module.onValueChanged += () => onValueChanged?.Invoke();
-        OutputList.Add(module);
+        output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_));
+        OutputList.Add(output);
         BuildDefinitions();
     }
-    public void RemoveModule(IDmxOutput module)
+    public void RemoveOutput(IDmxOutput output)
     {
-        OutputList.Remove(module);
+        OutputList.Remove(output);
         BuildDefinitions();
     }
-    public void NotifyEditOutputList() => onEditOutputList?.Invoke(OutputList);
+    public void NotifyEditChannel() => editChannelSubject.OnNext(Unit.Default);
     public void BuildDefinitions()
     {
         OutputList.Sort((a, b) => a.StartChannel - b.StartChannel);

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UniRx;
 
 public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
 {
@@ -14,8 +15,8 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
         selector.style.flexDirection = FlexDirection.ColumnReverse;
         selector.NumChoices = targetDmxOutput.SizeProp;
         void SetSelectorSize(int size) => selector.NumChoices = size;
-        targetDmxOutput.onSizePropChanged += SetSelectorSize;
-        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => targetDmxOutput.onSizePropChanged -= SetSelectorSize);
+        var disposable = targetDmxOutput.OnSizePropChanged.Subscribe(SetSelectorSize);
+        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => disposable.Dispose());
 
         selector.onValueChanged += (val) =>
         {

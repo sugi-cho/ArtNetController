@@ -2,9 +2,24 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 using UnityEngine;
+using UniRx;
 
 public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
 {
+    public override IDmxOutput TargetDmxOutput => targetDmxOutput;
+    protected T targetDmxOutput;
+    public List<DmxOutputUI<T>> multiEditUIs = new List<DmxOutputUI<T>>();
+
+    string EditorUIBaseResourcePath => $"UI/DmxOutput/DmxOutput_Editor";
+    internal string EditorUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Editor";
+    internal string ControlUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Control";
+
+    Label typeLabel;
+    Toggle fineToggle;
+    TextField sizeField;
+    Button removeButton;
+
+    #region Constructor
     public DmxOutputUI(T dmxOutput)
     {
         targetDmxOutput = dmxOutput;
@@ -12,62 +27,17 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         BuildControlUI();
     }
 
-    public override void SetParent(IDmxOutput parentOutput)
-    {
-        var universe = parentOutput as DmxOutputUniverse;
-        var fixture = parentOutput as DmxOutputFixture;
-        if (universe != null)
-        {
-            onRemoveButtonClicked += () =>
-            {
-                universe.RemoveModule(TargetDmxOutput);
-                foreach (var ui in multiEditUIs)
-                    universe.RemoveModule(ui.TargetDmxOutput);
-                universe.NotifyEditOutputList();
-            };
-            editorUI.Q<Toggle>().SetEnabled(false);
-        }
-        if (fixture != null)
-        {
-            onRemoveButtonClicked += () =>
-            {
-                fixture.RemoveModule(TargetDmxOutput);
-                fixture.NotifyEditOutputList();
-                editorUI.RemoveFromHierarchy();
-                controlUI.RemoveFromHierarchy();
-            };
-            editorUI.Q<Toggle>().SetEnabled(true);
-            editorUI.Q<Toggle>().RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
-            editorUI.Q<TextField>("SizeProp").RegisterValueChangedCallback(evt => fixture.NotifyEditOutputList());
-
-            var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
-            fixture.onEditOutputList += list =>
-            {
-                fixture.StartChannel = 0;
-                editorUI.Q<Label>("Type").text = $"{TargetDmxOutput.StartChannel}_{outputType}";
-            };
-        }
-    }
-    public override IDmxOutput TargetDmxOutput => targetDmxOutput;
-    protected T targetDmxOutput;
-    public List<DmxOutputUI<T>> multiEditUIs = new List<DmxOutputUI<T>>();
-    public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis) =>
-        multiEditUIs.AddRange(uis.Select(ui => ui as DmxOutputUI<T>));
-
-    string EditorUIBaseResourcePath => $"UI/DmxOutput/DmxOutput_Editor";
-    internal string EditorUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Editor";
-    internal string ControlUIResourcePath => $"UI/DmxOutput/{typeof(T).Name}_Control";
     protected virtual void BuildEditorUI()
     {
         var tree = Resources.Load<VisualTreeAsset>(EditorUIBaseResourcePath);
         editorUI = tree?.CloneTree("");
 
         var uiBase = editorUI.Q("dmx-output-module");
-        var typeLabel = uiBase.Q<Label>("Type");
+        typeLabel = uiBase.Q<Label>("Type");
         var labelField = uiBase.Q<TextField>("Label");
-        var fineToggle = uiBase.Q<Toggle>();
-        var sizeField = uiBase.Q<TextField>("SizeProp");
-        var removeButton = uiBase.Q<Button>("remove-button");
+        fineToggle = uiBase.Q<Toggle>();
+        sizeField = uiBase.Q<TextField>("SizeProp");
+        removeButton = uiBase.Q<Button>("remove-button");
 
         var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
 
@@ -76,6 +46,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
 
         uiBase.style.backgroundColor = UIConfig.GetTypeColor(TargetDmxOutput.Type);
         typeLabel.text = $"{targetDmxOutput.StartChannel}_{outputType}";
+
         labelField.value = TargetDmxOutput.Label;
         labelField.isDelayed = true;
         labelField.RegisterValueChangedCallback(evt =>
@@ -117,9 +88,8 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         else
             sizeField.style.display = DisplayStyle.None;
 
-        removeButton.clicked += () => { onRemoveButtonClicked?.Invoke(); };
-
     }
+
     protected virtual void BuildControlUI()
     {
         var tree = Resources.Load<VisualTreeAsset>(ControlUIResourcePath);
@@ -136,11 +106,51 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
 
         uiBase.style.backgroundColor = UIConfig.GetTypeColor(TargetDmxOutput.Type);
         label.text = $"{TargetDmxOutput.Label} ({TargetDmxOutput.StartChannel})";
-        void OnLabelChanged(string val) => label.text = val;
-        TargetDmxOutput.onLabelChanged += OnLabelChanged;
-        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => TargetDmxOutput.onLabelChanged -= OnLabelChanged);
+        void OnLabelChanged(string val) => label.text = $"{TargetDmxOutput.Label} ({TargetDmxOutput.StartChannel})";
+        var disposable = TargetDmxOutput.OnLabelChanged.Subscribe(OnLabelChanged);
+        controlUI.RegisterCallback<DetachFromPanelEvent>(evt => disposable.Dispose());
     }
-    private event System.Action onRemoveButtonClicked;
+    #endregion
+
+    public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis) =>
+        multiEditUIs.AddRange(uis.Select(ui => ui as DmxOutputUI<T>));
+
+    public override void SetParent(IDmxOutput parentOutput)
+    {
+        var universe = parentOutput as DmxOutputUniverse;
+        var fixture = parentOutput as DmxOutputFixture;
+        if (universe != null)
+        {
+            removeButton.clicked += () =>
+            {
+                universe.RemoveOutput(TargetDmxOutput);
+                foreach (var ui in multiEditUIs)
+                    universe.RemoveOutput(ui.TargetDmxOutput);
+                universe.NotifyEditChannel();
+            };
+            fineToggle.SetEnabled(false);
+        }
+        if (fixture != null)
+        {
+            removeButton.clicked += () =>
+            {
+                fixture.RemoveOutput(TargetDmxOutput);
+                fixture.NotifyEditChannel();
+                editorUI.RemoveFromHierarchy();
+                controlUI.RemoveFromHierarchy();
+            };
+            fineToggle.SetEnabled(true);
+            fineToggle.RegisterValueChangedCallback(evt => fixture.NotifyEditChannel());
+            sizeField.RegisterValueChangedCallback(evt => fixture.NotifyEditChannel());
+
+            var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
+            fixture.OnEditChannel.Subscribe(_ =>
+            {
+                fixture.StartChannel = 0;
+                typeLabel.text = $"{TargetDmxOutput.StartChannel}_{outputType}";
+            });
+        }
+    }
 }
 
 public abstract class DmxOutputUI

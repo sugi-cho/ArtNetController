@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UniRx;
 
 public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 {
@@ -79,9 +80,9 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             if (System.Enum.TryParse(val, out outputType))
             {
                 var output = DmxOutputUtility.CreateDmxOutput(outputType);
-                targetDmxOutput.AddModule(output);
+                targetDmxOutput.AddOutput(output);
                 dropdownEdit.Q<DropdownField>().index = 0;
-                targetDmxOutput.NotifyEditOutputList();
+                targetDmxOutput.NotifyEditChannel();
 
                 var ui = DmxOutputUI.CreateUI(output);
                 uiContainer.Add(ui.EditorUI);
@@ -89,7 +90,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
                 ui.SetParent(targetDmxOutput);
             }
         };
-        targetDmxOutput.onEditOutputList += list => UpdateStructures();
+        targetDmxOutput.OnEditChannel.Subscribe(_ => UpdateStructures());
     }
 
     protected override void BuildControlUI()

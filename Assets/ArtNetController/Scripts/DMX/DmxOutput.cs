@@ -1,44 +1,18 @@
+using System;
 using System.Linq;
 using UnityEngine;
+using UniRx;
 
-[System.Serializable]
-public class DmxOutputFloat : IDmxOutput, IUseFine
+public class DmxOutputFloat : DmxOutputBase<float>, IUseFine
 {
-    public DmxOutputType Type => DmxOutputType.Float;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public bool UseFine
-    {
-        get => m_useFine; set
-        {
-            m_useFine = value;
-            onUseFineChanged?.Invoke(value);
-        }
-    }
-    bool m_useFine;
-    public event System.Action<bool> onUseFineChanged;
-    public int StartChannel { get; set; }
-    public int NumChannels => UseFine ? 2 : 1;
+    public override DmxOutputType Type => DmxOutputType.Float;
+    public bool UseFine { get => m_useFineProp.Value; set => m_useFineProp.Value = value; }
+    public IObservable<bool> OnUseFineChanged => m_useFineProp;
+    ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
+    public override int NumChannels => UseFine ? 2 : 1;
 
-    public float Value
-    {
-        get => m_value; set
-        {
-            m_value = Mathf.Clamp01(value);
-            onValueChanged?.Invoke();
-        }
-    }
-    float m_value;
-    public void SetDmx(ref byte[] dmx)
+    public override float Value { get => base.Value; set => base.Value = Mathf.Clamp01(value); }
+    public override void SetDmx(ref byte[] dmx)
     {
         if (UseFine)
         {
@@ -50,123 +24,39 @@ public class DmxOutputFloat : IDmxOutput, IUseFine
     }
 }
 
-[System.Serializable]
-public class DmxOutputInt : IDmxOutput
+public class DmxOutputInt : DmxOutputBase<int>
 {
-    public DmxOutputType Type => DmxOutputType.Int;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public int StartChannel { get; set; }
-    public int NumChannels => 1;
-
-    public int Value
-    {
-        get => m_value; set
-        {
-            m_value = Mathf.Clamp(value, 0, 255);
-            onValueChanged?.Invoke();
-        }
-    }
-    int m_value;
-    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
+    public override DmxOutputType Type => DmxOutputType.Int;
+    public override int NumChannels => 1;
+    public override int Value { get => base.Value; set => base.Value = Mathf.Clamp(value, 0, 255); }
+    public override void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)Value;
 }
 
-[System.Serializable]
-public class DmxOutputSelector : IDmxOutput, ISizeProp
+public class DmxOutputSelector : DmxOutputBase<int>, ISizeProp
 {
-    public DmxOutputType Type => DmxOutputType.Selector;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public int StartChannel { get; set; }
-    public int NumChannels => 1;
+    public override DmxOutputType Type => DmxOutputType.Selector;
+    public override int NumChannels => 1;
 
-    public int SizeProp
-    {
-        get => m_size; set
-        {
-            m_size = value;
-            onSizePropChanged?.Invoke(value);
-        }
-    }
-    int m_size;
-    public event System.Action<int> onSizePropChanged;
-    public int Value
-    {
-        get => m_value; set
-        {
-            m_value = Mathf.Clamp(value, 0, SizeProp - 1);
-            onValueChanged?.Invoke();
-        }
-    }
-    int m_value;
-    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / SizeProp * 255);
+    public int SizeProp { get => m_sizeProp.Value; set => m_sizeProp.Value = value; }
+    public IObservable<int> OnSizePropChanged => m_sizeProp;
+    ReactiveProperty<int> m_sizeProp = new ReactiveProperty<int>(5);
+
+    public override int Value { get => base.Value; set => base.Value = Mathf.Clamp(value, 0, SizeProp - 1); }
+    public override void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)((Value + 0.5f) / SizeProp * 255);
 
 }
 
-[System.Serializable]
-public class DmxOutputBool : IDmxOutput
+public class DmxOutputBool : DmxOutputBase<bool>
 {
-    public DmxOutputType Type => DmxOutputType.Bool;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public int StartChannel { get; set; }
-    public int NumChannels => 1;
-
-    public bool Value
-    {
-        get => m_value; set
-        {
-            m_value = value;
-            onValueChanged?.Invoke();
-        }
-    }
-    bool m_value;
-    public void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)(m_value ? 255 : 0);
+    public override DmxOutputType Type => DmxOutputType.Bool;
+    public override int NumChannels => 1;
+    public override void SetDmx(ref byte[] dmx) => dmx[StartChannel] = (byte)(Value ? 255 : 0);
 }
 
-[System.Serializable]
-public class DmxOutputXY : IDmxOutput, IUseFine
+public class DmxOutputXY : DmxOutputBase<Vector2>, IUseFine
 {
-    public DmxOutputType Type => DmxOutputType.XY;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public DmxOutputXY()
+    public override DmxOutputType Type => DmxOutputType.XY;
+    public DmxOutputXY() : base()
     {
         dmxOutputX = new DmxOutputFloat();
         dmxOutputY = new DmxOutputFloat();
@@ -178,20 +68,22 @@ public class DmxOutputXY : IDmxOutput, IUseFine
 
     public bool UseFine
     {
-        get => dmxOutputX.UseFine;
+        get => m_useFineProp.Value;
         set
         {
-            dmxOutputX.UseFine = dmxOutputY.UseFine = value;
-            StartChannel = (dmxOutputs[0].StartChannel);
-            onUseFineChanged?.Invoke(value);
+            m_useFineProp.Value = value;
+            dmxOutputX.UseFine = dmxOutputY.UseFine = UseFine;
+            StartChannel = dmxOutputs[0].StartChannel;
         }
     }
-    public event System.Action<bool> onUseFineChanged;
-    public int StartChannel
+    public IObservable<bool> OnUseFineChanged => m_useFineProp;
+    ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
+    public override int StartChannel
     {
-        get => dmxOutputs[0].StartChannel;
+        get => base.StartChannel;
         set
         {
+            base.StartChannel = value;
             foreach (var output in dmxOutputs)
             {
                 output.StartChannel = value;
@@ -199,45 +91,33 @@ public class DmxOutputXY : IDmxOutput, IUseFine
             }
         }
     }
-    public int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
+    public override int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
 
-    public Vector2 Value
+    public override Vector2 Value
     {
-        get => m_value;
+        get => base.Value;
         set
         {
-            dmxOutputX.Value = value.x;
-            dmxOutputY.Value = value.y;
-            m_value.x = dmxOutputX.Value;
-            m_value.y = dmxOutputY.Value;
-            onValueChanged?.Invoke();
+            value.x = Mathf.Clamp(value.x, 0, 1f);
+            value.y = Mathf.Clamp(value.y, 0, 1f);
+            base.Value = value;
+            dmxOutputX.Value = Value.x;
+            dmxOutputY.Value = Value.y;
         }
     }
-    Vector2 m_value;
 
-    public void SetDmx(ref byte[] dmx)
+    public override void SetDmx(ref byte[] dmx)
     {
         foreach (var output in dmxOutputs)
             output.SetDmx(ref dmx);
     }
 }
 
-[System.Serializable]
-public class DmxOutputColor : IDmxOutput, IUseFine
+public class DmxOutputColor : DmxOutputBase<Color>, IUseFine
 {
-    public DmxOutputType Type => DmxOutputType.Color;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public DmxOutputColor()
+    public override DmxOutputType Type => DmxOutputType.Color;
+
+    public DmxOutputColor() : base()
     {
         dmxOutputR = new DmxOutputFloat();
         dmxOutputG = new DmxOutputFloat();
@@ -251,21 +131,23 @@ public class DmxOutputColor : IDmxOutput, IUseFine
 
     public bool UseFine
     {
-        get => dmxOutputR.UseFine;
+        get => m_useFineProp.Value;
         set
         {
-            dmxOutputR.UseFine = dmxOutputG.UseFine = dmxOutputB.UseFine = value;
+            m_useFineProp.Value = value;
+            dmxOutputR.UseFine = dmxOutputG.UseFine = dmxOutputB.UseFine = UseFine;
             StartChannel = dmxOutputs[0].StartChannel;
-            onUseFineChanged?.Invoke(value);
         }
     }
-    public event System.Action<bool> onUseFineChanged;
+    public IObservable<bool> OnUseFineChanged => m_useFineProp;
+    ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
 
-    public int StartChannel
+    public override int StartChannel
     {
-        get => dmxOutputs[0].StartChannel;
+        get => base.StartChannel;
         set
         {
+            base.StartChannel = value;
             foreach (var output in dmxOutputs)
             {
                 output.StartChannel = value;
@@ -273,56 +155,63 @@ public class DmxOutputColor : IDmxOutput, IUseFine
             }
         }
     }
-    public int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
+    public override int NumChannels => dmxOutputs.Sum(output => output.NumChannels);
 
-    public Color Value
+    public override Color Value
     {
-        get => m_value;
+        get => base.Value;
         set
         {
-            m_value = value;
-            dmxOutputR.Value = value.r;
-            dmxOutputG.Value = value.g;
-            dmxOutputB.Value = value.b;
-            onValueChanged?.Invoke();
+            base.Value = value;
+            dmxOutputR.Value = Value.r;
+            dmxOutputG.Value = Value.g;
+            dmxOutputB.Value = Value.b;
         }
     }
-    Color m_value;
 
-    public void SetDmx(ref byte[] dmx)
+    public override void SetDmx(ref byte[] dmx)
     {
         foreach (var output in dmxOutputs)
             output.SetDmx(ref dmx);
     }
 }
 
-[System.Serializable]
-public class DmxOutputEmpty : IDmxOutput, ISizeProp
+public class DmxOutputEmpty : DmxOutputBase, ISizeProp
 {
-    public DmxOutputType Type => DmxOutputType.Empty;
-    public event System.Action<string> onLabelChanged;
-    public event System.Action onValueChanged;
-    public string Label
-    {
-        get => m_label; set
-        {
-            m_label = value;
-            onLabelChanged?.Invoke(value);
-        }
-    }
-    string m_label;
-    public int SizeProp
-    {
-        get => m_size; set
-        {
-            m_size = value;
-            onSizePropChanged?.Invoke(value);
-        }
-    }
-    int m_size;
-    public event System.Action<int> onSizePropChanged;
-    public int StartChannel { get; set; }
-    public int NumChannels => SizeProp;
-    public void SetDmx(ref byte[] dmx) =>
+    public override DmxOutputType Type => DmxOutputType.Empty;
+    public int SizeProp { get => m_sizeProp.Value; set => m_sizeProp.Value = value; }
+    public IObservable<int> OnSizePropChanged => m_sizeProp;
+    ReactiveProperty<int> m_sizeProp = new ReactiveProperty<int>(1);
+
+    public override int NumChannels => SizeProp;
+    public override void SetDmx(ref byte[] dmx) =>
         System.Buffer.BlockCopy(new byte[SizeProp], 0, dmx, StartChannel, SizeProp);
+}
+
+
+public abstract class DmxOutputBase<T> : DmxOutputBase
+{
+    public DmxOutputBase() : base() =>
+        m_valueProp.Subscribe(_ => valueChangedSubject.OnNext(Unit.Default));
+
+    public virtual T Value { get => m_valueProp.Value; set => m_valueProp.Value = value; }
+    ReactiveProperty<T> m_valueProp = new ReactiveProperty<T>();
+}
+public abstract class DmxOutputBase : IDmxOutput
+{
+    public DmxOutputBase() => 
+        m_startChannelProp.Subscribe(_ => editChannelSubject.OnNext(Unit.Default));
+
+    public abstract DmxOutputType Type { get; }
+    public string Label { get => m_labelProp.Value; set => m_labelProp.Value = value; }
+    public IObservable<string> OnLabelChanged => m_labelProp;
+    [SerializeField] protected ReactiveProperty<string> m_labelProp = new ReactiveProperty<string>();
+    public IObservable<Unit> OnValueChanged => valueChangedSubject;
+    protected Subject<Unit> valueChangedSubject = new Subject<Unit>();
+    public virtual int StartChannel { get => m_startChannelProp.Value; set => m_startChannelProp.Value = value; }
+    public IObservable<Unit> OnEditChannel => editChannelSubject;
+    ReactiveProperty<int> m_startChannelProp = new ReactiveProperty<int>();
+    protected Subject<Unit> editChannelSubject = new Subject<Unit>();
+    public abstract int NumChannels { get; }
+    public abstract void SetDmx(ref byte[] dmx);
 }

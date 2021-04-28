@@ -1,3 +1,6 @@
+using System;
+using UniRx;
+
 public interface IDmxOutput
 {
     public DmxOutputType Type { get; }
@@ -5,16 +8,20 @@ public interface IDmxOutput
     int StartChannel { get; set; }
     int NumChannels { get; }
     void SetDmx(ref byte[] dmx);
-    event System.Action<string> onLabelChanged;
-    event System.Action onValueChanged;
+
+    IObservable<string> OnLabelChanged { get; }
+    IObservable<Unit> OnValueChanged { get; }
+    IObservable<Unit> OnEditChannel { get; } 
 }
 public interface IUseFine
 {
     bool UseFine { get; set; }
-    event System.Action<bool> onUseFineChanged;
+
+    IObservable<bool> OnUseFineChanged { get; }
 }
 public interface ISizeProp
 {
     int SizeProp { get; set; }
-    event System.Action<int> onSizePropChanged;
+
+    IObservable<int> OnSizePropChanged { get; }
 }

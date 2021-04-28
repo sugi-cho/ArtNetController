@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.UIElements;
+using UniRx;
 
 [System.Serializable]
 public class EditorView
@@ -92,10 +93,10 @@ public class EditorView
                 var output = DmxOutputUtility.CreateDmxOutput(definition);
                 output.StartChannel = ch;
                 if (Enumerable.Range(ch, output.NumChannels).All(idx => activeUniverse.IsEmpty(idx)))
-                    activeUniverse.AddModule(output);
+                    activeUniverse.AddOutput(output);
                 ch += output.NumChannels;
             }
-            activeUniverse.NotifyEditOutputList();
+            activeUniverse.NotifyEditChannel();
         };
 
         labelField.value = "Name";
@@ -146,14 +147,14 @@ public class EditorView
                     var output = FixtureLibrary.LoadFixture(label);
                     output.StartChannel = ch;
                     if (Enumerable.Range(ch, output.NumChannels).All(idx => activeUniverse.IsEmpty(idx)))
-                        activeUniverse.AddModule(output);
+                        activeUniverse.AddOutput(output);
                     ch += output.NumChannels;
                 }
-                activeUniverse.NotifyEditOutputList();
+                activeUniverse.NotifyEditChannel();
             }
         };
 
-        FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
+        FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_ => SetChoices());
     }
 
     void BuildFixtureEditorView()
@@ -185,7 +186,7 @@ public class EditorView
 
             deleteButton.SetEnabled(!string.IsNullOrEmpty(editingFixture.FilePath));
             saveButton.SetEnabled(0 < editingFixture.NumChannels);
-            editingFixture.onEditOutputList += list => saveButton.SetEnabled(0 < editingFixture.NumChannels);
+            editingFixture.OnEditChannel.Subscribe(_ => saveButton.SetEnabled(0 < editingFixture.NumChannels));
         }
 
         fixtureSelectField.onValueCanged += SelectFixture;
@@ -204,7 +205,7 @@ public class EditorView
 
         SetChoices();
         SelectFixture(fixtureSelectField.Value);
-        FixtureLibrary.OnFixtureLabelListLoaded += SetChoices;
+        FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_ => SetChoices());
     }
 
     internal void DisplayOutputEditorUI()

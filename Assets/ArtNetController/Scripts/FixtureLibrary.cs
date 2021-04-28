@@ -1,12 +1,15 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UniRx;
 
 public static class FixtureLibrary
 {
-    public static event System.Action OnFixtureLabelListLoaded;
+    public static IObservable<Unit> OnFixtureLabelListLoaded => fixtureLabelLoadedSubject;
+    static Subject<Unit> fixtureLabelLoadedSubject = new Subject<Unit>();
 
     public static List<string> FixtureLabelList
     {
@@ -31,13 +34,7 @@ public static class FixtureLibrary
             var label = Path.GetFileNameWithoutExtension(path);
             m_fixtureLabelList.Add(label);
         }
-        OnFixtureLabelListLoaded?.Invoke();
-    }
-    public static DmxOutputFixture CreateFixture()
-    {
-        var label = GenerateUniqueLabel("New Fixture");
-        var newFixture = new DmxOutputFixture { Label = label };
-        return newFixture;
+        fixtureLabelLoadedSubject.OnNext(Unit.Default);
     }
     static string GenerateUniqueLabel(string label)
     {
@@ -62,7 +59,7 @@ public static class FixtureLibrary
         if (!File.Exists(filePath))
         {
             Debug.LogWarning($"Fixture: Label='{label}' does not exist.");
-            var fixture = new DmxOutputFixture { Label = label };
+            var fixture = new DmxOutputFixture { Label = GenerateUniqueLabel(label) };
             fixture.Initialize();
             return fixture;
         }
@@ -74,13 +71,6 @@ public static class FixtureLibrary
             fixture.FilePath = filePath;
             return fixture;
         }
-    }
-    public static void ReloadFixture(DmxOutputFixture fixture)
-    {
-        var filePath = Path.Combine(folderPath, $"{fixture.Label}.json");
-        var json = File.ReadAllText(filePath);
-        JsonUtility.FromJsonOverwrite(json, fixture);
-        fixture.Initialize();
     }
     public static void DeleteFixture(DmxOutputFixture fixture)
     {

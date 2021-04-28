@@ -1,1 +1,1 @@
-{"label":"Gogo","dmxOutputDefinitions":[{"type":3,"label":"Selector","channel":0,"useFine":false,"size":4},{"type":5,"label":"XY","channel":1,"useFine":true,"size":0}]}
+{"m_labelProp":{"value":"Gogo"},"dmxOutputDefinitions":[{"type":3,"label":"Selector","channel":0,"useFine":false,"size":4},{"type":5,"label":"XY","channel":1,"useFine":true,"size":0}]}
