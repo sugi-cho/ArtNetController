@@ -6,7 +6,8 @@ using UniRx;
 [System.Serializable]
 public class EditorView
 {
-    DmxOutputUniverse activeUniverse => UniverseManager.Instance.ActiveUniverse;
+    DmxOutputUniverse ActiveUniverse => UniverseManager.Instance.ActiveUniverse;
+    FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
 
     ScrollView baseScroll;
     VisualElement addOutputView;
@@ -92,11 +93,11 @@ public class EditorView
             {
                 var output = DmxOutputUtility.CreateDmxOutput(definition);
                 output.StartChannel = ch;
-                if (activeUniverse.IsValid(output))
-                    activeUniverse.AddOutput(output);
+                if (ActiveUniverse.IsValid(output))
+                    ActiveUniverse.AddOutput(output);
                 ch += output.NumChannels;
             }
-            activeUniverse.NotifyEditChannel();
+            ActiveUniverse.NotifyEditChannel();
         };
 
         labelField.value = "Name";
@@ -146,11 +147,11 @@ public class EditorView
                 {
                     var output = FixtureLibrary.LoadFixture(label);
                     output.StartChannel = ch;
-                    if (activeUniverse.IsValid(output))
-                        activeUniverse.AddOutput(output);
+                    if (ActiveUniverse.IsValid(output))
+                        ActiveUniverse.AddOutput(output);
                     ch += output.NumChannels;
                 }
-                activeUniverse.NotifyEditChannel();
+                ActiveUniverse.NotifyEditChannel();
             }
         };
 

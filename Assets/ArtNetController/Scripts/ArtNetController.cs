@@ -8,8 +8,9 @@ public class ArtNetController : MonoBehaviour
 {
     [SerializeField] ArtNetDmxPacket packetToOutput;
     [SerializeField] UdpSender sender;
-    UniverseManager universeManager => UniverseManager.Instance;
-    DmxOutputUniverse activeUniverse => universeManager.ActiveUniverse;
+    UniverseManager UniverseManager => UniverseManager.Instance;
+    DmxOutputUniverse ActiveUniverse => UniverseManager.ActiveUniverse;
+    FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
 
     public bool UseBroadCast
     {
@@ -39,18 +40,21 @@ public class ArtNetController : MonoBehaviour
         sender.useBroadCast = UseBroadCast;
         sender.CreateRemoteEP(RemoteIp, 6454);
 
-        universeManager.onActiveUniverseChanged += univ => packetToOutput.Universe = univ.Universe;
-        activeUniverse.OnValueChanged.Subscribe(_ =>
+        UniverseManager.OnActiveUniverseChanged.Subscribe(_
+            => packetToOutput.Universe = ActiveUniverse.Universe);
+        ActiveUniverse.OnValueChanged.Subscribe(_ =>
         {
             var dmx = new byte[512];
-            activeUniverse.SetDmx(ref dmx);
+            ActiveUniverse.SetDmx(ref dmx);
             packetToOutput.DmxData = dmx;
             sender.Send(packetToOutput.ToArray());
         });
+        FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_
+            => UniverseManager.ValidateAllUniverses());
     }
     private void OnDisable()
     {
-        universeManager.SaveAllUniverses();
+        UniverseManager.SaveAllUniverses();
     }
 
 }

@@ -7,8 +7,8 @@ using UniRx;
 [System.Serializable]
 public class UniverseView
 {
-    UniverseManager universeManager => UniverseManager.Instance;
-    DmxOutputUniverse activeUniverse => universeManager.ActiveUniverse;
+    UniverseManager UniverseManager => UniverseManager.Instance;
+    DmxOutputUniverse ActiveUniverse => UniverseManager.ActiveUniverse;
 
     VisualElement tabView;
     VisualElement channelsView;
@@ -43,20 +43,20 @@ public class UniverseView
 
         void SetTabChoices()
         {
-            tabGroup.choices = universeManager.Universes.Select(u => u.Label);
-            tabGroup.SetValueWithoutNotify(universeManager.ActiveUniverseIdx);
+            tabGroup.choices = UniverseManager.UniverseList.Select(u => u.Label);
+            tabGroup.SetValueWithoutNotify(UniverseManager.ActiveUniverseIdx);
         }
         void ResetChoices(string dummy) => SetTabChoices();
         SetTabChoices();
         tabGroup.RegisterValueChangedCallback(evt =>
         {
-            universeManager.ActiveUniverseIdx = evt.newValue;
-            activeUniverse.OnLabelChanged.Subscribe(ResetChoices);
+            UniverseManager.ActiveUniverseIdx = evt.newValue;
+            ActiveUniverse.OnLabelChanged.Subscribe(ResetChoices);
         });
         newButton.clicked += () =>
         {
-            universeManager.CreateUniverse();
-            universeManager.ActiveUniverseIdx = universeManager.Universes.Count - 1;
+            UniverseManager.CreateUniverse();
+            UniverseManager.ActiveUniverseIdx = UniverseManager.UniverseList.Count - 1;
             SetTabChoices();
         };
     }
@@ -80,7 +80,7 @@ public class UniverseView
             var selectElements = matrixSelector.Query("select-element").ToList();
             var groups = selectElements.Select((vle, ch) =>
             {
-                var output = activeUniverse.GetChannelOutput(ch);
+                var output = ActiveUniverse.GetChannelOutput(ch);
                 if (output == null)
                 {
                     vle.AddToClassList("null-channel");
@@ -141,14 +141,14 @@ public class UniverseView
                 OnSelectionChanged();
             };
         }
-        universeManager.onActiveUniverseChanged += univ =>
+        UniverseManager.OnActiveUniverseChanged.Subscribe(_ =>
         {
             SetupMatrixSelector();
             Clear();
-        };
-        activeUniverse.OnEditChannel.Subscribe(_ =>
+        });
+        ActiveUniverse.OnEditChannel.Subscribe(_ =>
         {
-            var list = activeUniverse.OutputList;
+            var list = ActiveUniverse.OutputList;
             SetupMatrixSelector();
             var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
             foreach (var rem in removes)
@@ -193,23 +193,23 @@ public class UniverseView
             nameField.value = universe.Label;
             universeField.value = universe.Universe;
         }
-        universeManager.onActiveUniverseChanged += SetupInfoFields;
-        SetupInfoFields(activeUniverse);
-        nameField.RegisterValueChangedCallback(evt => activeUniverse.Label = evt.newValue);
-        universeField.RegisterValueChangedCallback(evt => activeUniverse.Universe = (short)evt.newValue);
+        UniverseManager.OnActiveUniverseChanged.Subscribe(_ => SetupInfoFields(ActiveUniverse));
+        SetupInfoFields(ActiveUniverse);
+        nameField.RegisterValueChangedCallback(evt => ActiveUniverse.Label = evt.newValue);
+        universeField.RegisterValueChangedCallback(evt => ActiveUniverse.Universe = (short)evt.newValue);
 
         void SetupControllerContainer()
         {
             controllerContainer.Clear();
-            foreach (var output in activeUniverse.OutputList)
+            foreach (var output in ActiveUniverse.OutputList)
                 controllerContainer.Add(UniverseControllerView(output));
         }
-        universeManager.onActiveUniverseChanged += _ => SetupControllerContainer();
-        activeUniverse.OnEditChannel.Subscribe(_ => SetupControllerContainer());
+        UniverseManager.OnActiveUniverseChanged.Subscribe(_ => SetupControllerContainer());
+        ActiveUniverse.OnEditChannel.Subscribe(_ => SetupControllerContainer());
         SetupControllerContainer();
 
         saveButton.clicked += () =>
-            universeManager.SaveUniverse(activeUniverse);
+            UniverseManager.SaveUniverse(ActiveUniverse);
     }
     VisualElement UniverseControllerView(IDmxOutput output)
     {
@@ -231,11 +231,11 @@ public class UniverseView
             int ch;
             if (int.TryParse(evt.newValue, out ch))
             {
-                var checkCh = activeUniverse.IsValid(output);
+                var checkCh = ActiveUniverse.IsValid(output);
                 if (checkCh)
                 {
                     output.StartChannel = ch;
-                    activeUniverse.NotifyEditChannel();
+                    ActiveUniverse.NotifyEditChannel();
                 }
                 else
                     chField.SetValueWithoutNotify(evt.previousValue);
@@ -248,8 +248,8 @@ public class UniverseView
         label.text = output.Label;
         removeButton.clicked += () =>
         {
-            activeUniverse.RemoveOutput(output);
-            activeUniverse.NotifyEditChannel();
+            ActiveUniverse.RemoveOutput(output);
+            ActiveUniverse.NotifyEditChannel();
             ReleaseOutput(output);
         };
         view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));

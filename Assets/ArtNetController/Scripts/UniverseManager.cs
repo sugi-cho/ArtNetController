@@ -1,39 +1,39 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+
 using UnityEngine;
+using UniRx;
 
 class UniverseManager
 {
     public static UniverseManager Instance => _instance;
     private static UniverseManager _instance = new UniverseManager();
 
-    public event System.Action<List<DmxOutputUniverse>> onEditUniverses;
-    public event System.Action<DmxOutputUniverse> onActiveUniverseChanged;
+    public IObservable<int> OnEditUniverses => m_universes.ObserveCountChanged();
+    public IObservable<int> OnActiveUniverseChanged => m_activeUniverseIdx;
 
-    public List<DmxOutputUniverse> Universes => m_universes;
+    public IList<DmxOutputUniverse> UniverseList => m_universes;
+    ReactiveCollection<DmxOutputUniverse> m_universes;
 
-    [SerializeField] List<DmxOutputUniverse> m_universes;
     readonly string folderPath = Path.Combine(Application.streamingAssetsPath, "Universes");
 
     public int ActiveUniverseIdx
     {
-        get => m_activeUniverseIdx;
-        set
-        {
-            m_activeUniverseIdx = value;
-            onActiveUniverseChanged?.Invoke(ActiveUniverse);
-        }
+        get => m_activeUniverseIdx.Value;
+        set => m_activeUniverseIdx.Value = value;
     }
-    int m_activeUniverseIdx;
+    ReactiveProperty<int> m_activeUniverseIdx = new ReactiveProperty<int>();
     public DmxOutputUniverse ActiveUniverse => m_universes[ActiveUniverseIdx];
 
     private UniverseManager()
     {
-        m_universes = Directory.GetFiles(folderPath, "*.json")
+        m_universes = new ReactiveCollection<DmxOutputUniverse>(
+            Directory.GetFiles(folderPath, "*.json")
             .Select(path => File.ReadAllText(path))
             .Select(json => JsonUtility.FromJson<DmxOutputUniverse>(json))
-            .ToList();
+        );
         if (m_universes.Count == 0)
             CreateUniverse();
     }
@@ -44,16 +44,16 @@ class UniverseManager
             0 : Enumerable.Range(0, 512).Where(idx => !exists.Contains((short)idx)).FirstOrDefault();
         var newOutputUniverse = new DmxOutputUniverse { Universe = (short)newUniverse, Label = "Set" };
         m_universes.Add(newOutputUniverse);
-        onEditUniverses?.Invoke(m_universes);
     }
-    public void SaveAllUniverses()
-    {
-        m_universes.ForEach(u => SaveUniverse(u));
-    }
+    public void ValidateAllUniverses() =>
+        m_universes.ToList().ForEach(u => u.ValidateOutputs());
+    public void SaveAllUniverses() =>
+        m_universes.ToList().ForEach(u => SaveUniverse(u));
+
     public void SaveUniverse(DmxOutputUniverse universe)
     {
         universe.BuildDefinitions();
-        var idx = Universes.IndexOf(universe);
+        var idx = UniverseList.IndexOf(universe);
         var fileName = $"Universe_{idx:000}.json";
         var path = Path.Combine(folderPath, fileName);
         var json = JsonUtility.ToJson(universe);

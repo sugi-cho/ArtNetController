@@ -6,6 +6,8 @@ using UniRx;
 
 public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
 {
+    FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
+
     public override void AddMultiTargeUIs(IEnumerable<DmxOutputUI> uis)
     {
         for(var i = 0; i < DmxOutputUIList.Count; i++)

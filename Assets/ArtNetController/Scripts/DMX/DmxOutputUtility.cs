@@ -26,6 +26,8 @@ public enum DmxOutputType
 
 public static class DmxOutputUtility
 {
+    static FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
+
     public readonly static Dictionary<DmxOutputType, System.Type> TypeMap
         = new Dictionary<DmxOutputType, System.Type>
         {

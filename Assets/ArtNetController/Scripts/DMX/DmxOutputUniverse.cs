@@ -6,6 +6,7 @@ using UniRx;
 [System.Serializable]
 public class DmxOutputUniverse : DmxOutputBase
 {
+    FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
     public override DmxOutputType Type => DmxOutputType.Universe;
     public short Universe { get => universe; set => universe = value; }
     [SerializeField] short universe;
@@ -31,15 +32,20 @@ public class DmxOutputUniverse : DmxOutputBase
         BuildDefinitions();
         NotifyEditChannel();
     }
-    public bool IsValid(IDmxOutput output) => Enumerable.Range(output.StartChannel, output.NumChannels).All(ch => {
-        if (ch < 0 || 511 < ch)
-            return false;
-        var existOutput = GetChannelOutput(ch);
-        if (existOutput != null || existOutput != output)
-            return false;
-        else
-            return true;
-    });
+    public bool IsValid(IDmxOutput output) =>
+        Enumerable.Range(output.StartChannel, output.NumChannels).All(ch =>
+        {
+            var fixture = output as DmxOutputFixture;
+            if (fixture != null && !FixtureLibrary.FixtureLabelList.Contains(output.Label))
+                return false;
+            if (ch < 0 || 511 < ch)
+                return false;
+            var existOutput = GetChannelOutput(ch);
+            if (existOutput != null && existOutput != output)
+                return false;
+            else
+                return true;
+        });
     public IDmxOutput GetChannelOutput(int ch) =>
         OutputList.FirstOrDefault(o => o.StartChannel <= ch && ch <= o.StartChannel + o.NumChannels - 1);
     public List<IDmxOutput> OutputList

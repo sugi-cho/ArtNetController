@@ -6,12 +6,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-public static class FixtureLibrary
+public class FixtureLibrary
 {
-    public static IObservable<Unit> OnFixtureLabelListLoaded => fixtureLabelLoadedSubject;
-    static Subject<Unit> fixtureLabelLoadedSubject = new Subject<Unit>();
+    public static FixtureLibrary Instance => _instance;
+    static FixtureLibrary _instance = new FixtureLibrary();
 
-    public static List<string> FixtureLabelList
+    private FixtureLibrary() => LoadFixtureList();
+
+    public IObservable<Unit> OnFixtureLabelListLoaded => fixtureLabelLoadedSubject;
+    Subject<Unit> fixtureLabelLoadedSubject = new Subject<Unit>();
+
+    public List<string> FixtureLabelList
     {
         get
         {
@@ -20,10 +25,10 @@ public static class FixtureLibrary
             return m_fixtureLabelList;
         }
     }
-    static List<string> m_fixtureLabelList;
-    readonly static string folderPath = Path.Combine(Application.streamingAssetsPath, "Fixtures");
+    List<string> m_fixtureLabelList;
+    readonly string folderPath = Path.Combine(Application.streamingAssetsPath, "Fixtures");
 
-    public static void LoadFixtureList()
+    public void LoadFixtureList()
     {
         var filePathes = Directory.GetFiles(folderPath, "*.json");
         if (m_fixtureLabelList == null)
@@ -36,7 +41,7 @@ public static class FixtureLibrary
         }
         fixtureLabelLoadedSubject.OnNext(Unit.Default);
     }
-    static string GenerateUniqueLabel(string label)
+    string GenerateUniqueLabel(string label)
     {
         if (!FixtureLabelList.Contains(label))
             return label;
@@ -53,7 +58,7 @@ public static class FixtureLibrary
 
         return label;
     }
-    public static DmxOutputFixture LoadFixture(string label)
+    public DmxOutputFixture LoadFixture(string label)
     {
         var filePath = Path.Combine(folderPath, $"{label}.json");
         if (!File.Exists(filePath))
@@ -72,13 +77,13 @@ public static class FixtureLibrary
             return fixture;
         }
     }
-    public static void DeleteFixture(DmxOutputFixture fixture)
+    public void DeleteFixture(DmxOutputFixture fixture)
     {
         if (File.Exists(fixture.FilePath))
             File.Delete(fixture.FilePath);
         LoadFixtureList();
     }
-    public static void SaveFixture(DmxOutputFixture fixture)
+    public void SaveFixture(DmxOutputFixture fixture)
     {
         if (fixture.NumChannels < 1)
             return;
