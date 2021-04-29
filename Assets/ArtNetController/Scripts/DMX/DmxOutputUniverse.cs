@@ -52,12 +52,13 @@ public class DmxOutputUniverse : DmxOutputBase
     }
     public bool IsValid(IDmxOutput output) => IsValid(output.StartChannel, output.NumChannels, output);
 
-    public bool IsValid(int startCh, int numCh, IDmxOutput output) =>
-        Enumerable.Range(startCh, numCh).All(ch =>
+    public bool IsValid(int startCh, int numCh, IDmxOutput output)
+    {
+        var fixture = output as DmxOutputFixture;
+        if (fixture != null && !FixtureLibrary.FixtureLabelList.Contains(output.Label))
+            return false;
+        return Enumerable.Range(startCh, numCh).All(ch =>
         {
-            var fixture = output as DmxOutputFixture;
-            if (fixture != null && !FixtureLibrary.FixtureLabelList.Contains(output.Label))
-                return false;
             if (ch < 0 || 511 < ch)
                 return false;
             var existOutput = GetChannelOutput(ch);
@@ -66,6 +67,7 @@ public class DmxOutputUniverse : DmxOutputBase
             else
                 return true;
         });
+    }
     public IDmxOutput GetChannelOutput(int ch) =>
         OutputList.FirstOrDefault(o => o.StartChannel <= ch && ch <= o.StartChannel + o.NumChannels - 1);
     public IList<IDmxOutput> OutputList

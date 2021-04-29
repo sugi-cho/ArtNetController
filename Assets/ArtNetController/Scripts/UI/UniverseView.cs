@@ -146,14 +146,17 @@ public class UniverseView
             SetupMatrixSelector();
             Clear();
         });
-        ActiveUniverse.OnEditChannel.Subscribe(_ =>
+        UniverseManager.UniverseList.ToList().ForEach(univ =>
         {
-            var list = ActiveUniverse.OutputList;
-            SetupMatrixSelector();
-            var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
-            foreach (var rem in removes)
-                selectOutputList.Remove(rem);
-            OnSelectionChanged();
+            univ.OnEditChannel.Subscribe(_ =>
+            {
+                var list = ActiveUniverse.OutputList;
+                SetupMatrixSelector();
+                var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
+                foreach (var rem in removes)
+                    selectOutputList.Remove(rem);
+                OnSelectionChanged();
+            });
         });
         SetupMatrixSelector();
 
@@ -204,8 +207,8 @@ public class UniverseView
             foreach (var output in ActiveUniverse.OutputList)
                 controllerContainer.Add(UniverseControllerView(output));
         }
+        UniverseManager.UniverseList.ToList().ForEach(univ => univ.OnEditChannel.Subscribe(_ => SetupControllerContainer()));
         UniverseManager.OnActiveUniverseChanged.Subscribe(_ => SetupControllerContainer());
-        ActiveUniverse.OnEditChannel.Subscribe(_ => SetupControllerContainer());
         SetupControllerContainer();
 
         saveButton.clicked += () =>

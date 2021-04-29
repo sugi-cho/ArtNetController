@@ -32,7 +32,12 @@ class UniverseManager
         m_universes = new ReactiveCollection<DmxOutputUniverse>(
             Directory.GetFiles(folderPath, "*.json")
             .Select(path => File.ReadAllText(path))
-            .Select(json => JsonUtility.FromJson<DmxOutputUniverse>(json))
+            .Select(json =>
+            {
+                var univ= JsonUtility.FromJson<DmxOutputUniverse>(json);
+                univ.Initialize();
+                return univ;
+            })
         );
         if (m_universes.Count == 0)
             CreateUniverse();
