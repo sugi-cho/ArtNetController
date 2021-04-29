@@ -1,10 +1,11 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="dmx-output-module" style="align-items: center; width: 54px; overflow: hidden; margin-left: 2px; margin-right: 2px; display: flex; border-top-left-radius: 5px; border-bottom-left-radius: 0; border-top-right-radius: 5px; border-bottom-right-radius: 0; background-color: rgba(77, 77, 77, 255); margin-top: 2px; margin-bottom: 2px;">
+    <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/IntSelector.uss" />
+    <ui:VisualElement name="dmx-output-module" style="align-items: center; width: 54px; overflow: hidden; margin-left: 2px; margin-right: 2px; display: flex; border-top-left-radius: 5px; border-bottom-left-radius: 0; border-top-right-radius: 5px; border-bottom-right-radius: 0; background-color: rgb(77, 77, 77); margin-top: 2px; margin-bottom: 2px;">
         <ui:Label text="Label" display-tooltip-when-elided="true" style="flex-grow: 1; width: 100%; border-top-left-radius: 5px; -unity-text-align: upper-center; color: rgb(255, 255, 255); padding-left: 3px; padding-right: 3px; padding-top: 5px; padding-bottom: 5px; border-top-right-radius: 5px; overflow: hidden; white-space: normal;" />
-        <ui:VisualElement name="input-area" style="flex-direction: column-reverse; height: 300px; width: 100%; padding-left: 8px; padding-right: 8px; background-color: rgba(77, 77, 77, 255);">
-            <IntSelector style="flex-grow: 1;" />
+        <ui:VisualElement name="input-area" style="flex-direction: column-reverse; height: 300px; width: 100%; padding-left: 8px; padding-right: 8px; background-color: rgb(77, 77, 77);">
+            <IntSelector style="flex-grow: 1; flex-direction: column-reverse;" />
         </ui:VisualElement>
-        <ui:VisualElement style="width: 100%; padding-bottom: 2px; background-color: rgba(77, 77, 77, 255);">
+        <ui:VisualElement style="width: 100%; padding-bottom: 2px; background-color: rgb(77, 77, 77);">
             <ui:TextField value="filler text" text="0.15" style="flex-grow: 1;" />
         </ui:VisualElement>
     </ui:VisualElement>

@@ -9,6 +9,8 @@ public class DmxOutputFloat : DmxOutputBase<float>, IUseFine
     public bool UseFine { get => m_useFineProp.Value; set => m_useFineProp.Value = value; }
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
+    public override IObservable<Unit> OnEditChannel
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
     public override int NumChannels => UseFine ? 2 : 1;
 
     public override float Value { get => base.Value; set => base.Value = Mathf.Clamp01(value); }
@@ -56,7 +58,7 @@ public class DmxOutputBool : DmxOutputBase<bool>
 public class DmxOutputXY : DmxOutputBase<Vector2>, IUseFine
 {
     public override DmxOutputType Type => DmxOutputType.XY;
-    public DmxOutputXY() : base()
+    public DmxOutputXY()
     {
         dmxOutputX = new DmxOutputFloat();
         dmxOutputY = new DmxOutputFloat();
@@ -78,6 +80,8 @@ public class DmxOutputXY : DmxOutputBase<Vector2>, IUseFine
     }
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
+    public override IObservable<Unit> OnEditChannel
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
     public override int StartChannel
     {
         get => base.StartChannel;
@@ -117,7 +121,7 @@ public class DmxOutputColor : DmxOutputBase<Color>, IUseFine
 {
     public override DmxOutputType Type => DmxOutputType.Color;
 
-    public DmxOutputColor() : base()
+    public DmxOutputColor()
     {
         dmxOutputR = new DmxOutputFloat();
         dmxOutputG = new DmxOutputFloat();
@@ -141,6 +145,8 @@ public class DmxOutputColor : DmxOutputBase<Color>, IUseFine
     }
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
+    public override IObservable<Unit> OnEditChannel
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
 
     public override int StartChannel
     {
@@ -182,36 +188,32 @@ public class DmxOutputEmpty : DmxOutputBase, ISizeProp
     public int SizeProp { get => m_sizeProp.Value; set => m_sizeProp.Value = value; }
     public IObservable<int> OnSizePropChanged => m_sizeProp;
     ReactiveProperty<int> m_sizeProp = new ReactiveProperty<int>(1);
-
     public override int NumChannels => SizeProp;
     public override void SetDmx(ref byte[] dmx) =>
         System.Buffer.BlockCopy(new byte[SizeProp], 0, dmx, StartChannel, SizeProp);
+    public override IObservable<Unit> OnEditChannel
+        => Observable.Merge(base.OnEditChannel, m_sizeProp.AsUnitObservable());
+    public override IObservable<Unit> OnValueChanged => m_subject;
+    Subject<Unit> m_subject;
 }
 
 
 public abstract class DmxOutputBase<T> : DmxOutputBase
 {
-    public DmxOutputBase() : base() =>
-        m_valueProp.Subscribe(_ => valueChangedSubject.OnNext(Unit.Default));
-
     public virtual T Value { get => m_valueProp.Value; set => m_valueProp.Value = value; }
     ReactiveProperty<T> m_valueProp = new ReactiveProperty<T>();
+    public override IObservable<Unit> OnValueChanged => m_valueProp.AsUnitObservable();
 }
 public abstract class DmxOutputBase : IDmxOutput
 {
-    public DmxOutputBase() => 
-        m_startChannelProp.Subscribe(_ => editChannelSubject.OnNext(Unit.Default));
-
     public abstract DmxOutputType Type { get; }
     public string Label { get => m_labelProp.Value; set => m_labelProp.Value = value; }
     public IObservable<string> OnLabelChanged => m_labelProp;
     [SerializeField] protected ReactiveProperty<string> m_labelProp = new ReactiveProperty<string>();
-    public IObservable<Unit> OnValueChanged => valueChangedSubject;
-    protected Subject<Unit> valueChangedSubject = new Subject<Unit>();
+    public virtual IObservable<Unit> OnValueChanged { get; }
     public virtual int StartChannel { get => m_startChannelProp.Value; set => m_startChannelProp.Value = value; }
-    public IObservable<Unit> OnEditChannel => editChannelSubject;
+    public virtual IObservable<Unit> OnEditChannel => m_startChannelProp.AsUnitObservable();
     ReactiveProperty<int> m_startChannelProp = new ReactiveProperty<int>();
-    protected Subject<Unit> editChannelSubject = new Subject<Unit>();
     public abstract int NumChannels { get; }
     public abstract void SetDmx(ref byte[] dmx);
 }

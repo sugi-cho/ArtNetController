@@ -231,12 +231,9 @@ public class UniverseView
             int ch;
             if (int.TryParse(evt.newValue, out ch))
             {
-                var checkCh = ActiveUniverse.IsValid(output);
+                var checkCh = ActiveUniverse.IsValid(ch, output.NumChannels, output);
                 if (checkCh)
-                {
                     output.StartChannel = ch;
-                    ActiveUniverse.NotifyEditChannel();
-                }
                 else
                     chField.SetValueWithoutNotify(evt.previousValue);
             }
@@ -249,7 +246,6 @@ public class UniverseView
         removeButton.clicked += () =>
         {
             ActiveUniverse.RemoveOutput(output);
-            ActiveUniverse.NotifyEditChannel();
             ReleaseOutput(output);
         };
         view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));

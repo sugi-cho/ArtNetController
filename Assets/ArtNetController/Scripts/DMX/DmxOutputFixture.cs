@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -21,8 +22,24 @@ public class DmxOutputFixture : DmxOutputBase
             }
         }
     }
-
-    internal void NotifyEditChannel() => editChannelSubject.OnNext(Unit.Default);
+    public override IObservable<Unit> OnValueChanged
+    {
+        get
+        {
+            var onValueChanged = base.OnValueChanged;
+            OutputList.ToList().ForEach(output => onValueChanged = Observable.Merge(onValueChanged, output.OnValueChanged));
+            return onValueChanged;
+        }
+    }
+    public override IObservable<Unit> OnEditChannel
+    {
+        get
+        {
+            var onEditChannel = Observable.Merge(base.OnEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
+            OutputList.ToList().ForEach(output => onEditChannel = Observable.Merge(onEditChannel, output.OnEditChannel));
+            return onEditChannel;
+        }
+    }
 
     public override int NumChannels => OutputList.Sum(output => output.NumChannels);
 
@@ -34,7 +51,7 @@ public class DmxOutputFixture : DmxOutputBase
     #endregion
 
     #region Fixture methods
-    public List<IDmxOutput> OutputList
+    public IList<IDmxOutput> OutputList
     {
         get
         {
@@ -43,25 +60,22 @@ public class DmxOutputFixture : DmxOutputBase
             return m_outputList;
         }
     }
-    List<IDmxOutput> m_outputList;
+    ReactiveCollection<IDmxOutput> m_outputList;
     public DmxOutputDefinition[] dmxOutputDefinitions;
     bool m_initialized;
     public void Initialize()
     {
         if (dmxOutputDefinitions != null)
-            m_outputList = dmxOutputDefinitions
-                .Select(d => DmxOutputUtility.CreateDmxOutput(d))
-                .ToList();
+            m_outputList = new ReactiveCollection<IDmxOutput>(
+                dmxOutputDefinitions
+                .Select(d => DmxOutputUtility.CreateDmxOutput(d)));
         if (m_outputList == null)
-            m_outputList = new List<IDmxOutput>();
-        m_outputList.ForEach(output =>
-            output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_)));
+            m_outputList = new ReactiveCollection<IDmxOutput>();
         m_initialized = true;
     }
 
     public void AddOutput(IDmxOutput output)
     {
-        output.OnValueChanged.Subscribe(_ => valueChangedSubject.OnNext(_));
         OutputList.Add(output);
         BuildDefinitions();
     }
@@ -71,13 +85,10 @@ public class DmxOutputFixture : DmxOutputBase
         BuildDefinitions();
     }
     public void BuildDefinitions()
-    {
-        var startChannel = StartChannel;
-        StartChannel = 0;
-        dmxOutputDefinitions = OutputList
-            .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
-            .ToArray();
-        StartChannel = startChannel;
-    }
+        => dmxOutputDefinitions = OutputList
+        .OrderBy(output => output.StartChannel)
+        .Select(output => DmxOutputUtility.CreateDmxOutputDefinitioin(output))
+        .ToArray();
+
     #endregion
 }

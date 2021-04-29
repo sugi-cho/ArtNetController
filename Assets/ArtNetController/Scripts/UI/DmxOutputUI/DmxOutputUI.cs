@@ -126,7 +126,6 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
                 universe.RemoveOutput(TargetDmxOutput);
                 foreach (var ui in multiEditUIs)
                     universe.RemoveOutput(ui.TargetDmxOutput);
-                universe.NotifyEditChannel();
             };
             fineToggle.SetEnabled(false);
         }
@@ -135,20 +134,14 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
             removeButton.clicked += () =>
             {
                 fixture.RemoveOutput(TargetDmxOutput);
-                fixture.NotifyEditChannel();
                 editorUI.RemoveFromHierarchy();
                 controlUI.RemoveFromHierarchy();
             };
             fineToggle.SetEnabled(true);
-            fineToggle.RegisterValueChangedCallback(evt => fixture.NotifyEditChannel());
-            sizeField.RegisterValueChangedCallback(evt => fixture.NotifyEditChannel());
 
             var outputType = DmxOutputUtility.GetDmxOutputType(TargetDmxOutput);
             fixture.OnEditChannel.Subscribe(_ =>
-            {
-                fixture.StartChannel = 0;
-                typeLabel.text = $"{TargetDmxOutput.StartChannel}_{outputType}";
-            });
+                typeLabel.text = $"{TargetDmxOutput.StartChannel}_{outputType}");
         }
     }
 }

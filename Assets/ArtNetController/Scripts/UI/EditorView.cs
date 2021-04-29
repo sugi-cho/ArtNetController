@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.UIElements;
 using UniRx;
 
@@ -9,7 +8,6 @@ public class EditorView
     DmxOutputUniverse ActiveUniverse => UniverseManager.Instance.ActiveUniverse;
     FixtureLibrary FixtureLibrary => FixtureLibrary.Instance;
 
-    ScrollView baseScroll;
     VisualElement addOutputView;
     VisualElement addFixtureView;
     VisualElement fixtureEditorView;
@@ -19,8 +17,6 @@ public class EditorView
 
     public void BuildUI(VisualElement view)
     {
-        baseScroll = view.Q<ScrollView>("base-scroll");
-
         addOutputView = view.Q("AddOutputView");
         addFixtureView = view.Q("AddFixtureView");
         fixtureEditorView = view.Q("FixtureEditorView");
@@ -97,7 +93,6 @@ public class EditorView
                     ActiveUniverse.AddOutput(output);
                 ch += output.NumChannels;
             }
-            ActiveUniverse.NotifyEditChannel();
         };
 
         labelField.value = "Name";
@@ -151,7 +146,6 @@ public class EditorView
                         ActiveUniverse.AddOutput(output);
                     ch += output.NumChannels;
                 }
-                ActiveUniverse.NotifyEditChannel();
             }
         };
 

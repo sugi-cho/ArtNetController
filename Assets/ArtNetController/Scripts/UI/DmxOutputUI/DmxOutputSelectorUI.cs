@@ -12,7 +12,6 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
         selector = controlUI.Q<IntSelector>();
         var textField = controlUI.Q<TextField>();
 
-        selector.style.flexDirection = FlexDirection.ColumnReverse;
         selector.NumChoices = targetDmxOutput.SizeProp;
         void SetSelectorSize(int size) => selector.NumChoices = size;
         var disposable = targetDmxOutput.OnSizePropChanged.Subscribe(SetSelectorSize);
@@ -26,6 +25,7 @@ public class DmxOutputSelectorUI : DmxOutputUI<DmxOutputSelector>
             else
                 textField.value = "0";
         };
+        selector.onShiftKey += val => multiEditUIs.ForEach(ui => (ui as DmxOutputSelectorUI).SetValue(val));
         textField.SetEnabled(false);
         SetValue(targetDmxOutput.Value);
     }

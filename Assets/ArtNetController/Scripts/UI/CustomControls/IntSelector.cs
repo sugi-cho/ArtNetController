@@ -27,15 +27,25 @@ public class IntSelector : VisualElement
         get => m_numChoices;
         set
         {
+            VisualElement SelectElement()
+            {
+                var vel = new VisualElement { name = "select-element" };
+                vel.style.flexGrow = 1;
+                return vel;
+            }
             m_numChoices = value;
             Clear();
             for (var i = 0; i < m_numChoices; i++)
             {
                 var index = i;
-                var button = new Button() { text = $"{index}" };
-                button.clicked += () => Value = index;
-                button.style.flexGrow = 1;
-                Add(button);
+                var select = SelectElement();
+                select.RegisterCallback<PointerUpEvent>(evt =>
+                {
+                    Value = index;
+                    if (evt.shiftKey)
+                        onShiftKey?.Invoke(Value);
+                });
+                Add(select);
             }
         }
     }
@@ -47,17 +57,21 @@ public class IntSelector : VisualElement
         {
             value = Mathf.Clamp(value, 0, NumChoices - 1);
             m_value = value;
-            this.Query<Button>().ForEach(b =>
+            this.Query("select-element").ForEach(e =>
             {
-                var idx = b.parent.IndexOf(b);
-                b.SetEnabled(idx != m_value);
+                var idx = e.parent.IndexOf(e);
+                if (idx == m_value)
+                    e.AddToClassList("selected");
+                else
+                    e.RemoveFromClassList("selected");
             });
             onValueChanged?.Invoke(m_value);
         }
     }
     int m_value;
 
-    public System.Action<int> onValueChanged;
+    public event System.Action<int> onValueChanged;
+    public event System.Action<int> onShiftKey;
 
     public IntSelector() : base()
     {

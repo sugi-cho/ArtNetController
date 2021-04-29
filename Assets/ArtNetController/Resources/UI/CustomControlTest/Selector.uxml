@@ -1,3 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/ArtNetController/Resources/UI/StyleSheets/IntSelector.uss" />
     <IntSelector numChoices="5" style="flex-grow: 1;" />
 </ui:UXML>
