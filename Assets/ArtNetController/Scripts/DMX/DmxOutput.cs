@@ -10,7 +10,7 @@ public class DmxOutputFloat : DmxOutputBase<float>, IUseFine
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
     public override IObservable<Unit> OnEditChannel
-        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.SkipLatestValueOnSubscribe().AsUnitObservable());
     public override int NumChannels => UseFine ? 2 : 1;
 
     public override float Value { get => base.Value; set => base.Value = Mathf.Clamp01(value); }
@@ -81,7 +81,7 @@ public class DmxOutputXY : DmxOutputBase<Vector2>, IUseFine
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
     public override IObservable<Unit> OnEditChannel
-        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.SkipLatestValueOnSubscribe().AsUnitObservable());
     public override int StartChannel
     {
         get => base.StartChannel;
@@ -146,7 +146,7 @@ public class DmxOutputColor : DmxOutputBase<Color>, IUseFine
     public IObservable<bool> OnUseFineChanged => m_useFineProp;
     ReactiveProperty<bool> m_useFineProp = new ReactiveProperty<bool>();
     public override IObservable<Unit> OnEditChannel
-        => Observable.Merge(base.OnEditChannel, m_useFineProp.AsUnitObservable());
+        => Observable.Merge(base.OnEditChannel, m_useFineProp.SkipLatestValueOnSubscribe().AsUnitObservable());
 
     public override int StartChannel
     {
@@ -192,9 +192,7 @@ public class DmxOutputEmpty : DmxOutputBase, ISizeProp
     public override void SetDmx(ref byte[] dmx) =>
         System.Buffer.BlockCopy(new byte[SizeProp], 0, dmx, StartChannel, SizeProp);
     public override IObservable<Unit> OnEditChannel
-        => Observable.Merge(base.OnEditChannel, m_sizeProp.AsUnitObservable());
-    public override IObservable<Unit> OnValueChanged => m_subject;
-    Subject<Unit> m_subject;
+        => Observable.Merge(base.OnEditChannel, m_sizeProp.SkipLatestValueOnSubscribe().AsUnitObservable());
 }
 
 
@@ -202,7 +200,7 @@ public abstract class DmxOutputBase<T> : DmxOutputBase
 {
     public virtual T Value { get => m_valueProp.Value; set => m_valueProp.Value = value; }
     ReactiveProperty<T> m_valueProp = new ReactiveProperty<T>();
-    public override IObservable<Unit> OnValueChanged => m_valueProp.AsUnitObservable();
+    public override IObservable<Unit> OnValueChanged => m_valueProp.SkipLatestValueOnSubscribe().AsUnitObservable();
 }
 public abstract class DmxOutputBase : IDmxOutput
 {
@@ -210,9 +208,9 @@ public abstract class DmxOutputBase : IDmxOutput
     public string Label { get => m_labelProp.Value; set => m_labelProp.Value = value; }
     public IObservable<string> OnLabelChanged => m_labelProp;
     [SerializeField] protected ReactiveProperty<string> m_labelProp = new ReactiveProperty<string>();
-    public virtual IObservable<Unit> OnValueChanged { get; }
+    public virtual IObservable<Unit> OnValueChanged => Observable.ReturnUnit();
     public virtual int StartChannel { get => m_startChannelProp.Value; set => m_startChannelProp.Value = value; }
-    public virtual IObservable<Unit> OnEditChannel => m_startChannelProp.AsUnitObservable();
+    public virtual IObservable<Unit> OnEditChannel => m_startChannelProp.SkipLatestValueOnSubscribe().AsUnitObservable();
     ReactiveProperty<int> m_startChannelProp = new ReactiveProperty<int>();
     public abstract int NumChannels { get; }
     public abstract void SetDmx(ref byte[] dmx);

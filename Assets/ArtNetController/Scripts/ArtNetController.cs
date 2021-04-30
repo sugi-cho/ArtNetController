@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Linq;
 using ArtNet.Packets;
 using sugi.cc.udp;
 using UniRx;
@@ -42,13 +42,15 @@ public class ArtNetController : MonoBehaviour
 
         UniverseManager.OnActiveUniverseChanged.Subscribe(_
             => packetToOutput.Universe = ActiveUniverse.Universe);
-        ActiveUniverse.OnValueChanged.Subscribe(_ =>
-        {
-            var dmx = new byte[512];
-            ActiveUniverse.SetDmx(ref dmx);
-            packetToOutput.DmxData = dmx;
-            sender.Send(packetToOutput.ToArray());
-        });
+        UniverseManager.UniverseList.ToList().ForEach(univ =>
+            univ.OnValueChanged.Subscribe(_ =>
+            {
+                var dmx = new byte[512];
+                ActiveUniverse.SetDmx(ref dmx);
+                packetToOutput.DmxData = dmx;
+                sender.Send(packetToOutput.ToArray());
+            })
+        );
         FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_
             => UniverseManager.ValidateAllUniverses());
     }

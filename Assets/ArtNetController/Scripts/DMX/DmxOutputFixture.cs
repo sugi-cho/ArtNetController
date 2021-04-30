@@ -28,7 +28,7 @@ public class DmxOutputFixture : DmxOutputBase
         {
             var onValueChanged = base.OnValueChanged;
             OutputList.ToList().ForEach(output => onValueChanged = Observable.Merge(onValueChanged, output.OnValueChanged));
-            return onValueChanged;
+            return onValueChanged.ThrottleFrame(1);
         }
     }
     public override IObservable<Unit> OnEditChannel
@@ -37,7 +37,7 @@ public class DmxOutputFixture : DmxOutputBase
         {
             var onEditChannel = Observable.Merge(base.OnEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
             OutputList.ToList().ForEach(output => onEditChannel = Observable.Merge(onEditChannel, output.OnEditChannel));
-            return onEditChannel;
+            return onEditChannel.ThrottleFrame(1);
         }
     }
 

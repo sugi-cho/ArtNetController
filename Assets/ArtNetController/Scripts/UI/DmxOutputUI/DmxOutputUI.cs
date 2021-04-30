@@ -96,7 +96,6 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         controlUI = tree?.CloneTree("");
         if (controlUI == null)
         {
-            Debug.LogWarning($"Invalid path: {ControlUIResourcePath}");
             controlUI = new VisualElement();
             return;
         }
