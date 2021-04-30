@@ -122,9 +122,9 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         {
             removeButton.clicked += () =>
             {
-                universe.RemoveOutput(TargetDmxOutput);
+                universe.OutputList.Remove(TargetDmxOutput);
                 foreach (var ui in multiEditUIs)
-                    universe.RemoveOutput(ui.TargetDmxOutput);
+                    universe.OutputList.Remove(ui.TargetDmxOutput);
             };
             fineToggle.SetEnabled(false);
         }

@@ -248,7 +248,7 @@ public class UniverseView
         label.text = output.Label;
         removeButton.clicked += () =>
         {
-            ActiveUniverse.RemoveOutput(output);
+            ActiveUniverse.OutputList.Remove(output);
             ReleaseOutput(output);
         };
         view.RegisterCallback<PointerDownEvent>(evt => view.CapturePointer(evt.pointerId));

@@ -90,7 +90,7 @@ public class EditorView
                 var output = DmxOutputUtility.CreateDmxOutput(definition);
                 output.StartChannel = ch;
                 if (ActiveUniverse.IsValid(output))
-                    ActiveUniverse.AddOutput(output);
+                    ActiveUniverse.OutputList.Add(output);
                 ch += output.NumChannels;
             }
         };
@@ -143,7 +143,7 @@ public class EditorView
                     var output = FixtureLibrary.LoadFixture(label);
                     output.StartChannel = ch;
                     if (ActiveUniverse.IsValid(output))
-                        ActiveUniverse.AddOutput(output);
+                        ActiveUniverse.OutputList.Add(output);
                     ch += output.NumChannels;
                 }
             }
