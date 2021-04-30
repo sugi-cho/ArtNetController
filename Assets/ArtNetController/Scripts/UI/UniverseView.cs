@@ -56,9 +56,12 @@ public class UniverseView
         newButton.clicked += () =>
         {
             UniverseManager.CreateUniverse();
-            UniverseManager.ActiveUniverseIdx = UniverseManager.UniverseList.Count - 1;
-            SetTabChoices();
         };
+        UniverseManager.OnUniverseListCountChanged.Subscribe(count =>
+        {
+            UniverseManager.ActiveUniverseIdx = count - 1;
+            SetTabChoices();
+        });
     }
     #endregion
 
@@ -146,17 +149,14 @@ public class UniverseView
             SetupMatrixSelector();
             Clear();
         });
-        UniverseManager.UniverseList.ToList().ForEach(univ =>
+        UniverseManager.OnEditChannel.Subscribe(_ =>
         {
-            univ.OnEditChannel.Subscribe(_ =>
-            {
-                var list = ActiveUniverse.OutputList;
-                SetupMatrixSelector();
-                var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
-                foreach (var rem in removes)
-                    selectOutputList.Remove(rem);
-                OnSelectionChanged();
-            });
+            var list = ActiveUniverse.OutputList;
+            SetupMatrixSelector();
+            var removes = selectOutputList.Where(output => !list.Contains(output)).ToList();
+            foreach (var rem in removes)
+                selectOutputList.Remove(rem);
+            OnSelectionChanged();
         });
         SetupMatrixSelector();
 
@@ -176,7 +176,6 @@ public class UniverseView
             matrixSelector.SetAllValues(false);
             ClearSelections();
         }
-        clearButton.clicked -= Clear;
         clearButton.clicked += Clear;
         Clear();
     }
@@ -207,7 +206,7 @@ public class UniverseView
             foreach (var output in ActiveUniverse.OutputList)
                 controllerContainer.Add(UniverseControllerView(output));
         }
-        UniverseManager.UniverseList.ToList().ForEach(univ => univ.OnEditChannel.Subscribe(_ => SetupControllerContainer()));
+        UniverseManager.OnEditChannel.Subscribe(_ => SetupControllerContainer());
         UniverseManager.OnActiveUniverseChanged.Subscribe(_ => SetupControllerContainer());
         SetupControllerContainer();
 

@@ -11,11 +11,29 @@ class UniverseManager
     public static UniverseManager Instance => _instance;
     private static UniverseManager _instance = new UniverseManager();
 
-    public IObservable<int> OnEditUniverses => m_universes.ObserveCountChanged();
+    public IObservable<int> OnUniverseListCountChanged => m_universeList.ObserveCountChanged();
     public IObservable<int> OnActiveUniverseChanged => m_activeUniverseIdx;
+    public IObservable<Unit> OnEditChannel
+    {
+        get
+        {
+            var onEditChannel = m_onEditChannel as IObservable<Unit>;
+            UniverseList.ToList().ForEach(univ => onEditChannel = Observable.Merge(onEditChannel, univ.OnEditChannel));
+            return onEditChannel;
+        }
+    }
+    Subject<Unit> m_onEditChannel = new Subject<Unit>();
+    public IObservable<Unit> OnValueChanged { get
+        {
+            var onUniverseValueChanged = m_onValueChanged as IObservable<Unit>;
+            UniverseList.ToList().ForEach(univ => onUniverseValueChanged = Observable.Merge(onUniverseValueChanged, univ.OnValueChanged));
+            return onUniverseValueChanged;
+        } 
+    }
+    Subject<Unit> m_onValueChanged = new Subject<Unit>();
 
-    public IList<DmxOutputUniverse> UniverseList => m_universes;
-    ReactiveCollection<DmxOutputUniverse> m_universes;
+    public IList<DmxOutputUniverse> UniverseList => m_universeList;
+    ReactiveCollection<DmxOutputUniverse> m_universeList;
 
     readonly string folderPath = Path.Combine(Application.streamingAssetsPath, "Universes");
 
@@ -25,35 +43,41 @@ class UniverseManager
         set => m_activeUniverseIdx.Value = value;
     }
     ReactiveProperty<int> m_activeUniverseIdx = new ReactiveProperty<int>();
-    public DmxOutputUniverse ActiveUniverse => m_universes[ActiveUniverseIdx];
+    public DmxOutputUniverse ActiveUniverse => m_universeList[ActiveUniverseIdx];
 
     private UniverseManager()
     {
-        m_universes = new ReactiveCollection<DmxOutputUniverse>(
+        m_universeList = new ReactiveCollection<DmxOutputUniverse>(
             Directory.GetFiles(folderPath, "*.json")
             .Select(path => File.ReadAllText(path))
             .Select(json =>
             {
-                var univ= JsonUtility.FromJson<DmxOutputUniverse>(json);
+                var univ = JsonUtility.FromJson<DmxOutputUniverse>(json);
                 univ.Initialize();
                 return univ;
             })
         );
-        if (m_universes.Count == 0)
+        if (m_universeList.Count == 0)
             CreateUniverse();
+        m_universeList.ObserveAdd().Subscribe(evt =>
+        {
+            var output = evt.Value;
+            output.OnValueChanged.Subscribe(_ => m_onValueChanged.OnNext(_));
+            output.OnEditChannel.Subscribe(_ => m_onEditChannel.OnNext(_));
+        });
     }
     public void CreateUniverse()
     {
-        var exists = m_universes.Select(u => u.Universe);
-        var newUniverse = m_universes == null ?
+        var exists = m_universeList.Select(u => u.Universe);
+        var newUniverse = m_universeList == null ?
             0 : Enumerable.Range(0, 512).Where(idx => !exists.Contains((short)idx)).FirstOrDefault();
-        var newOutputUniverse = new DmxOutputUniverse { Universe = (short)newUniverse, Label = "Set" };
-        m_universes.Add(newOutputUniverse);
+        var newOutputUniverse = new DmxOutputUniverse { Universe = (short)newUniverse, Label = "NewSet" };
+        m_universeList.Add(newOutputUniverse);
     }
     public void ValidateAllUniverses() =>
-        m_universes.ToList().ForEach(u => u.ValidateOutputs());
+        m_universeList.ToList().ForEach(u => u.ValidateOutputs());
     public void SaveAllUniverses() =>
-        m_universes.ToList().ForEach(u => SaveUniverse(u));
+        m_universeList.ToList().ForEach(u => SaveUniverse(u));
 
     public void SaveUniverse(DmxOutputUniverse universe)
     {

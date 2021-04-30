@@ -42,15 +42,13 @@ public class ArtNetController : MonoBehaviour
 
         UniverseManager.OnActiveUniverseChanged.Subscribe(_
             => packetToOutput.Universe = ActiveUniverse.Universe);
-        UniverseManager.UniverseList.ToList().ForEach(univ =>
-            univ.OnValueChanged.Subscribe(_ =>
-            {
-                var dmx = new byte[512];
-                ActiveUniverse.SetDmx(ref dmx);
-                packetToOutput.DmxData = dmx;
-                sender.Send(packetToOutput.ToArray());
-            })
-        );
+        UniverseManager.OnValueChanged.Subscribe(_ =>
+        {
+            var dmx = new byte[512];
+            ActiveUniverse.SetDmx(ref dmx);
+            packetToOutput.DmxData = dmx;
+            sender.Send(packetToOutput.ToArray());
+        });
         FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_
             => UniverseManager.ValidateAllUniverses());
     }

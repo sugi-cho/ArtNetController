@@ -13,8 +13,10 @@ public class FixtureLibrary
 
     private FixtureLibrary() => LoadFixtureList();
 
-    public IObservable<Unit> OnFixtureLabelListLoaded => fixtureLabelLoadedSubject;
-    Subject<Unit> fixtureLabelLoadedSubject = new Subject<Unit>();
+    public IObservable<Unit> OnFixtureLabelListLoaded => m_fixtureLabelLoadedSubject;
+    Subject<Unit> m_fixtureLabelLoadedSubject = new Subject<Unit>();
+    public IObservable<string> OnSaveFixture => m_onSaveFixture;
+    Subject<string> m_onSaveFixture = new Subject<string>();
 
     public List<string> FixtureLabelList
     {
@@ -39,7 +41,7 @@ public class FixtureLibrary
             var label = Path.GetFileNameWithoutExtension(path);
             m_fixtureLabelList.Add(label);
         }
-        fixtureLabelLoadedSubject.OnNext(Unit.Default);
+        m_fixtureLabelLoadedSubject.OnNext(Unit.Default);
     }
     string GenerateUniqueLabel(string label)
     {
@@ -95,5 +97,6 @@ public class FixtureLibrary
                 File.Move(fixture.FilePath, filePath);
         File.WriteAllText(filePath, json);
         LoadFixtureList();
+        m_onSaveFixture.OnNext(fixture.Label);
     }
 }
