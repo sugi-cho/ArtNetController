@@ -82,7 +82,7 @@ public class DmxOutputFixtureUI : DmxOutputUI<DmxOutputFixture>
             if (System.Enum.TryParse(val, out outputType))
             {
                 var output = DmxOutputUtility.CreateDmxOutput(outputType);
-                targetDmxOutput.AddOutput(output);
+                targetDmxOutput.OutputList.Add(output);
                 dropdownEdit.Q<DropdownField>().index = 0;
 
                 var ui = CreateUI(output);

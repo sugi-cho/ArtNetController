@@ -26,20 +26,22 @@ public class DmxOutputFixture : DmxOutputBase
     {
         get
         {
-            var onValueChanged = base.OnValueChanged;
+            var onValueChanged = Observable.Merge(base.OnValueChanged, m_onValueChanged);
             OutputList.ToList().ForEach(output => onValueChanged = Observable.Merge(onValueChanged, output.OnValueChanged));
             return onValueChanged.ThrottleFrame(1);
         }
     }
+    Subject<Unit> m_onValueChanged = new Subject<Unit>();
     public override IObservable<Unit> OnEditChannel
     {
         get
         {
-            var onEditChannel = Observable.Merge(base.OnEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
+            var onEditChannel = Observable.Merge(m_onEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
             OutputList.ToList().ForEach(output => onEditChannel = Observable.Merge(onEditChannel, output.OnEditChannel));
             return onEditChannel.ThrottleFrame(1);
         }
     }
+    Subject<Unit> m_onEditChannel = new Subject<Unit>();
 
     public override int NumChannels => OutputList.Sum(output => output.NumChannels);
 
@@ -71,19 +73,20 @@ public class DmxOutputFixture : DmxOutputBase
                 .Select(d => DmxOutputUtility.CreateDmxOutput(d)));
         if (m_outputList == null)
             m_outputList = new ReactiveCollection<IDmxOutput>();
+        m_outputList.ObserveCountChanged().Subscribe(_ =>
+        {
+            StartChannel = 0;
+            BuildDefinitions();
+        });
+        m_outputList.ObserveAdd().Subscribe(evt =>
+        {
+            var output = evt.Value;
+            output.OnValueChanged.Subscribe(_ => m_onValueChanged.OnNext(_));
+            output.OnEditChannel.Subscribe(_ => m_onEditChannel.OnNext(_));
+        });
         m_initialized = true;
     }
 
-    public void AddOutput(IDmxOutput output)
-    {
-        OutputList.Add(output);
-        BuildDefinitions();
-    }
-    public void RemoveOutput(IDmxOutput output)
-    {
-        OutputList.Remove(output);
-        BuildDefinitions();
-    }
     public void BuildDefinitions()
         => dmxOutputDefinitions = OutputList
         .OrderBy(output => output.StartChannel)

@@ -132,7 +132,7 @@ public class DmxOutputUI<T> : DmxOutputUI where T : IDmxOutput
         {
             removeButton.clicked += () =>
             {
-                fixture.RemoveOutput(TargetDmxOutput);
+                fixture.OutputList.Remove(TargetDmxOutput);
                 editorUI.RemoveFromHierarchy();
                 controlUI.RemoveFromHierarchy();
             };
