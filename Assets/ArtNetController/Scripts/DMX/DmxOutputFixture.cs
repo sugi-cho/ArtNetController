@@ -23,24 +23,10 @@ public class DmxOutputFixture : DmxOutputBase
         }
     }
     public override IObservable<Unit> OnValueChanged
-    {
-        get
-        {
-            var onValueChanged = Observable.Merge(base.OnValueChanged, m_onValueChanged);
-            OutputList.ToList().ForEach(output => onValueChanged = Observable.Merge(onValueChanged, output.OnValueChanged));
-            return onValueChanged.ThrottleFrame(1);
-        }
-    }
+        => Observable.Merge(base.OnValueChanged, m_onValueChanged).ThrottleFrame(1);
     Subject<Unit> m_onValueChanged = new Subject<Unit>();
     public override IObservable<Unit> OnEditChannel
-    {
-        get
-        {
-            var onEditChannel = Observable.Merge(m_onEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
-            OutputList.ToList().ForEach(output => onEditChannel = Observable.Merge(onEditChannel, output.OnEditChannel));
-            return onEditChannel.ThrottleFrame(1);
-        }
-    }
+        => Observable.Merge(base.OnEditChannel, m_onEditChannel).ThrottleFrame(1);
     Subject<Unit> m_onEditChannel = new Subject<Unit>();
 
     public override int NumChannels => OutputList.Sum(output => output.NumChannels);
@@ -70,9 +56,17 @@ public class DmxOutputFixture : DmxOutputBase
         if (dmxOutputDefinitions != null)
             m_outputList = new ReactiveCollection<IDmxOutput>(
                 dmxOutputDefinitions
-                .Select(d => DmxOutputUtility.CreateDmxOutput(d)));
+                .Select(d =>
+                {
+                    var o = DmxOutputUtility.CreateDmxOutput(d);
+                    o.OnValueChanged.Subscribe(_ => m_onValueChanged.OnNext(_));
+                    o.OnEditChannel.Subscribe(_ => m_onEditChannel.OnNext(_));
+                    return o;
+                })
+            );
         if (m_outputList == null)
             m_outputList = new ReactiveCollection<IDmxOutput>();
+
         m_outputList.ObserveCountChanged().Subscribe(_ =>
         {
             StartChannel = 0;

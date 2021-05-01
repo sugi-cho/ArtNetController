@@ -17,24 +17,10 @@ public class DmxOutputUniverse : DmxOutputBase
         set { Debug.Log("DmxOutputUniverse.StartChannel = 0, always"); }
     }
     public override IObservable<Unit> OnValueChanged
-    {
-        get
-        {
-            var onValueChanged = Observable.Merge(base.OnValueChanged, m_onValueChanged);
-            OutputList.ToList().ForEach(output => onValueChanged = Observable.Merge(onValueChanged, output.OnValueChanged));
-            return onValueChanged.ThrottleFrame(1);
-        }
-    }
+        => Observable.Merge(base.OnValueChanged, m_onEditChannel).ThrottleFrame(1);
     Subject<Unit> m_onValueChanged = new Subject<Unit>();
     public override IObservable<Unit> OnEditChannel
-    {
-        get
-        {
-            var onEditChannel = Observable.Merge(m_onEditChannel, m_outputList.ObserveCountChanged().AsUnitObservable());
-            OutputList.ToList().ForEach(output => onEditChannel = Observable.Merge(onEditChannel, output.OnEditChannel));
-            return onEditChannel.ThrottleFrame(1);
-        }
-    }
+        => Observable.Merge(base.OnEditChannel, m_onEditChannel).ThrottleFrame(1);
     Subject<Unit> m_onEditChannel = new Subject<Unit>();
 
     public override int NumChannels => OutputList
@@ -47,6 +33,11 @@ public class DmxOutputUniverse : DmxOutputBase
             output.SetDmx(ref dmx);
     }
 
+    public void ReloadFixture(string label)
+        => OutputList
+            .Select(output => (output as DmxOutputFixture))
+            .Where(fixture => fixture != null && fixture.Label == label)
+            .ToList().ForEach(fixture => FixtureLibrary.ReloadFixture(fixture));
     public void ValidateOutputs()
     {
         var inValidOutputList = OutputList.Where(o => !IsValid(o)).ToList();
@@ -54,7 +45,6 @@ public class DmxOutputUniverse : DmxOutputBase
         BuildDefinitions();
     }
     public bool IsValid(IDmxOutput output) => IsValid(output.StartChannel, output.NumChannels, output);
-
     public bool IsValid(int startCh, int numCh, IDmxOutput output)
     {
         var fixture = output as DmxOutputFixture;
@@ -90,12 +80,22 @@ public class DmxOutputUniverse : DmxOutputBase
         if (dmxOutputDefinitions != null)
             m_outputList = new ReactiveCollection<IDmxOutput>(
                 dmxOutputDefinitions
-                .Select(d => DmxOutputUtility.CreateDmxOutput(d))
+                .Select(d =>
+                {
+                    var o = DmxOutputUtility.CreateDmxOutput(d);
+                    o.OnValueChanged.Subscribe(_ => m_onValueChanged.OnNext(_));
+                    o.OnEditChannel.Subscribe(_ => m_onEditChannel.OnNext(_));
+                    return o;
+                })
                 .OrderBy(o => o.StartChannel));
         if (m_outputList == null)
             m_outputList = new ReactiveCollection<IDmxOutput>();
 
-        m_outputList.ObserveCountChanged().Subscribe(_ => BuildDefinitions());
+        m_outputList.ObserveCountChanged().Subscribe(_ =>
+        {
+            m_onEditChannel.OnNext(Unit.Default);
+            BuildDefinitions();
+        });
         m_outputList.ObserveAdd().Subscribe(evt =>
         {
             var output = evt.Value;

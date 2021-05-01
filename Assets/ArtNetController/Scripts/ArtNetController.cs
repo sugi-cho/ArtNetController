@@ -51,6 +51,9 @@ public class ArtNetController : MonoBehaviour
         });
         FixtureLibrary.OnFixtureLabelListLoaded.Subscribe(_
             => UniverseManager.ValidateAllUniverses());
+        FixtureLibrary.OnSaveFixture.Subscribe(label
+            => UniverseManager.UniverseList.ToList()
+            .ForEach(univ => univ.ReloadFixture(label)));
     }
     private void OnDisable()
     {

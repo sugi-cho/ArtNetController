@@ -79,6 +79,17 @@ public class FixtureLibrary
             return fixture;
         }
     }
+    public void ReloadFixture(DmxOutputFixture fixture)
+    {
+        if (File.Exists(fixture.FilePath))
+        {
+            var startChannel = fixture.StartChannel;
+            var json = File.ReadAllText(fixture.FilePath);
+            JsonUtility.FromJsonOverwrite(json, fixture);
+            fixture.Initialize();
+            fixture.StartChannel = startChannel;
+        }
+    }
     public void DeleteFixture(DmxOutputFixture fixture)
     {
         if (File.Exists(fixture.FilePath))
@@ -96,7 +107,7 @@ public class FixtureLibrary
             if (File.Exists(fixture.FilePath))
                 File.Move(fixture.FilePath, filePath);
         File.WriteAllText(filePath, json);
-        LoadFixtureList();
         m_onSaveFixture.OnNext(fixture.Label);
+        LoadFixtureList();
     }
 }
