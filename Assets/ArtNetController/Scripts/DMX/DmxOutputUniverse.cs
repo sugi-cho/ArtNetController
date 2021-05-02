@@ -17,7 +17,7 @@ public class DmxOutputUniverse : DmxOutputBase
         set { Debug.Log("DmxOutputUniverse.StartChannel = 0, always"); }
     }
     public override IObservable<Unit> OnValueChanged
-        => Observable.Merge(base.OnValueChanged, m_onEditChannel).ThrottleFrame(1);
+        => Observable.Merge(base.OnValueChanged, m_onValueChanged).ThrottleFrame(1);
     Subject<Unit> m_onValueChanged = new Subject<Unit>();
     public override IObservable<Unit> OnEditChannel
         => Observable.Merge(base.OnEditChannel, m_onEditChannel).ThrottleFrame(1);

@@ -13,23 +13,9 @@ class UniverseManager
 
     public IObservable<int> OnUniverseListCountChanged => m_universeList.ObserveCountChanged();
     public IObservable<int> OnActiveUniverseChanged => m_activeUniverseIdx;
-    public IObservable<Unit> OnEditChannel
-    {
-        get
-        {
-            var onEditChannel = m_onEditChannel as IObservable<Unit>;
-            UniverseList.ToList().ForEach(univ => onEditChannel = Observable.Merge(onEditChannel, univ.OnEditChannel));
-            return onEditChannel;
-        }
-    }
+    public IObservable<Unit> OnEditChannel => m_onEditChannel.ThrottleFrame(1);
     Subject<Unit> m_onEditChannel = new Subject<Unit>();
-    public IObservable<Unit> OnValueChanged { get
-        {
-            var onUniverseValueChanged = m_onValueChanged as IObservable<Unit>;
-            UniverseList.ToList().ForEach(univ => onUniverseValueChanged = Observable.Merge(onUniverseValueChanged, univ.OnValueChanged));
-            return onUniverseValueChanged;
-        } 
-    }
+    public IObservable<Unit> OnValueChanged => m_onValueChanged.ThrottleFrame(1);
     Subject<Unit> m_onValueChanged = new Subject<Unit>();
 
     public IList<DmxOutputUniverse> UniverseList => m_universeList;
@@ -54,6 +40,8 @@ class UniverseManager
             {
                 var univ = JsonUtility.FromJson<DmxOutputUniverse>(json);
                 univ.Initialize();
+                univ.OnValueChanged.Subscribe(_ => m_onValueChanged.OnNext(_));
+                univ.OnEditChannel.Subscribe(_ => m_onEditChannel.OnNext(_));
                 return univ;
             })
         );
