@@ -27,9 +27,12 @@
 
 ![](imgs/addControls.gif)
 
-### Control DMX Controllers
+### Operate DMX Controllers
 
 ![](imgs/controllers.gif)
+
+- Press the Shift key to operate multiple controllers
+- コントローラーUIを同時に操作すると重いから、表示しない方がいいかも知れん
 
 ## Control Virtual/Real DMX Devices
 
