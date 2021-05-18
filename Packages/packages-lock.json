@@ -15,10 +15,12 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.5",
+      "version": "3.0.6",
       "depth": 0,
       "source": "registry",
-      "dependencies": {},
+      "dependencies": {
+        "com.unity.ext.nunit": "1.0.6"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
@@ -96,7 +98,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.visualscripting": {
-      "version": "1.6.0-pre.3",
+      "version": "1.6.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -118,13 +120,13 @@
       "url": "https://upm-packages.dev"
     },
     "sugi.cc": {
-      "version": "file:C:/Users/sugi-cho/source/repos/sugi-cho/ArtNetController/sugi.cc",
+      "version": "file:../sugi.cc",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "sugi.udp": {
-      "version": "file:C:/Users/sugi-cho/source/repos/sugi-cho/ArtNetController/sugi.udp/sugi.udp",
+      "version": "file:../sugi.udp/sugi.udp",
       "depth": 0,
       "source": "local",
       "dependencies": {}
